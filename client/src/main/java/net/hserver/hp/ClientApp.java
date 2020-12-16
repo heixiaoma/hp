@@ -1,5 +1,7 @@
 package net.hserver.hp;
-import net.hserver.hp.client.ProxyClient;
+
+import net.hserver.hp.client.BaseClient;
+import net.hserver.hp.server.BaseServer;
 import net.hserver.hp.server.ProxyServer;
 
 /**
@@ -7,10 +9,12 @@ import net.hserver.hp.server.ProxyServer;
  */
 public class ClientApp {
 
-    public static void main(String[] args) throws Exception{
-        new ProxyServer().start();
+    public static void main(String[] args) throws Exception {
+        new BaseServer().start();
         Thread.sleep(1000);
-        new ProxyClient().start();
+        new BaseClient().start();
+        Thread.sleep(1000);
+        new ProxyServer().start();
     }
 
 }

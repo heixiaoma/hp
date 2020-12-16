@@ -1,11 +1,15 @@
 package net.hserver.hp.handler;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
+import net.hserver.hp.bean.Data;
+import net.hserver.hp.utils.ByteBufUtil;
 
 /**
  * 后端处理程序
+ * @author hxm
  */
-public class HHandler extends ChannelInboundHandlerAdapter {
+public class HHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     private final Channel inboundChannel;
 
@@ -19,11 +23,14 @@ public class HHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelRead(final ChannelHandlerContext ctx, Object msg) {
-        inboundChannel.writeAndFlush(msg).addListener((ChannelFutureListener) future -> {
+    protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
+        System.out.println("--" + msg);
+        inboundChannel.writeAndFlush(new Data(true, ByteBufUtil.byteBufToBytes(msg))).addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
+                System.out.println("客服端发送成功");
                 ctx.channel().read();
             } else {
+                System.out.println("客服端发送失败");
                 future.channel().close();
             }
         });
@@ -31,12 +38,13 @@ public class HHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        QHandler.closeOnFlush(inboundChannel);
+        System.out.println("关闭客服端");
+        BaseHandler.closeOnFlush(inboundChannel);
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.printStackTrace();
-        QHandler.closeOnFlush(ctx.channel());
+        BaseHandler.closeOnFlush(ctx.channel());
     }
 }

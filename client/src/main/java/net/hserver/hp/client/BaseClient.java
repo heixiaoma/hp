@@ -7,12 +7,12 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import net.hserver.hp.initializer.ProxyInitializer;
+import net.hserver.hp.initializer.BaseInitializer;
 
 /**
  * @author hxm
  */
-public class ProxyClient extends Thread{
+public class BaseClient extends Thread{
 
     public static Channel channel;
 
@@ -22,8 +22,8 @@ public class ProxyClient extends Thread{
             final EventLoopGroup group = new NioEventLoopGroup();
             Bootstrap b = new Bootstrap();
             b.group(group).channel(NioSocketChannel.class);
-            b.handler(new ProxyInitializer());
-            final ChannelFuture future = b.connect("127.0.0.1", 9999).sync();
+            b.handler(new BaseInitializer());
+            final ChannelFuture future = b.connect("127.0.0.1", 10000).sync();
             future.addListener((ChannelFutureListener) arg0 -> {
                 if (future.isSuccess()) {
                     System.out.println("连接服务器成功");
