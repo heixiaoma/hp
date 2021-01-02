@@ -1,3 +1,5 @@
+package net.hserver.hp.server;
+
 import org.apache.commons.cli.*;
 
 /**

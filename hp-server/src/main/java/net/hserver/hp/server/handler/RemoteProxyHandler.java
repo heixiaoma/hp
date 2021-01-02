@@ -1,4 +1,4 @@
-package handler;
+package net.hserver.hp.server.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import net.hserver.hp.common.handler.HpCommonHandler;

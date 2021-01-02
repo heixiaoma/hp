@@ -1,4 +1,4 @@
-package handler;
+package net.hserver.hp.server.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
@@ -8,11 +8,11 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.bytes.ByteArrayDecoder;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import io.netty.util.concurrent.GlobalEventExecutor;
-import net.TcpServer;
 import net.hserver.hp.common.exception.HpException;
 import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessage;
 import net.hserver.hp.common.protocol.HpMessageType;
+import net.hserver.hp.server.TcpServer;
 
 import java.util.HashMap;
 

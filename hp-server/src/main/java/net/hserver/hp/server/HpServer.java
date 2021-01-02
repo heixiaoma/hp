@@ -1,11 +1,12 @@
-import handler.HpServerHandler;
+package net.hserver.hp.server;
+
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.timeout.IdleStateHandler;
-import net.TcpServer;
 import net.hserver.hp.common.codec.HpMessageDecoder;
 import net.hserver.hp.common.codec.HpMessageEncoder;
+import net.hserver.hp.server.handler.HpServerHandler;
 
 
 /**
