@@ -12,7 +12,11 @@ import net.hserver.hp.common.exception.HpException;
 import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessage;
 import net.hserver.hp.common.protocol.HpMessageType;
-import net.hserver.hp.server.TcpServer;
+import net.hserver.hp.server.domian.vo.UserVo;
+import net.hserver.hp.server.init.TcpServer;
+import net.hserver.hp.server.service.UserService;
+import net.hserver.hp.server.service.impl.UserServiceImpl;
+import top.hserver.core.ioc.IocUtil;
 
 import java.util.HashMap;
 
@@ -26,13 +30,11 @@ public class HpServerHandler extends HpCommonHandler {
 
     private static ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-    private String password;
     private int port;
 
     private boolean register = false;
 
-    public HpServerHandler(String password) {
-        this.password = password;
+    public HpServerHandler() {
     }
 
     @Override
@@ -49,7 +51,7 @@ public class HpServerHandler extends HpCommonHandler {
             } else if (hpMessage.getType() == HpMessageType.KEEPALIVE) {
                 // 心跳包, 不处理
             } else {
-                throw new HpException("Unknown type: " + hpMessage.getType());
+                throw new HpException("未知类型: " + hpMessage.getType());
             }
         } else {
             ctx.close();
@@ -60,7 +62,7 @@ public class HpServerHandler extends HpCommonHandler {
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         remoteConnectionServer.close();
         if (register) {
-            System.out.println("Stop server on port: " + port);
+            System.out.println("停止服务器的端口: " + port);
         }
     }
 
@@ -69,16 +71,19 @@ public class HpServerHandler extends HpCommonHandler {
      */
     private void processRegister(HpMessage hpMessage) {
         HashMap<String, Object> metaData = new HashMap<>();
-
         String password = hpMessage.getMetaData().get("password").toString();
-        if (this.password != null && !this.password.equals(password)) {
+        String username = hpMessage.getMetaData().get("username").toString();
+        int port = (int) hpMessage.getMetaData().get("port");
+        UserService userService = IocUtil.getBean(UserServiceImpl.class);
+        UserVo login = userService.login(username, password);
+        /**
+         * 查询这个用户是否是合法的，不是合法的直接干掉
+         */
+        if (login == null || !login.getPorts().contains(port)) {
             metaData.put("success", false);
-            metaData.put("reason", "Token is wrong");
+            metaData.put("reason", "用户非法，有疑问请联系管理员");
         } else {
-            int port = (int) hpMessage.getMetaData().get("port");
-
             try {
-
                 HpServerHandler thisHandler = this;
                 remoteConnectionServer.bind(port, new ChannelInitializer<SocketChannel>() {
                     @Override
@@ -87,11 +92,10 @@ public class HpServerHandler extends HpCommonHandler {
                         channels.add(ch);
                     }
                 });
-
                 metaData.put("success", true);
                 this.port = port;
                 register = true;
-                System.out.println("Register success, start server on port: " + port);
+                System.out.println("注册成功，在端口上启动服务器: " + port);
             } catch (Exception e) {
                 metaData.put("success", false);
                 metaData.put("reason", e.getMessage());
@@ -105,7 +109,7 @@ public class HpServerHandler extends HpCommonHandler {
         ctx.writeAndFlush(sendBackMessage);
 
         if (!register) {
-            System.out.println("Client register error: " + metaData.get("reason"));
+            System.out.println("客户注册错误: " + metaData.get("reason"));
             ctx.close();
         }
     }
@@ -119,6 +123,7 @@ public class HpServerHandler extends HpCommonHandler {
 
     /**
      * if HpMessage.getType() == HpMessageType.DISCONNECTED
+     *
      * @param hpMessage
      */
     private void processDisconnected(HpMessage hpMessage) {

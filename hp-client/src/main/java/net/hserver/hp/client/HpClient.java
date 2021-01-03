@@ -17,12 +17,14 @@ import java.io.IOException;
  */
 public class HpClient {
 
-    public void connect(String serverAddress, int serverPort, String password, int remotePort, String proxyAddress, int proxyPort) throws IOException, InterruptedException {
+    public static boolean isAuth=true;
+
+    public void connect(String serverAddress, int serverPort, String username, String password, int remotePort, String proxyAddress, int proxyPort) throws IOException, InterruptedException {
         TcpConnection hpConnection = new TcpConnection();
         ChannelFuture future = hpConnection.connect(serverAddress, serverPort, new ChannelInitializer<SocketChannel>() {
             @Override
             public void initChannel(SocketChannel ch) throws Exception {
-                HpClientHandler hpClientHandler = new HpClientHandler(remotePort, password,
+                HpClientHandler hpClientHandler = new HpClientHandler(remotePort, username, password,
                         proxyAddress, proxyPort);
                 ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4),
                         new HpMessageDecoder(), new HpMessageEncoder(),
@@ -31,23 +33,20 @@ public class HpClient {
         });
 
         // channel close retry connect
-        future.addListener(future1 -> new Thread() {
-            @Override
-            public void run() {
-                while (true) {
+        future.addListener(future1 -> new Thread(() -> {
+            while (isAuth) {
+                try {
+                    connect(serverAddress, serverPort, username,password, remotePort, proxyAddress, proxyPort);
+                    break;
+                } catch (Exception e) {
+                    e.printStackTrace();
                     try {
-                        connect(serverAddress, serverPort, password, remotePort, proxyAddress, proxyPort);
-                        break;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        try {
-                            Thread.sleep(10000);
-                        } catch (InterruptedException e1) {
-                            e1.printStackTrace();
-                        }
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
                     }
                 }
             }
-        }.start());
+        }).start());
     }
 }

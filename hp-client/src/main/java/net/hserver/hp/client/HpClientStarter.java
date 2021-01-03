@@ -14,6 +14,7 @@ public class HpClientStarter {
         options.addOption("h", false, "Help");
         options.addOption("server_addr", true, "Hp server address");
         options.addOption("server_port", true, "Hp server port");
+        options.addOption("username", true, "Hp server username");
         options.addOption("password", true, "Hp server password");
         options.addOption("proxy_addr", true, "Proxy server address");
         options.addOption("proxy_port", true, "Proxy server port");
@@ -38,7 +39,16 @@ public class HpClientStarter {
                 System.out.println("server_port cannot be null");
                 return;
             }
+            String username = cmd.getOptionValue("username");
+            if (username == null) {
+                System.out.println("username cannot be null");
+                return;
+            }
             String password = cmd.getOptionValue("password");
+            if (password == null) {
+                System.out.println("password cannot be null");
+                return;
+            }
             String proxyAddress = cmd.getOptionValue("proxy_addr");
             if (proxyAddress == null) {
                 System.out.println("proxy_addr cannot be null");
@@ -56,7 +66,7 @@ public class HpClientStarter {
             }
 
             HpClient client = new HpClient();
-            client.connect(serverAddress, Integer.parseInt(serverPort), password, Integer.parseInt(remotePort), proxyAddress, Integer.parseInt(proxyPort));
+            client.connect(serverAddress, Integer.parseInt(serverPort), username,password, Integer.parseInt(remotePort), proxyAddress, Integer.parseInt(proxyPort));
         }
     }
 }

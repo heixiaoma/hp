@@ -9,6 +9,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.bytes.ByteArrayDecoder;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import net.hserver.hp.client.HpClient;
 import net.hserver.hp.client.net.TcpConnection;
 import net.hserver.hp.common.exception.HpException;
 import net.hserver.hp.common.handler.HpCommonHandler;
@@ -26,15 +27,17 @@ public class HpClientHandler extends HpCommonHandler {
 
     private int port;
     private String password;
+    private String username;
     private String proxyAddress;
     private int proxyPort;
 
     private ConcurrentHashMap<String, HpCommonHandler> channelHandlerMap = new ConcurrentHashMap<>();
     private ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-    public HpClientHandler(int port, String password, String proxyAddress, int proxyPort) {
+    public HpClientHandler(int port, String username, String password, String proxyAddress, int proxyPort) {
         this.port = port;
         this.password = password;
+        this.username = username;
         this.proxyAddress = proxyAddress;
         this.proxyPort = proxyPort;
     }
@@ -43,10 +46,11 @@ public class HpClientHandler extends HpCommonHandler {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
 
         // register client information
-       HpMessage message = new HpMessage();
+        HpMessage message = new HpMessage();
         message.setType(HpMessageType.REGISTER);
         HashMap<String, Object> metaData = new HashMap<>();
         metaData.put("port", port);
+        metaData.put("username", username);
         metaData.put("password", password);
         message.setMetaData(metaData);
         ctx.writeAndFlush(message);
@@ -86,6 +90,10 @@ public class HpClientHandler extends HpCommonHandler {
         if ((Boolean) message.getMetaData().get("success")) {
             System.out.println("Register to Hp server");
         } else {
+            //认证错误的，不在重新连接
+            if (message.getMetaData().toString().contains("用户非法")) {
+                HpClient.isAuth = false;
+            }
             System.out.println("Register fail: " + message.getMetaData().get("reason"));
             ctx.close();
         }

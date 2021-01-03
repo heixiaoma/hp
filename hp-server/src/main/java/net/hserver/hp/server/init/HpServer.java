@@ -1,4 +1,4 @@
-package net.hserver.hp.server;
+package net.hserver.hp.server.init;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
@@ -14,14 +14,14 @@ import net.hserver.hp.server.handler.HpServerHandler;
  */
 public class HpServer {
 
-    public void start(int port, String password) throws InterruptedException {
+    public void start(int port) throws InterruptedException {
 
         TcpServer hpClientServer = new TcpServer();
         hpClientServer.bind(port, new ChannelInitializer<SocketChannel>() {
             @Override
             public void initChannel(SocketChannel ch)
                     throws Exception {
-                HpServerHandler hpServerHandler = new HpServerHandler(password);
+                HpServerHandler hpServerHandler = new HpServerHandler();
                 ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4),
                         new HpMessageDecoder(), new HpMessageEncoder(),
                         new IdleStateHandler(60, 30, 0), hpServerHandler);
