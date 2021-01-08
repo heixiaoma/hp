@@ -1,6 +1,13 @@
 <#include "/header.ftl">
 <#--监控页面-->
 <div style="padding: 1rem">
+
+    <div style="padding: .6rem">
+        <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-purple-accent mdui-ripple" onclick="new mdui.Dialog('#addUser').open()">
+            添加
+        </button>
+    </div>
+
     <div class="mdui-table-fluid">
         <table class="mdui-table">
             <thead>
@@ -20,10 +27,12 @@
                             <div class="mdui-dialog-title">编辑</div>
                             <div class="mdui-dialog-content">
                                 <div class="mdui-textfield">
-                                    <input class="mdui-textfield-input" name="username" readonly type="text" value="${userVo.username}"/>
+                                    <input class="mdui-textfield-input" name="username" readonly type="text"
+                                           value="${userVo.username}"/>
                                 </div>
                                 <div class="mdui-textfield">
-                                    <input class="mdui-textfield-input" name="password" type="text" value="${userVo.password}"/>
+                                    <input class="mdui-textfield-input" name="password" type="text"
+                                           value="${userVo.password}"/>
                                 </div>
                                 <div class="mdui-textfield">
                                     <input class="mdui-textfield-input" name="ports" type="text"
@@ -50,9 +59,10 @@
                                 onclick="new mdui.Dialog('#${userVo.username}').open()">
                             编辑
                         </button>
-                        <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-orange-accent mdui-ripple">
+                        <a class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-orange-accent mdui-ripple"
+                           href="/user/remove?page=${page}&username=${userVo.username}">
                             删除
-                        </button>
+                        </a>
                     </td>
                 </tr>
             </#list>
@@ -60,6 +70,31 @@
         </table>
     </div>
     <div class="pagger-box pagger" id="box"></div>
+
+    <#--  添加  -->
+
+    <div class="mdui-dialog" id="addUser">
+        <form method="post" action="/user/add?page=${page}">
+            <div class="mdui-dialog-content">
+                <div class="mdui-textfield">
+                    <input class="mdui-textfield-input" name="username" placeholder="用户名" type="text"/>
+                </div>
+                <div class="mdui-textfield">
+                    <input class="mdui-textfield-input" name="password" placeholder="密码" type="text"/>
+                </div>
+                <div class="mdui-textfield">
+                    <input class="mdui-textfield-input" name="ports" placeholder="端口号 逗号分隔" type="text"/>
+                </div>
+            </div>
+            <div class="mdui-dialog-actions">
+                <button class="mdui-btn mdui-ripple" mdui-dialog-cancel>取消</button>
+                <button type="submit" class="mdui-btn mdui-ripple">确定</button>
+            </div>
+        </form>
+    </div>
+
+
+
 </div>
 <script>
     var pageConst =${page};

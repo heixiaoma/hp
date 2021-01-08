@@ -43,4 +43,20 @@ public class UserController {
         }
         index(page, response);
     }
+
+    @POST("/user/add")
+    public void add(Integer page, HttpResponse response, String username, String password, String ports) {
+        if (username != null) {
+            userService.addUser(username,password,ports);
+        }
+        index(page, response);
+    }
+
+    @GET("/user/remove")
+    public void remove(Integer page, HttpResponse response, String username) {
+        if (username != null) {
+            userService.remove(username);
+        }
+        index(page, response);
+    }
 }

@@ -31,6 +31,7 @@ public interface UserService {
 
     /**
      * 获取用户的端口
+     *
      * @param userId
      * @return
      */
@@ -38,6 +39,7 @@ public interface UserService {
 
     /**
      * 列表
+     *
      * @param page
      * @param pageSize
      * @return
@@ -46,10 +48,27 @@ public interface UserService {
 
     /**
      * 编辑用户
+     *
      * @param username
      * @param password
      * @param ports
      */
-    void editUser(String username,String password,String ports);
+    void editUser(String username, String password, String ports);
+
+    /**
+     * 添加用户
+     *
+     * @param username
+     * @param password
+     * @param ports
+     */
+    void addUser(String username, String password, String ports);
+
+    /**
+     * 删除用户
+     *
+     * @param username
+     */
+    void remove(String username);
 
 }
