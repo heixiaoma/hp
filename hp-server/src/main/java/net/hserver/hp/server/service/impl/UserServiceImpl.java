@@ -13,6 +13,7 @@ import top.hserver.core.ioc.annotation.Bean;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author hxm
@@ -79,5 +80,30 @@ public class UserServiceImpl implements UserService {
             userVo.setPorts(ports);
         }
         return page1;
+    }
+
+    @Override
+    public void editUser(String username, String password, String ports) {
+        UserEntity user = getUser(username);
+        if (user != null) {
+            user.setPassword(password);
+            userDao.updateById(user);
+        }
+        assert user != null;
+        List<PortEntity> port = getPort(user.getId());
+        for (PortEntity portEntity : port) {
+            portDao.deleteById(portEntity.getId());
+        }
+
+        String[] split = ports.split(",");
+        if (split.length > 0) {
+            for (String s : split) {
+                PortEntity portEntity = new PortEntity();
+                portEntity.setId(UUID.randomUUID().toString());
+                portEntity.setUserId(user.getId());
+                portEntity.setPort(Integer.parseInt(s));
+                portDao.insert(portEntity);
+            }
+        }
     }
 }

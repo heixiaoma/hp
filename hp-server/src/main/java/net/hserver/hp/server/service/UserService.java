@@ -44,5 +44,12 @@ public interface UserService {
      */
     PageResult<UserVo> list(Integer page, Integer pageSize);
 
+    /**
+     * 编辑用户
+     * @param username
+     * @param password
+     * @param ports
+     */
+    void editUser(String username,String password,String ports);
 
 }

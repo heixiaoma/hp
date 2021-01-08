@@ -7,6 +7,7 @@ import top.hserver.core.interfaces.HttpResponse;
 import top.hserver.core.ioc.annotation.Autowired;
 import top.hserver.core.ioc.annotation.Controller;
 import top.hserver.core.ioc.annotation.GET;
+import top.hserver.core.ioc.annotation.POST;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,5 +34,13 @@ public class UserController {
         data.put("list", list.getList());
         data.put("totalPage", list.getTotalPage());
         response.sendTemplate("/user.ftl", data);
+    }
+
+    @POST("/user/edit")
+    public void edit(Integer page, HttpResponse response, String username, String password, String ports) {
+        if (username != null) {
+            userService.editUser(username,password,ports);
+        }
+        index(page, response);
     }
 }
