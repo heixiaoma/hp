@@ -44,7 +44,6 @@ public class HpClientHandler extends HpCommonHandler {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-
         // register client information
         HpMessage message = new HpMessage();
         message.setType(HpMessageType.REGISTER);
@@ -54,7 +53,6 @@ public class HpClientHandler extends HpCommonHandler {
         metaData.put("password", password);
         message.setMetaData(metaData);
         ctx.writeAndFlush(message);
-
         super.channelActive(ctx);
     }
 
@@ -80,7 +78,7 @@ public class HpClientHandler extends HpCommonHandler {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         channelGroup.close();
-        HpClient.setMsg("Loss connection to Hp server, Please restart!");
+        HpClient.setMsg("与HP服务器的连接断开，请重新启动！");
     }
 
     /**
@@ -88,13 +86,17 @@ public class HpClientHandler extends HpCommonHandler {
      */
     private void processRegisterResult(HpMessage message) {
         if ((Boolean) message.getMetaData().get("success")) {
-            HpClient.setMsg("Register to Hp server");
+            HpClient.setMsg("成功注册到HP服务器");
         } else {
             //认证错误的，不在重新连接
             if (message.getMetaData().toString().contains("用户非法")) {
                 HpClient.isAuth = false;
             }
-            HpClient.setMsg("Register fail: " + message.getMetaData().get("reason"));
+            HpClient.setMsg("注册失败: " + message.getMetaData().get("reason"));
+            if (message.getMetaData().toString().contains("端口占用")) {
+                HpClient.isAuth = false;
+                HpClient.setMsg("重启APP吧: " + message.getMetaData().get("reason"));
+            }
             ctx.close();
         }
     }

@@ -5,6 +5,8 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 import net.hserver.hp.client.handler.HpClientHandler;
 import net.hserver.hp.client.net.TcpConnection;
 import net.hserver.hp.common.codec.HpMessageDecoder;
@@ -33,23 +35,30 @@ public class HpClient {
                         new IdleStateHandler(60, 30, 0), hpClientHandler);
             }
         });
-
         // channel close retry connect
-        future.addListener(future1 -> new Thread(() -> {
-            while (isAuth) {
-                try {
-                    connect(serverAddress, serverPort, username, password, remotePort, proxyAddress, proxyPort);
-                    break;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    try {
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
+        future.addListener(new GenericFutureListener(){
+            @Override
+            public void operationComplete(Future future) throws Exception {
+                new Thread()  {
+                    @Override
+                    public void run() {
+                        while (isAuth) {
+                            try {
+                                connect(serverAddress, serverPort, username, password, remotePort, proxyAddress, proxyPort);
+                                break;
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                try {
+                                    Thread.sleep(10000);
+                                } catch (InterruptedException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+                        }
                     }
-                }
+                }.start();
             }
-        }).start());
+        });
     }
 
     public void onMessage(CallMsg callMsg) {

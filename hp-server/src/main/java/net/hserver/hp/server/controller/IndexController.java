@@ -10,7 +10,6 @@ import top.hserver.core.ioc.annotation.GET;
 @Controller
 public class IndexController {
 
-
     @GET("/")
     public void index(HttpResponse response){
         response.sendTemplate("/index.ftl");

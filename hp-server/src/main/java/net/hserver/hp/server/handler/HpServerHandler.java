@@ -98,16 +98,14 @@ public class HpServerHandler extends HpCommonHandler {
                 System.out.println("注册成功，在端口上启动服务器: " + port);
             } catch (Exception e) {
                 metaData.put("success", false);
-                metaData.put("reason", e.getMessage());
+                metaData.put("reason", "端口占用，检查是否已经链接上去了");
                 e.printStackTrace();
             }
         }
-
         HpMessage sendBackMessage = new HpMessage();
         sendBackMessage.setType(HpMessageType.REGISTER_RESULT);
         sendBackMessage.setMetaData(metaData);
         ctx.writeAndFlush(sendBackMessage);
-
         if (!register) {
             System.out.println("客户注册错误: " + metaData.get("reason"));
             ctx.close();

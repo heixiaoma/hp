@@ -6,9 +6,9 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.util.CharsetUtil;
+import net.hserver.hp.common.Config;
 import net.hserver.hp.common.protocol.HpMessage;
 import net.hserver.hp.common.protocol.HpMessageType;
-import top.hserver.core.server.context.ConstConfig;
 
 import java.util.List;
 import java.util.Map;
@@ -28,7 +28,7 @@ public class HpMessageDecoder extends MessageToMessageDecoder<ByteBuf> {
         CharSequence metaDataString = msg.readCharSequence(metaDataLength, CharsetUtil.UTF_8);
 
         String s = metaDataString.toString();
-        Map<String, Object> metaData = ConstConfig.JSON.readValue(s, new TypeReference<Map<String, Object>>() {
+        Map<String, Object> metaData = Config.JSON.readValue(s, new TypeReference<Map<String, Object>>() {
         });
         byte[] data = null;
         if (msg.isReadable()) {

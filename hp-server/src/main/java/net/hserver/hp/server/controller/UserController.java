@@ -8,6 +8,7 @@ import top.hserver.core.ioc.annotation.Autowired;
 import top.hserver.core.ioc.annotation.Controller;
 import top.hserver.core.ioc.annotation.GET;
 import top.hserver.core.ioc.annotation.POST;
+import top.hserver.core.server.util.JsonResult;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +21,7 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
 
     @GET("/user")
     public void index(Integer page, HttpResponse response) {
@@ -36,10 +38,23 @@ public class UserController {
         response.sendTemplate("/user.ftl", data);
     }
 
+
+    @POST("/user/login")
+    public JsonResult login(String username, String password) {
+        if (username != null && password != null) {
+            UserVo login = userService.login(username, password);
+            if (login!=null) {
+                return JsonResult.ok("登录成功").put("data", login);
+            }
+        }
+        return JsonResult.error("登录失败");
+    }
+
+
     @POST("/user/edit")
     public void edit(Integer page, HttpResponse response, String username, String password, String ports) {
         if (username != null) {
-            userService.editUser(username,password,ports);
+            userService.editUser(username, password, ports);
         }
         index(page, response);
     }
@@ -47,7 +62,7 @@ public class UserController {
     @POST("/user/add")
     public void add(Integer page, HttpResponse response, String username, String password, String ports) {
         if (username != null) {
-            userService.addUser(username,password,ports);
+            userService.addUser(username, password, ports);
         }
         index(page, response);
     }

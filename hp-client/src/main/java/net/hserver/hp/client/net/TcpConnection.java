@@ -11,7 +11,6 @@ import java.io.IOException;
  * A TCP connection to server
  */
 public class TcpConnection {
-
     /**
      *
      * @param host
@@ -20,9 +19,7 @@ public class TcpConnection {
      * @throws InterruptedException
      */
     public ChannelFuture connect(String host, int port, ChannelInitializer channelInitializer) throws InterruptedException, IOException {
-
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
-
         try {
             Bootstrap b = new Bootstrap();
             b.group(workerGroup);
