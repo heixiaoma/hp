@@ -80,7 +80,7 @@ public class HpClientHandler extends HpCommonHandler {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         channelGroup.close();
-        System.out.println("Loss connection to Hp server, Please restart!");
+        HpClient.setMsg("Loss connection to Hp server, Please restart!");
     }
 
     /**
@@ -88,13 +88,13 @@ public class HpClientHandler extends HpCommonHandler {
      */
     private void processRegisterResult(HpMessage message) {
         if ((Boolean) message.getMetaData().get("success")) {
-            System.out.println("Register to Hp server");
+            HpClient.setMsg("Register to Hp server");
         } else {
             //认证错误的，不在重新连接
             if (message.getMetaData().toString().contains("用户非法")) {
                 HpClient.isAuth = false;
             }
-            System.out.println("Register fail: " + message.getMetaData().get("reason"));
+            HpClient.setMsg("Register fail: " + message.getMetaData().get("reason"));
             ctx.close();
         }
     }

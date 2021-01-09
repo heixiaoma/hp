@@ -17,7 +17,9 @@ import java.io.IOException;
  */
 public class HpClient {
 
-    public static boolean isAuth=true;
+    private static CallMsg callMsg;
+
+    public static boolean isAuth = true;
 
     public void connect(String serverAddress, int serverPort, String username, String password, int remotePort, String proxyAddress, int proxyPort) throws IOException, InterruptedException {
         TcpConnection hpConnection = new TcpConnection();
@@ -36,7 +38,7 @@ public class HpClient {
         future.addListener(future1 -> new Thread(() -> {
             while (isAuth) {
                 try {
-                    connect(serverAddress, serverPort, username,password, remotePort, proxyAddress, proxyPort);
+                    connect(serverAddress, serverPort, username, password, remotePort, proxyAddress, proxyPort);
                     break;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -49,4 +51,15 @@ public class HpClient {
             }
         }).start());
     }
+
+    public void onMessage(CallMsg callMsg) {
+        HpClient.callMsg = callMsg;
+    }
+
+    public static void setMsg(String msg) {
+        if (msg != null && callMsg != null) {
+            callMsg.message(msg);
+        }
+    }
+
 }
