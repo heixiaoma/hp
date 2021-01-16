@@ -9,6 +9,7 @@ public class PortTest {
         try {
             serverSocket = new ServerSocket(0);
         } catch (IOException e) {
+
             e.printStackTrace();
         }
         for (int i = 0; i < 10; i++) {
