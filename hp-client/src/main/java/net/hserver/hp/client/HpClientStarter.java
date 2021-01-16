@@ -65,14 +65,13 @@ public class HpClientStarter {
                 return;
             }
 
-            HpClient client = new HpClient();
-            client.connect(serverAddress, Integer.parseInt(serverPort), username,password, Integer.parseInt(remotePort), proxyAddress, Integer.parseInt(proxyPort));
-            client.onMessage(new CallMsg() {
+            HpClient client = new HpClient(new CallMsg() {
                 @Override
                 public void message(String msg) {
                     System.out.println(msg);
                 }
             });
+            client.connect(serverAddress, Integer.parseInt(serverPort), username,password, Integer.parseInt(remotePort), proxyAddress, Integer.parseInt(proxyPort));
         }
     }
 }

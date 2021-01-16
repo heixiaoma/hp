@@ -9,7 +9,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.bytes.ByteArrayDecoder;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import io.netty.util.concurrent.GlobalEventExecutor;
-import net.hserver.hp.client.HpClient;
+import net.hserver.hp.client.CallMsg;
 import net.hserver.hp.client.net.TcpConnection;
 import net.hserver.hp.common.exception.HpException;
 import net.hserver.hp.common.handler.HpCommonHandler;
@@ -30,16 +30,17 @@ public class HpClientHandler extends HpCommonHandler {
     private String username;
     private String proxyAddress;
     private int proxyPort;
-
+    private CallMsg callMsg;
     private ConcurrentHashMap<String, HpCommonHandler> channelHandlerMap = new ConcurrentHashMap<>();
     private ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-    public HpClientHandler(int port, String username, String password, String proxyAddress, int proxyPort) {
+    public HpClientHandler(int port, String username, String password, String proxyAddress, int proxyPort, CallMsg callMsg) {
         this.port = port;
         this.password = password;
         this.username = username;
         this.proxyAddress = proxyAddress;
         this.proxyPort = proxyPort;
+        this.callMsg = callMsg;
     }
 
     @Override
@@ -78,25 +79,16 @@ public class HpClientHandler extends HpCommonHandler {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         channelGroup.close();
-        HpClient.setMsg("与HP服务器的连接断开，请重新启动！");
+        callMsg.message("与HP服务器的连接断开，请重新启动！");
     }
-
     /**
      * if Message.getType() == HpMessageType.REGISTER_RESULT
      */
     private void processRegisterResult(HpMessage message) {
         if ((Boolean) message.getMetaData().get("success")) {
-            HpClient.setMsg("成功注册到HP服务器");
+            callMsg.message("成功注册到HP服务器");
         } else {
-            //认证错误的，不在重新连接
-            if (message.getMetaData().toString().contains("用户非法")) {
-                HpClient.isAuth = false;
-            }
-            HpClient.setMsg("注册失败: " + message.getMetaData().get("reason"));
-            if (message.getMetaData().toString().contains("端口占用")) {
-                HpClient.isAuth = false;
-                HpClient.setMsg("重启APP吧: " + message.getMetaData().get("reason"));
-            }
+            callMsg.message(message.getMetaData().get("reason").toString());
             ctx.close();
         }
     }
@@ -105,7 +97,6 @@ public class HpClientHandler extends HpCommonHandler {
      * if HpMessage.getType() == HpMessageType.CONNECTED
      */
     private void processConnected(final HpMessage message) throws Exception {
-
         try {
             final HpClientHandler thisHandler = this;
             TcpConnection localConnection = new TcpConnection();
@@ -114,7 +105,6 @@ public class HpClientHandler extends HpCommonHandler {
                 public void initChannel(SocketChannel ch) throws Exception {
                     LocalProxyHandler localProxyHandler = new LocalProxyHandler(thisHandler, message.getMetaData().get("channelId").toString());
                     ch.pipeline().addLast(new ByteArrayDecoder(), new ByteArrayEncoder(), localProxyHandler);
-
                     channelHandlerMap.put(message.getMetaData().get("channelId").toString(), localProxyHandler);
                     channelGroup.add(ch);
                 }
@@ -123,10 +113,11 @@ public class HpClientHandler extends HpCommonHandler {
             HpMessage msg = new HpMessage();
             msg.setType(HpMessageType.DISCONNECTED);
             HashMap<String, Object> metaData = new HashMap<>();
-            metaData.put("channelId", msg.getMetaData().get("channelId"));
+            metaData.put("channelId", message.getMetaData().get("channelId"));
             msg.setMetaData(metaData);
             ctx.writeAndFlush(msg);
-            channelHandlerMap.remove(msg.getMetaData().get("channelId"));
+            channelHandlerMap.remove(message.getMetaData().get("channelId"));
+            callMsg.message(e.getMessage());
             throw e;
         }
     }

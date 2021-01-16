@@ -15,60 +15,47 @@ import net.hserver.hp.common.codec.HpMessageEncoder;
 import java.io.IOException;
 
 /**
- * Created by wucao on 2019/2/27.
+ * @author hxm
  */
 public class HpClient {
 
-    private static CallMsg callMsg;
+    private CallMsg callMsg;
 
-    public static boolean isAuth = true;
+    private ChannelFuture future;
+
+    public HpClient(CallMsg callMsg) {
+        this.callMsg = callMsg;
+    }
 
     public void connect(String serverAddress, int serverPort, String username, String password, int remotePort, String proxyAddress, int proxyPort) throws IOException, InterruptedException {
-        TcpConnection hpConnection = new TcpConnection();
-        ChannelFuture future = hpConnection.connect(serverAddress, serverPort, new ChannelInitializer<SocketChannel>() {
-            @Override
-            public void initChannel(SocketChannel ch) throws Exception {
-                HpClientHandler hpClientHandler = new HpClientHandler(remotePort, username, password,
-                        proxyAddress, proxyPort);
-                ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4),
-                        new HpMessageDecoder(), new HpMessageEncoder(),
-                        new IdleStateHandler(60, 30, 0), hpClientHandler);
-            }
-        });
-        // channel close retry connect
-        future.addListener(new GenericFutureListener(){
-            @Override
-            public void operationComplete(Future future) throws Exception {
-                new Thread()  {
-                    @Override
-                    public void run() {
-                        while (isAuth) {
-                            try {
-                                connect(serverAddress, serverPort, username, password, remotePort, proxyAddress, proxyPort);
-                                break;
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                try {
-                                    Thread.sleep(10000);
-                                } catch (InterruptedException e1) {
-                                    e1.printStackTrace();
-                                }
-                            }
-                        }
-                    }
-                }.start();
-            }
-        });
-    }
+        try {
+            TcpConnection hpConnection = new TcpConnection();
+            future = hpConnection.connect(serverAddress, serverPort, new ChannelInitializer<SocketChannel>() {
+                @Override
+                public void initChannel(SocketChannel ch) throws Exception {
+                    HpClientHandler hpClientHandler = new HpClientHandler(remotePort, username, password,
+                            proxyAddress, proxyPort, callMsg);
+                    ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4),
+                            new HpMessageDecoder(), new HpMessageEncoder(),
+                            new IdleStateHandler(60, 30, 0), hpClientHandler);
+                }
+            });
 
-    public void onMessage(CallMsg callMsg) {
-        HpClient.callMsg = callMsg;
-    }
+            future.addListener(new GenericFutureListener() {
+                @Override
+                public void operationComplete(Future future) throws Exception {
+                    callMsg.message("断开了连接");
+                }
+            });
 
-    public static void setMsg(String msg) {
-        if (msg != null && callMsg != null) {
-            callMsg.message(msg);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            callMsg.message(e.getMessage());
         }
+    }
+
+    public boolean getStatus() {
+        return future != null && future.channel().isActive();
     }
 
 }

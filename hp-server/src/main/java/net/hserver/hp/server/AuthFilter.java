@@ -15,6 +15,11 @@ public class AuthFilter implements FilterAdapter {
     @Override
     public void doFilter(Webkit webkit) throws Exception {
         HttpRequest request = webkit.httpRequest;
+
+        if (request.getUri().contains("login")) {
+            return;
+        }
+
         String auth = request.getHeader("cookie");
         String s = readAuth();
         if (s != null) {

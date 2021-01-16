@@ -48,7 +48,7 @@ INSERT INTO "sys_user"("id", "username", "password", "type","create_time") VALUE
 
 INSERT INTO "sys_port"("id", "user_id", "port","create_time") VALUES ('1', '2', '8888','1609660694000');
 INSERT INTO "sys_port"("id", "user_id", "port","create_time") VALUES ('2', '3', '9999','1609660694000');
-INSERT INTO "sys_port"("id", "user_id", "port","create_time") VALUES ('3', '3', '10000','1609660694000');
+INSERT INTO "sys_port"("id", "user_id", "port","create_time") VALUES ('3', '3', '12000','1609660694000');
 
 
 PRAGMA foreign_keys = true;

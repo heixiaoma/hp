@@ -9,7 +9,7 @@ import net.hserver.hp.common.protocol.HpMessageType;
 import java.util.HashMap;
 
 /**
- * Created by wucao on 2019/3/2.
+ * @author hxm
  */
 public class LocalProxyHandler extends HpCommonHandler {
 

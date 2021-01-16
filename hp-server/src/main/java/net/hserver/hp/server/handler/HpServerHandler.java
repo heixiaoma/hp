@@ -98,7 +98,7 @@ public class HpServerHandler extends HpCommonHandler {
                 System.out.println("注册成功，在端口上启动服务器: " + port);
             } catch (Exception e) {
                 metaData.put("success", false);
-                metaData.put("reason", "端口占用，检查是否已经链接上去了");
+                metaData.put("reason", e.getMessage());
                 e.printStackTrace();
             }
         }
