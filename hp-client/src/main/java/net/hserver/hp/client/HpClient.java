@@ -28,6 +28,10 @@ public class HpClient {
     }
 
     public void connect(String serverAddress, int serverPort, String username, String password, int remotePort, String proxyAddress, int proxyPort) throws IOException, InterruptedException {
+        if (future != null) {
+            future.channel().close();
+            future = null;
+        }
         try {
             TcpConnection hpConnection = new TcpConnection();
             future = hpConnection.connect(serverAddress, serverPort, new ChannelInitializer<SocketChannel>() {
@@ -56,6 +60,13 @@ public class HpClient {
 
     public boolean getStatus() {
         return future != null && future.channel().isActive();
+    }
+
+    public void close() {
+        if (future != null) {
+            future.channel().close();
+        }
+
     }
 
 }

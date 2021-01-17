@@ -16,6 +16,7 @@ import net.hserver.hp.server.domian.vo.UserVo;
 import net.hserver.hp.server.init.TcpServer;
 import net.hserver.hp.server.service.UserService;
 import net.hserver.hp.server.service.impl.UserServiceImpl;
+import net.hserver.hp.server.utils.NetUtil;
 import top.hserver.core.ioc.IocUtil;
 
 import java.util.HashMap;
@@ -73,19 +74,26 @@ public class HpServerHandler extends HpCommonHandler {
         HashMap<String, Object> metaData = new HashMap<>();
         String password = hpMessage.getMetaData().get("password").toString();
         String username = hpMessage.getMetaData().get("username").toString();
-        int port = (int) hpMessage.getMetaData().get("port");
+        int tempPort = 0;
+        Object port = hpMessage.getMetaData().get("port");
+        if (port != null) {
+            tempPort = (int) port;
+        }
         UserService userService = IocUtil.getBean(UserServiceImpl.class);
         UserVo login = userService.login(username, password);
         /**
          * 查询这个用户是否是合法的，不是合法的直接干掉
          */
-        if (login == null || !login.getPorts().contains(port)) {
+        if (login == null) {
             metaData.put("success", false);
             metaData.put("reason", "用户非法，有疑问请联系管理员");
         } else {
             try {
+                if (!login.getPorts().contains(tempPort) || tempPort < 0) {
+                    tempPort = NetUtil.getAvailablePort();
+                }
                 HpServerHandler thisHandler = this;
-                remoteConnectionServer.bind(port, new ChannelInitializer<SocketChannel>() {
+                remoteConnectionServer.bind(tempPort, new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new ByteArrayDecoder(), new ByteArrayEncoder(), new RemoteProxyHandler(thisHandler));
@@ -93,9 +101,10 @@ public class HpServerHandler extends HpCommonHandler {
                     }
                 });
                 metaData.put("success", true);
-                this.port = port;
+                this.port = tempPort;
                 register = true;
-                System.out.println("注册成功，在端口上启动服务器: " + port);
+                metaData.put("reason", "注册成功，外网端口是: " + tempPort);
+                System.out.println("注册成功，外网端口是: " + tempPort);
             } catch (Exception e) {
                 metaData.put("success", false);
                 metaData.put("reason", e.getMessage());

@@ -108,30 +108,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void addUser(String username, String password, String ports) {
-
+    public boolean addUser(String username, String password, String ports) {
         UserEntity user = getUser(username);
         if (user != null) {
-            return;
+            return false;
         }
-        user=new UserEntity();
+        user = new UserEntity();
         user.setPassword(password);
         user.setCreateTime(String.valueOf(System.currentTimeMillis()));
         user.setType(2);
         user.setId(UUID.randomUUID().toString());
         user.setUsername(username);
         userDao.insert(user);
-        String[] split = ports.split(",");
-        if (split.length > 0) {
-            for (String s : split) {
-                PortEntity portEntity = new PortEntity();
-                portEntity.setId(UUID.randomUUID().toString());
-                portEntity.setUserId(user.getId());
-                portEntity.setPort(Integer.parseInt(s));
-                portDao.insert(portEntity);
+        if (ports != null) {
+            String[] split = ports.split(",");
+            if (split.length > 0) {
+                for (String s : split) {
+                    PortEntity portEntity = new PortEntity();
+                    portEntity.setId(UUID.randomUUID().toString());
+                    portEntity.setUserId(user.getId());
+                    portEntity.setPort(Integer.parseInt(s));
+                    portDao.insert(portEntity);
+                }
             }
         }
-
+        return true;
     }
 
     @Override

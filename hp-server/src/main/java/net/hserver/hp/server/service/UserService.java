@@ -62,7 +62,7 @@ public interface UserService {
      * @param password
      * @param ports
      */
-    void addUser(String username, String password, String ports);
+    boolean addUser(String username, String password, String ports);
 
     /**
      * 删除用户

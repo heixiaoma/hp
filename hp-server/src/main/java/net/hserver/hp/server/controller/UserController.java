@@ -1,5 +1,6 @@
 package net.hserver.hp.server.controller;
 
+import net.hserver.hp.server.domian.entity.UserEntity;
 import net.hserver.hp.server.domian.vo.UserVo;
 import net.hserver.hp.server.service.UserService;
 import org.beetl.sql.core.page.PageResult;
@@ -22,7 +23,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-
     @GET("/user")
     public void index(Integer page, HttpResponse response) {
         if (page == null) {
@@ -38,12 +38,26 @@ public class UserController {
         response.sendTemplate("/user.ftl", data);
     }
 
+    @POST("/user/reg")
+    public JsonResult reg(String username, String password) {
+        if (username != null && password != null) {
+            if (username.trim().length() < 5) {
+                return JsonResult.error("注册的长度太短");
+            }
+            if (userService.addUser(username.trim(), password.trim(), null)) {
+                return JsonResult.ok("注册成功");
+            } else {
+                return JsonResult.error("用户名已经存在请换一个");
+            }
+        }
+        return JsonResult.error("登录失败");
+    }
 
     @POST("/user/login")
     public JsonResult login(String username, String password) {
         if (username != null && password != null) {
             UserVo login = userService.login(username, password);
-            if (login!=null) {
+            if (login != null) {
                 return JsonResult.ok("登录成功").put("data", login);
             }
         }

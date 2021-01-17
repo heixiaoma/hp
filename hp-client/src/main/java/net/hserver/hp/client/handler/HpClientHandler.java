@@ -86,7 +86,7 @@ public class HpClientHandler extends HpCommonHandler {
      */
     private void processRegisterResult(HpMessage message) {
         if ((Boolean) message.getMetaData().get("success")) {
-            callMsg.message("成功注册到HP服务器");
+            callMsg.message(message.getMetaData().get("reason").toString());
         } else {
             callMsg.message(message.getMetaData().get("reason").toString());
             ctx.close();

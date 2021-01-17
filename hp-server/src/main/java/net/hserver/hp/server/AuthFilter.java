@@ -16,7 +16,7 @@ public class AuthFilter implements FilterAdapter {
     public void doFilter(Webkit webkit) throws Exception {
         HttpRequest request = webkit.httpRequest;
 
-        if (request.getUri().contains("login")) {
+        if (request.getUri().contains("login")||request.getUri().contains("reg")) {
             return;
         }
 
