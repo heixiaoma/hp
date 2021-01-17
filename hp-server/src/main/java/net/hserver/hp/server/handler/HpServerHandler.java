@@ -104,7 +104,7 @@ public class HpServerHandler extends HpCommonHandler {
                 this.port = tempPort;
                 register = true;
                 metaData.put("reason", "注册成功，外网端口是: " + tempPort);
-                System.out.println("注册成功，外网端口是: " + tempPort);
+                System.out.println("注册成功，外网地址是:  ksweb.club: " + tempPort);
             } catch (Exception e) {
                 metaData.put("success", false);
                 metaData.put("reason", e.getMessage());
