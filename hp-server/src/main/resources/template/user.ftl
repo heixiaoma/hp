@@ -3,7 +3,8 @@
 <div style="padding: 1rem">
 
     <div style="padding: .6rem">
-        <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-purple-accent mdui-ripple" onclick="new mdui.Dialog('#addUser').open()">
+        <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-purple-accent mdui-ripple"
+                onclick="new mdui.Dialog('#addUser').open()">
             添加
         </button>
     </div>
@@ -20,52 +21,54 @@
             </tr>
             </thead>
             <tbody>
-            <#list list as userVo>
-                <tr>
-                    <div class="mdui-dialog" id="${userVo.username}">
-                        <form method="post" action="/user/edit?page=${page}">
-                            <div class="mdui-dialog-title">编辑</div>
-                            <div class="mdui-dialog-content">
-                                <div class="mdui-textfield">
-                                    <input class="mdui-textfield-input" name="username" readonly type="text"
-                                           value="${userVo.username}"/>
+            <#if list??>
+                <#list list as userVo>
+                    <tr>
+                        <div class="mdui-dialog" id="${userVo.username}">
+                            <form method="post" action="/user/edit?page=${page}">
+                                <div class="mdui-dialog-title">编辑</div>
+                                <div class="mdui-dialog-content">
+                                    <div class="mdui-textfield">
+                                        <input class="mdui-textfield-input" name="username" readonly type="text"
+                                               value="${userVo.username}"/>
+                                    </div>
+                                    <div class="mdui-textfield">
+                                        <input class="mdui-textfield-input" name="password" type="text"
+                                               value="${userVo.password}"/>
+                                    </div>
+                                    <div class="mdui-textfield">
+                                        <input class="mdui-textfield-input" name="ports" type="text"
+                                               value="<#list userVo.ports as port>${port?c},</#list>"/>
+                                    </div>
                                 </div>
-                                <div class="mdui-textfield">
-                                    <input class="mdui-textfield-input" name="password" type="text"
-                                           value="${userVo.password}"/>
+                                <div class="mdui-dialog-actions">
+                                    <button class="mdui-btn mdui-ripple" mdui-dialog-cancel>取消</button>
+                                    <button type="submit" class="mdui-btn mdui-ripple">确定</button>
                                 </div>
-                                <div class="mdui-textfield">
-                                    <input class="mdui-textfield-input" name="ports" type="text"
-                                           value="<#list userVo.ports as port>${port?c},</#list>"/>
-                                </div>
-                            </div>
-                            <div class="mdui-dialog-actions">
-                                <button class="mdui-btn mdui-ripple" mdui-dialog-cancel>取消</button>
-                                <button type="submit" class="mdui-btn mdui-ripple">确定</button>
-                            </div>
-                        </form>
-                    </div>
+                            </form>
+                        </div>
 
-                    <td>${userVo.username}</td>
-                    <td>${userVo.password}</td>
-                    <td>
-                        <#list userVo.ports as port>
-                            ${port?c} &nbsp;
-                        </#list>
-                    </td>
-                    <td>${userVo.createTime}</td>
-                    <td>
-                        <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-purple-accent mdui-ripple"
-                                onclick="new mdui.Dialog('#${userVo.username}').open()">
-                            编辑
-                        </button>
-                        <a class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-orange-accent mdui-ripple"
-                           href="/user/remove?page=${page}&username=${userVo.username}">
-                            删除
-                        </a>
-                    </td>
-                </tr>
-            </#list>
+                        <td>${userVo.username}</td>
+                        <td>${userVo.password}</td>
+                        <td>
+                            <#list userVo.ports as port>
+                                ${port?c} &nbsp;
+                            </#list>
+                        </td>
+                        <td>${userVo.createTime}</td>
+                        <td>
+                            <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-purple-accent mdui-ripple"
+                                    onclick="new mdui.Dialog('#${userVo.username}').open()">
+                                编辑
+                            </button>
+                            <a class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-orange-accent mdui-ripple"
+                               href="/user/remove?page=${page}&username=${userVo.username}">
+                                删除
+                            </a>
+                        </td>
+                    </tr>
+                </#list>
+            </#if>
             </tbody>
         </table>
     </div>
@@ -92,7 +95,6 @@
             </div>
         </form>
     </div>
-
 
 
 </div>

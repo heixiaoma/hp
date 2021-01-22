@@ -40,6 +40,15 @@ CREATE TABLE "sys_port" (
   PRIMARY KEY ("id")
 );
 
+DROP TABLE IF EXISTS "sys_app";
+CREATE TABLE "sys_app" (
+  "id" text NOT NULL,
+  "version_code" text NOT NULL,
+  "update_content" text NOT NULL,
+  "create_time" TEXT,
+  PRIMARY KEY ("id")
+);
+
 --添加管理员信息
 INSERT INTO "sys_user"("id", "username", "password", "type","create_time") VALUES ('1', 'admin', '123456', '1','1609660694000');
 

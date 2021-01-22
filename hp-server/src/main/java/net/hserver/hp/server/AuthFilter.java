@@ -9,15 +9,21 @@ import top.hserver.core.server.context.Webkit;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
+/**
+ * @author hxm
+ */
 @Bean
 public class AuthFilter implements FilterAdapter {
+
+    private static  final String[] URI ={"login","reg","getVersion","download"};
 
     @Override
     public void doFilter(Webkit webkit) throws Exception {
         HttpRequest request = webkit.httpRequest;
-
-        if (request.getUri().contains("login")||request.getUri().contains("reg")) {
-            return;
+        for (String s : URI) {
+            if (request.getUri().contains(s)) {
+                return;
+            }
         }
 
         String auth = request.getHeader("cookie");

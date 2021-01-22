@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PageResult<UserVo> list(Integer page, Integer pageSize) {
-        PageResult<UserVo> page1 = userDao.createLambdaQuery().page(page, pageSize, UserVo.class);
+        PageResult<UserVo> page1 = userDao.createLambdaQuery().orderBy("create_time desc").page(page, pageSize, UserVo.class);
         List<UserVo> list = page1.getList();
         for (UserVo userVo : list) {
             userVo.setCreateTime(DateUtil.stampToDate(userVo.getCreateTime()));
