@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity getUser(String username) {
-        List<UserEntity> select = userDao.createLambdaQuery().andEq(UserEntity::getUsername, username).select();
+        List<UserEntity> select = userDao.createLambdaQuery().andEq(UserEntity::getUsername, username.trim()).select();
         if (select != null && select.size() == 1) {
             return select.get(0);
         } else {
@@ -114,11 +114,11 @@ public class UserServiceImpl implements UserService {
             return false;
         }
         user = new UserEntity();
-        user.setPassword(password);
+        user.setPassword(password.trim());
         user.setCreateTime(String.valueOf(System.currentTimeMillis()));
         user.setType(2);
         user.setId(UUID.randomUUID().toString());
-        user.setUsername(username);
+        user.setUsername(username.trim());
         userDao.insert(user);
         if (ports != null) {
             String[] split = ports.split(",");
@@ -138,6 +138,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void remove(String username) {
         UserEntity user = getUser(username);
+        if (user==null){
+            return;
+        }
         List<PortEntity> port = getPort(user.getId());
         for (PortEntity portEntity : port) {
             portDao.deleteById(portEntity.getId());
