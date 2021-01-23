@@ -74,9 +74,10 @@ public class HpServerHandler extends HpCommonHandler {
         try {
             CURRENT_STATUS.remove(String.valueOf(port));
             Statistics statistics = remoteConnectionServer.getStatistics();
-            IocUtil.getBean(StatisticsServiceImpl.class).add(statistics);
+            if (statistics!=null) {
+                IocUtil.getBean(StatisticsServiceImpl.class).add(statistics);
+            }
         } catch (Throwable ignored) {
-            ignored.printStackTrace();
         }
         remoteConnectionServer.close();
         if (register) {
