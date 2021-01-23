@@ -43,8 +43,11 @@ public class AppController {
 
     @POST("/app/add")
     public void add(Integer page, HttpResponse response, AppEntity appEntity) {
-        if (appEntity != null) {
-            appService.add(appEntity);
+        try {
+            if (appEntity != null && appEntity.getVersionCode().trim().length() > 0 && appEntity.getUpdateContent().trim().length() > 0) {
+                appService.add(appEntity);
+            }
+        } catch (Exception ignored) {
         }
         index(page, response);
     }
