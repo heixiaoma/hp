@@ -15,7 +15,6 @@ import net.hserver.hp.server.handler.HpServerHandler;
 public class HpServer {
 
     public void start(int port) throws InterruptedException {
-
         TcpServer hpClientServer = new TcpServer();
         hpClientServer.bind(port, new ChannelInitializer<SocketChannel>() {
             @Override
@@ -26,6 +25,6 @@ public class HpServer {
                         new HpMessageDecoder(), new HpMessageEncoder(),
                         new IdleStateHandler(60, 30, 0), hpServerHandler);
             }
-        });
+        },null);
     }
 }

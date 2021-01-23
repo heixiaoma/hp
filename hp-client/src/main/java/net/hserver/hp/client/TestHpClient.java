@@ -12,6 +12,6 @@ public class TestHpClient {
                     System.out.println(msg);
                 }
             });
-            client.connect("127.0.0.1",7731, "jishunan","123456", -1, "127.0.0.1", 3306);
+            client.connect("127.0.0.1",7731, "jishunan","123456", 10000, "127.0.0.1", 3306);
     }
 }

@@ -30,7 +30,7 @@ public interface AppService {
     boolean add(AppEntity appEntity);
 
     /**
-     * 删除用户
+     * 删除
      *
      * @param id
      */

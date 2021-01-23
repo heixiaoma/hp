@@ -7,19 +7,27 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.bytes.ByteArrayDecoder;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
+import io.netty.handler.traffic.GlobalChannelTrafficShapingHandler;
+import io.netty.handler.traffic.GlobalTrafficShapingHandler;
+import io.netty.handler.traffic.TrafficCounter;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import net.hserver.hp.common.exception.HpException;
 import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessage;
 import net.hserver.hp.common.protocol.HpMessageType;
+import net.hserver.hp.server.domian.bean.Statistics;
 import net.hserver.hp.server.domian.vo.UserVo;
 import net.hserver.hp.server.init.TcpServer;
+import net.hserver.hp.server.service.StatisticsService;
 import net.hserver.hp.server.service.UserService;
+import net.hserver.hp.server.service.impl.StatisticsServiceImpl;
 import net.hserver.hp.server.service.impl.UserServiceImpl;
 import net.hserver.hp.server.utils.NetUtil;
 import top.hserver.core.ioc.IocUtil;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -29,6 +37,8 @@ public class HpServerHandler extends HpCommonHandler {
 
     private TcpServer remoteConnectionServer = new TcpServer();
 
+    public static final Map<String, String> CURRENT_STATUS = new ConcurrentHashMap<>();
+
     private static ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     private int port;
@@ -36,11 +46,11 @@ public class HpServerHandler extends HpCommonHandler {
     private boolean register = false;
 
     public HpServerHandler() {
+
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-
         HpMessage hpMessage = (HpMessage) msg;
         if (hpMessage.getType() == HpMessageType.REGISTER) {
             processRegister(hpMessage);
@@ -61,6 +71,13 @@ public class HpServerHandler extends HpCommonHandler {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        try {
+            CURRENT_STATUS.remove(String.valueOf(port));
+            Statistics statistics = remoteConnectionServer.getStatistics();
+            IocUtil.getBean(StatisticsServiceImpl.class).add(statistics);
+        } catch (Throwable ignored) {
+            ignored.printStackTrace();
+        }
         remoteConnectionServer.close();
         if (register) {
             System.out.println("停止服务器的端口: " + port);
@@ -96,13 +113,16 @@ public class HpServerHandler extends HpCommonHandler {
                 remoteConnectionServer.bind(tempPort, new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new ByteArrayDecoder(), new ByteArrayEncoder(), new RemoteProxyHandler(thisHandler));
+                        GlobalChannelTrafficShapingHandler globalChannelTrafficShapingHandler = new GlobalChannelTrafficShapingHandler(ch.eventLoop());
+                        remoteConnectionServer.setGlobalChannelTrafficShapingHandler(globalChannelTrafficShapingHandler);
+                        ch.pipeline().addLast(globalChannelTrafficShapingHandler).addLast(new ByteArrayDecoder(), new ByteArrayEncoder(), new RemoteProxyHandler(thisHandler, remoteConnectionServer));
                         channels.add(ch);
                     }
-                });
+                }, login.getUsername());
                 metaData.put("success", true);
                 this.port = tempPort;
                 register = true;
+                CURRENT_STATUS.put(String.valueOf(tempPort),login.getUsername());
                 metaData.put("reason", "注册成功，外网地址是:  ksweb.club: " + tempPort);
                 System.out.println("注册成功，外网地址是:  ksweb.club: " + tempPort);
             } catch (Exception e) {

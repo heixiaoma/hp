@@ -15,7 +15,7 @@ import java.io.FileReader;
 @Bean
 public class AuthFilter implements FilterAdapter {
 
-    private static  final String[] URI ={"login","reg","getVersion","download"};
+    private static  final String[] URI ={"login","reg","getVersion","download","getMyInfo"};
 
     @Override
     public void doFilter(Webkit webkit) throws Exception {
