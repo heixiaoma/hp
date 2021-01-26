@@ -24,14 +24,10 @@ public class TcpServer {
 
     private AtomicLong packNum = new AtomicLong();
 
-    /**
-     * 流量统计
-     */
-    private GlobalChannelTrafficShapingHandler globalChannelTrafficShapingHandler;
+    private AtomicLong send = new AtomicLong();
 
-    public synchronized void setGlobalChannelTrafficShapingHandler(GlobalChannelTrafficShapingHandler globalChannelTrafficShapingHandler) {
-        this.globalChannelTrafficShapingHandler = globalChannelTrafficShapingHandler;
-    }
+    private AtomicLong receive = new AtomicLong();
+
 
     public synchronized void bind(int port, ChannelInitializer channelInitializer, String username) throws InterruptedException {
         if (username!=null) {
@@ -74,15 +70,22 @@ public class TcpServer {
         packNum.incrementAndGet();
     }
 
+    public void addSend(Long num){
+        send.addAndGet(num);
+    }
+
+    public void addReceive(Long num){
+        receive.addAndGet(num);
+    }
+
     /**
      * 获取统计
      *
      * @return
      */
     public synchronized Statistics getStatistics() {
-        TrafficCounter trafficCounter = globalChannelTrafficShapingHandler.trafficCounter();
-        statistics.setReceive(trafficCounter.cumulativeReadBytes());
-        statistics.setSend(trafficCounter.cumulativeWrittenBytes());
+        statistics.setReceive(receive.get());
+        statistics.setSend(send.get());
         statistics.setConnectNum(connectNum.get());
         statistics.setPackNum(packNum.get());
         return statistics;
@@ -90,7 +93,6 @@ public class TcpServer {
 
     public synchronized void close() {
         if (channel != null) {
-            globalChannelTrafficShapingHandler = null;
             channel.close();
         }
     }

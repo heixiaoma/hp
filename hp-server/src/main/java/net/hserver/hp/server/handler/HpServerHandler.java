@@ -5,20 +5,16 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.bytes.ByteArrayDecoder;
-import io.netty.handler.codec.bytes.ByteArrayEncoder;
-import io.netty.handler.traffic.GlobalChannelTrafficShapingHandler;
-import io.netty.handler.traffic.GlobalTrafficShapingHandler;
-import io.netty.handler.traffic.TrafficCounter;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import net.hserver.hp.common.exception.HpException;
 import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessage;
 import net.hserver.hp.common.protocol.HpMessageType;
+import net.hserver.hp.server.codec.HpByteArrayDecoder;
+import net.hserver.hp.server.codec.HpByteArrayEncoder;
 import net.hserver.hp.server.domian.bean.Statistics;
 import net.hserver.hp.server.domian.vo.UserVo;
 import net.hserver.hp.server.init.TcpServer;
-import net.hserver.hp.server.service.StatisticsService;
 import net.hserver.hp.server.service.UserService;
 import net.hserver.hp.server.service.impl.StatisticsServiceImpl;
 import net.hserver.hp.server.service.impl.UserServiceImpl;
@@ -114,9 +110,7 @@ public class HpServerHandler extends HpCommonHandler {
                 remoteConnectionServer.bind(tempPort, new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
-                        GlobalChannelTrafficShapingHandler globalChannelTrafficShapingHandler = new GlobalChannelTrafficShapingHandler(ch.eventLoop());
-                        remoteConnectionServer.setGlobalChannelTrafficShapingHandler(globalChannelTrafficShapingHandler);
-                        ch.pipeline().addLast(globalChannelTrafficShapingHandler).addLast(new ByteArrayDecoder(), new ByteArrayEncoder(), new RemoteProxyHandler(thisHandler, remoteConnectionServer));
+                        ch.pipeline().addLast(new HpByteArrayDecoder(remoteConnectionServer), new HpByteArrayEncoder(remoteConnectionServer), new RemoteProxyHandler(thisHandler, remoteConnectionServer));
                         channels.add(ch);
                     }
                 }, login.getUsername());

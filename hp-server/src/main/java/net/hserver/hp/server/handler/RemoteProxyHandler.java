@@ -1,5 +1,6 @@
 package net.hserver.hp.server.handler;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessage;
@@ -45,8 +46,8 @@ public class RemoteProxyHandler extends HpCommonHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        tcpServer.addPackNum();
         byte[] data = (byte[]) msg;
+        tcpServer.addPackNum();
         HpMessage message = new HpMessage();
         message.setType(HpMessageType.DATA);
         message.setData(data);
