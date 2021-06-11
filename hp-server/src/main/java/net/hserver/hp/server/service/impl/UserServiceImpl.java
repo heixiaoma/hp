@@ -94,6 +94,7 @@ public class UserServiceImpl implements UserService {
         for (PortEntity portEntity : port) {
             portDao.deleteById(portEntity.getId());
         }
+        // 修复ports为空情况
         if (!ports.equals("")) {
             String[] split = ports.split(",");
             if (split.length > 0) {
