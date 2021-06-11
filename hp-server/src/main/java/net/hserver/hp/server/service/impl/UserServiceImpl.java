@@ -94,15 +94,16 @@ public class UserServiceImpl implements UserService {
         for (PortEntity portEntity : port) {
             portDao.deleteById(portEntity.getId());
         }
-
-        String[] split = ports.split(",");
-        if (split.length > 0) {
-            for (String s : split) {
-                PortEntity portEntity = new PortEntity();
-                portEntity.setId(UUID.randomUUID().toString());
-                portEntity.setUserId(user.getId());
-                portEntity.setPort(Integer.parseInt(s));
-                portDao.insert(portEntity);
+        if (!ports.equals("")) {
+            String[] split = ports.split(",");
+            if (split.length > 0) {
+                for (String s : split) {
+                    PortEntity portEntity = new PortEntity();
+                    portEntity.setId(UUID.randomUUID().toString());
+                    portEntity.setUserId(user.getId());
+                    portEntity.setPort(Integer.parseInt(s));
+                    portDao.insert(portEntity);
+                }
             }
         }
     }
