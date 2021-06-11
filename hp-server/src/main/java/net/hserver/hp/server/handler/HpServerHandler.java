@@ -6,6 +6,7 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import net.hserver.hp.common.Config;
 import net.hserver.hp.common.exception.HpException;
 import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessage;
@@ -118,8 +119,8 @@ public class HpServerHandler extends HpCommonHandler {
                 this.port = tempPort;
                 register = true;
                 CURRENT_STATUS.put(String.valueOf(tempPort),login.getUsername());
-                metaData.put("reason", "注册成功，外网地址是:  ksweb.club: " + tempPort);
-                System.out.println("注册成功，外网地址是:  ksweb.club: " + tempPort);
+                metaData.put("reason", "注册成功，外网地址是:  "+ Config.ADDRESS +": " + tempPort);
+                System.out.println("注册成功，外网地址是:  "+ Config.ADDRESS +": " + tempPort);
             } catch (Exception e) {
                 metaData.put("success", false);
                 metaData.put("reason", e.getMessage());

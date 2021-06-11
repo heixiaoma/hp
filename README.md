@@ -29,3 +29,7 @@ java -jar hp-client.jar -server_addr 127.0.0.1 -server_port 7731 -username jishu
 - `remote_port` hp 服务端对外访问该应用的端口
 
 启动成功后可以通过 server_addr:remote_port 访问被代理的应用，如果被代理的应用是 HTTP 应用，可以通过 http://211.161.xxx.xxx:10000 在外网访问。
+
+
+### 安卓客服端
+[![HServer/hp-android-client](https://gitee.com/HServer/hp-android-client/widgets/widget_card.svg?colors=4183c4,ffffff,ffffff,e3e9ed,666666,9b9b9b)](https://gitee.com/HServer/hp-android-client)
