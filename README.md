@@ -37,8 +37,8 @@ java -jar hp-client.jar -server_addr 127.0.0.1 -server_port 7731 -username jishu
 
 ### 安卓客服端
 
-<img src="https://gitee.com/HServer/hp/raw/master/doc/a.png" width="500" />
-<img src="https://gitee.com/HServer/hp/raw/master/doc/b.png" width="500" />
+<img src="https://gitee.com/HServer/hp/raw/master/doc/a.jpg" width="500" />
+<img src="https://gitee.com/HServer/hp/raw/master/doc/b.jpg" width="500" />
 
 
 [![HServer/hp-android-client](https://gitee.com/HServer/hp-android-client/widgets/widget_card.svg?colors=4183c4,ffffff,ffffff,e3e9ed,666666,9b9b9b)](https://gitee.com/HServer/hp-android-client)
