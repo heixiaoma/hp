@@ -11,16 +11,24 @@
 ```
 java -jar hp-server.jar
 ```
-看到输出表示启动成功:
+默认服务端端口号是9090
+
+如果自己需要修改配置，可以和jar同目录建立一个配置文件 app.properties 内容如下
+
+```properties
+#内网穿透端口和web管理后台都是这个端口
+ports=9090
+#提示域名，没有域名写IP也可以
+host=ksweb.club
+#后台密码
+password=123456
 ```
-hp server started on port 7731
-```
-默认服务端端口号是7731。注意这个端口号是 hp 客户端连接 hp 服务器的端口号，并非对外网提供访问的端口号。
+
 
 ### 客户端启动
 在没有公网 IP 的机器上执行 Java 命令:
 ```
-java -jar hp-client.jar -server_addr 127.0.0.1 -server_port 7731 -username jishunan  -password 123456 -proxy_addr localhost -proxy_port 3306 -remote_port 10000
+java -jar hp-client.jar -server_addr 127.0.0.1 -server_port 9090 -username jishunan  -password 123456 -proxy_addr localhost -proxy_port 3306 -remote_port 10000
 ```
 
 参数说明:
@@ -32,7 +40,8 @@ java -jar hp-client.jar -server_addr 127.0.0.1 -server_port 7731 -username jishu
 - `proxy_port` 被代理的应用端口号
 - `remote_port` hp 服务端对外访问该应用的端口
 
-启动成功后可以通过 server_addr:remote_port 访问被代理的应用，如果被代理的应用是 HTTP 应用，可以通过 http://211.161.xxx.xxx:10000 在外网访问。
+启动成功后可以通过 server_addr:remote_port 访问被代理的应用，如果被代理的应用是 HTTP 应用，可以通过 http://xxx.xxx.xxx.xxx:10000 在外网访问。
+如果账号没有分配10000 端口给他，那么服务器会随机一个端口
 
 
 ### 安卓客服端
