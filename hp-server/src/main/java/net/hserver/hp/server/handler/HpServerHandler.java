@@ -6,13 +6,13 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.util.concurrent.GlobalEventExecutor;
-import net.hserver.hp.common.Config;
 import net.hserver.hp.common.exception.HpException;
 import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessage;
 import net.hserver.hp.common.protocol.HpMessageType;
 import net.hserver.hp.server.codec.HpByteArrayDecoder;
 import net.hserver.hp.server.codec.HpByteArrayEncoder;
+import net.hserver.hp.server.config.WebConfig;
 import net.hserver.hp.server.domian.bean.Statistics;
 import net.hserver.hp.server.domian.vo.UserVo;
 import net.hserver.hp.server.init.TcpServer;
@@ -119,8 +119,8 @@ public class HpServerHandler extends HpCommonHandler {
                 this.port = tempPort;
                 register = true;
                 CURRENT_STATUS.put(String.valueOf(tempPort),login.getUsername());
-                metaData.put("reason", "注册成功，外网地址是:  "+ Config.ADDRESS +": " + tempPort);
-                System.out.println("注册成功，外网地址是:  "+ Config.ADDRESS +": " + tempPort);
+                metaData.put("reason", "注册成功，外网地址是:  "+ IocUtil.getBean(WebConfig.class).getHost() +":" + tempPort);
+                System.out.println("注册成功，外网地址是:  "+ IocUtil.getBean(WebConfig.class).getHost() +":" + tempPort);
             } catch (Exception e) {
                 metaData.put("success", false);
                 metaData.put("reason", e.getMessage());
