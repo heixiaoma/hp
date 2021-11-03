@@ -1,5 +1,6 @@
 package net.hserver.hp.server.handler;
 
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.group.ChannelGroup;
@@ -30,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author hxm
  */
+@ChannelHandler.Sharable
 public class HpServerHandler extends HpCommonHandler {
 
     private TcpServer remoteConnectionServer = new TcpServer();
