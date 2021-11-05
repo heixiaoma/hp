@@ -1,12 +1,13 @@
 package net.hserver.hp.common.protocol;
 
+import java.io.Serializable;
 import java.util.Map;
 
 
 /**
  * @author hxm
  */
-public class HpMessage {
+public class HpMessage implements Serializable {
 
     private HpMessageType type;
     private Map<String, Object> metaData;

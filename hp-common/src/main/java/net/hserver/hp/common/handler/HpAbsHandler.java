@@ -11,7 +11,7 @@ import net.hserver.hp.common.protocol.HpMessageType;
 /**
  * @author hxm
  */
-public abstract class HpCommonHandler extends SimpleChannelInboundHandler<HpMessage> {
+public class HpAbsHandler extends ChannelInboundHandlerAdapter {
 
     protected ChannelHandlerContext ctx;
 

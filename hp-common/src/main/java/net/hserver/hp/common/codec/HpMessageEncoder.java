@@ -3,39 +3,29 @@ package net.hserver.hp.common.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
-import io.netty.util.CharsetUtil;
-import net.hserver.hp.common.Config;
-import net.hserver.hp.common.protocol.HpMessage;
-import net.hserver.hp.common.protocol.HpMessageType;
-
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-
+import net.hserver.hp.common.utils.SerializationUtil;
 
 /**
  * @author hxm
  */
-public class HpMessageEncoder extends MessageToByteEncoder<HpMessage> {
+public class HpMessageEncoder extends MessageToByteEncoder {
+
+    private Class<?> genericClass;
+
+    public HpMessageEncoder(Class<?> genericClass) {
+        this.genericClass = genericClass;
+    }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, HpMessage msg, ByteBuf out) throws Exception {
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        try (DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream)) {
-            HpMessageType messageType = msg.getType();
-            dataOutputStream.writeInt(messageType.getCode());
-            String s = Config.JSON.writeValueAsString(msg.getMetaData());
-            byte[] metaDataBytes = s.getBytes(CharsetUtil.UTF_8);
-            dataOutputStream.writeInt(metaDataBytes.length);
-            dataOutputStream.write(metaDataBytes);
-            if (msg.getData() != null && msg.getData().length > 0) {
-                dataOutputStream.write(msg.getData());
-            }
-            byte[] data = byteArrayOutputStream.toByteArray();
+    protected void encode(ChannelHandlerContext ctx, Object in, ByteBuf out) {
+        if (genericClass.isInstance(in)) {
+            byte[] data = SerializationUtil.serialize(in);
+            //header RPC 72,80
+            out.writeInt(72);
+            out.writeInt(80);
             out.writeInt(data.length);
             out.writeBytes(data);
         }
-
     }
 
 }

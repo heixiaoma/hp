@@ -11,6 +11,7 @@ import net.hserver.hp.client.handler.HpClientHandler;
 import net.hserver.hp.client.net.TcpConnection;
 import net.hserver.hp.common.codec.HpMessageDecoder;
 import net.hserver.hp.common.codec.HpMessageEncoder;
+import net.hserver.hp.common.protocol.HpMessage;
 
 import java.io.IOException;
 
@@ -39,12 +40,14 @@ public class HpClient {
                 public void initChannel(SocketChannel ch) throws Exception {
                     HpClientHandler hpClientHandler = new HpClientHandler(remotePort, username, password,
                             proxyAddress, proxyPort, callMsg);
-                    ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4),
-                            new HpMessageDecoder(), new HpMessageEncoder(),
-                            new IdleStateHandler(60, 30, 0), hpClientHandler);
+                    ch.pipeline().addLast(
+                            new IdleStateHandler(60, 30, 0),
+                            new HpMessageDecoder(HpMessage.class), new HpMessageEncoder(HpMessage.class),
+                            hpClientHandler);
                 }
             });
 
+            //兼容Android不用拉米大
             future.addListener(new GenericFutureListener() {
                 @Override
                 public void operationComplete(Future future) throws Exception {

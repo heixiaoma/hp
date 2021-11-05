@@ -12,6 +12,7 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import net.hserver.hp.client.CallMsg;
 import net.hserver.hp.client.net.TcpConnection;
 import net.hserver.hp.common.exception.HpException;
+import net.hserver.hp.common.handler.HpAbsHandler;
 import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessage;
 import net.hserver.hp.common.protocol.HpMessageType;
@@ -31,7 +32,7 @@ public class HpClientHandler extends HpCommonHandler {
     private String proxyAddress;
     private int proxyPort;
     private CallMsg callMsg;
-    private ConcurrentHashMap<String, HpCommonHandler> channelHandlerMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, HpAbsHandler> channelHandlerMap = new ConcurrentHashMap<>();
     private ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     public HpClientHandler(int port, String username, String password, String proxyAddress, int proxyPort, CallMsg callMsg) {
@@ -56,11 +57,8 @@ public class HpClientHandler extends HpCommonHandler {
         ctx.writeAndFlush(message);
         super.channelActive(ctx);
     }
-
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-
-        HpMessage message = (HpMessage) msg;
+    protected void channelRead0(ChannelHandlerContext ctx, HpMessage message) throws Exception {
         if (message.getType() == HpMessageType.REGISTER_RESULT) {
             processRegisterResult(message);
         } else if (message.getType() == HpMessageType.CONNECTED) {
@@ -127,7 +125,7 @@ public class HpClientHandler extends HpCommonHandler {
      */
     private void processDisconnected(HpMessage message) {
         String channelId = message.getMetaData().get("channelId").toString();
-        HpCommonHandler handler = channelHandlerMap.get(channelId);
+        HpAbsHandler handler = channelHandlerMap.get(channelId);
         if (handler != null) {
             handler.getCtx().close();
             channelHandlerMap.remove(channelId);
@@ -139,7 +137,7 @@ public class HpClientHandler extends HpCommonHandler {
      */
     private void processData(HpMessage message) {
         String channelId = message.getMetaData().get("channelId").toString();
-        HpCommonHandler handler = channelHandlerMap.get(channelId);
+        HpAbsHandler handler = channelHandlerMap.get(channelId);
         if (handler != null) {
             ChannelHandlerContext ctx = handler.getCtx();
             ctx.writeAndFlush(message.getData());

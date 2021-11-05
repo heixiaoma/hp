@@ -2,6 +2,7 @@ package net.hserver.hp.client.handler;
 
 
 import io.netty.channel.ChannelHandlerContext;
+import net.hserver.hp.common.handler.HpAbsHandler;
 import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessage;
 import net.hserver.hp.common.protocol.HpMessageType;
@@ -11,7 +12,7 @@ import java.util.HashMap;
 /**
  * @author hxm
  */
-public class LocalProxyHandler extends HpCommonHandler {
+public class LocalProxyHandler extends HpAbsHandler {
 
     private HpCommonHandler proxyHandler;
     private String remoteChannelId;
@@ -20,6 +21,7 @@ public class LocalProxyHandler extends HpCommonHandler {
         this.proxyHandler = proxyHandler;
         this.remoteChannelId = remoteChannelId;
     }
+
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {

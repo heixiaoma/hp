@@ -1,46 +1,43 @@
 package net.hserver.hp.common.codec;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToMessageDecoder;
-import io.netty.util.CharsetUtil;
-import net.hserver.hp.common.Config;
-import net.hserver.hp.common.protocol.HpMessage;
-import net.hserver.hp.common.protocol.HpMessageType;
+import io.netty.handler.codec.ByteToMessageDecoder;
+import net.hserver.hp.common.utils.SerializationUtil;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author hxm
  */
-public class HpMessageDecoder extends MessageToMessageDecoder<ByteBuf> {
+public class HpMessageDecoder extends ByteToMessageDecoder {
+
+    private Class<?> genericClass;
+
+    public HpMessageDecoder(Class<?> genericClass) {
+        this.genericClass = genericClass;
+    }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List out) throws Exception {
-
-        int type = msg.readInt();
-        HpMessageType messageType = HpMessageType.valueOf(type);
-
-        int metaDataLength = msg.readInt();
-        CharSequence metaDataString = msg.readCharSequence(metaDataLength, CharsetUtil.UTF_8);
-
-        String s = metaDataString.toString();
-        Map<String, Object> metaData = Config.JSON.readValue(s, new TypeReference<Map<String, Object>>() {
-        });
-        byte[] data = null;
-        if (msg.isReadable()) {
-            data = ByteBufUtil.getBytes(msg);
+    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
+        //因为之前编码的时候写入4个Int型，4个字节来表示长度
+        if (in.readableBytes() < 4*4) {
+            return;
         }
-
-        HpMessage message = new HpMessage();
-        message.setType(messageType);
-        message.setMetaData(metaData);
-        message.setData(data);
-
-        out.add(message);
+        in.markReaderIndex();
+        int r = in.readInt();
+        int p = in.readInt();
+        if (r != 'H' && p != 'P') {
+            return;
+        }
+        int dataLength = in.readInt();
+        if (in.readableBytes() < dataLength) {
+            in.resetReaderIndex();
+            return;
+        }
+        byte[] data = new byte[dataLength];
+        in.readBytes(data);
+        out.add(SerializationUtil.deserialize(data, genericClass));
     }
 
 }

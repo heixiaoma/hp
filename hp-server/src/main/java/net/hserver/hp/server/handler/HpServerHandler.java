@@ -48,9 +48,9 @@ public class HpServerHandler extends HpCommonHandler {
 
     }
 
+
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        HpMessage hpMessage = (HpMessage) msg;
+    protected void channelRead0(ChannelHandlerContext ctx, HpMessage hpMessage) throws Exception {
         if (hpMessage.getType() == HpMessageType.REGISTER) {
             processRegister(hpMessage);
         } else if (register) {
