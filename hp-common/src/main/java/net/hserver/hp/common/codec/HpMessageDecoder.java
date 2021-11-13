@@ -37,7 +37,7 @@ public class HpMessageDecoder extends ByteToMessageDecoder {
         }
         byte[] data = new byte[dataLength];
         in.readBytes(data);
-        out.add(SerializationUtil.deserialize(data, genericClass));
+        out.add(SerializationUtil.unserialize(data));
     }
 
 }

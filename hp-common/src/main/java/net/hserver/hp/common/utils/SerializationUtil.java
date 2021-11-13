@@ -1,84 +1,36 @@
 package net.hserver.hp.common.utils;
 
-import com.dyuproject.protostuff.Input;
-import com.dyuproject.protostuff.LinkedBuffer;
-import com.dyuproject.protostuff.ProtostuffIOUtil;
-import com.dyuproject.protostuff.Schema;
-import com.dyuproject.protostuff.runtime.RuntimeSchema;
-import org.objenesis.Objenesis;
-import org.objenesis.ObjenesisStd;
-
-import java.util.concurrent.ConcurrentHashMap;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 /**
  * @author hxm
  */
 public class SerializationUtil {
 
-    private static ConcurrentHashMap cachedSchema = new ConcurrentHashMap();
-
-    private static Objenesis objenesis = new ObjenesisStd();
-
-    private SerializationUtil() {
-
-    }
-
-    /**
-     * 序列化(对象 -> 字节数组)
-     *
-     * @param obj 对象
-     * @return 字节数组
-     */
-    public static <T> byte[] serialize(T obj) {
-        Class<T> cls = (Class<T>) obj.getClass();
-        LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
-        try {
-            Schema<T> schema = getSchema(cls);
-            return ProtostuffIOUtil.toByteArray(obj, schema, buffer);
+    public static byte[] serialize(Object o){
+        byte[] byteArray = null ;
+        try(ByteArrayOutputStream bty = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(bty)){
+            oos.writeObject(o);
+            byteArray = bty.toByteArray();
         } catch (Exception e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        } finally {
-            buffer.clear();
+            e.printStackTrace();
         }
+        return byteArray ;
     }
 
-    /**
-     * 反序列化(字节数组 -> 对象)
-     *
-     * @param data
-     * @param cls
-     * @param <T>
-     */
-    public static <T> T deserialize(byte[] data, Class<T> cls) {
-        try {
-            T message = objenesis.newInstance(cls);
-            Schema<T> schema = getSchema(cls);
-            ProtostuffIOUtil.mergeFrom(data, message, schema);
-            return message;
+    public static Object unserialize(byte[] bytes){
+        Object o = null ;
+        try(ByteArrayInputStream bai = new ByteArrayInputStream(bytes);
+            ObjectInputStream ois = new ObjectInputStream(bai)){
+            o = ois.readObject();
         } catch (Exception e) {
-            throw new IllegalStateException(e.getMessage(), e);
+            e.printStackTrace();
         }
-    }
-
-    public static <T> T deserialize(Input in, Class<T> cls) {
-        //  ByteArrayInput input = new ByteArrayInput(data, offset, length, decodeNestedMessageAsGroup);
-        try {
-            T message = objenesis.newInstance(cls);
-            Schema<T> schema = getSchema(cls);
-            schema.mergeFrom(in,message);
-            return message;
-        } catch (Exception e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
-    }
-
-    private static <T> Schema<T> getSchema(Class<T> cls) {
-        Schema<T> schema = (Schema<T>) cachedSchema.get(cls);
-        if (schema == null) {
-            schema = RuntimeSchema.createFrom(cls);
-            cachedSchema.put(cls, schema);
-        }
-        return schema;
+        return o;
     }
 
 }
