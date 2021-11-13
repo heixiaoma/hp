@@ -74,10 +74,10 @@
 
 </div>
 <script>
-    var pageConst =${page};
+    var pageConst =${page?c};
     $('#box').paging({
-        initPageNo: ${page}, // 初始页码
-        totalPages: ${totalPage}, //总页数
+        initPageNo: ${page?c}, // 初始页码
+        totalPages: ${totalPage?c}, //总页数
         slideSpeed: 600, // 缓动速度。单位毫秒
         jump: true, //是否支持跳转
         callback: function (page) { // 回调函数
