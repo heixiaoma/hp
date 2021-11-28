@@ -15,7 +15,6 @@ import top.hserver.core.ioc.annotation.Order;
 @Order(6)
 @Bean
 public class HpProtocolDispatcher implements ProtocolDispatcherAdapter {
-    private HpServerHandler hpServerHandler = new HpServerHandler();
 
     //判断HP头
     @Override
@@ -24,7 +23,7 @@ public class HpProtocolDispatcher implements ProtocolDispatcherAdapter {
             channelPipeline.addLast(
                     new IdleStateHandler(60, 30, 0),
                     new HpMessageDecoder(HpMessage.class), new HpMessageEncoder(HpMessage.class),
-                    hpServerHandler);
+                    new HpServerHandler());
             return true;
         }
         return false;
