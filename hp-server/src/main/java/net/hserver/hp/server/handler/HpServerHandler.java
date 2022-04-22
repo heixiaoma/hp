@@ -34,11 +34,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @ChannelHandler.Sharable
 public class HpServerHandler extends HpCommonHandler {
 
-    private TcpServer remoteConnectionServer = new TcpServer();
+    private final TcpServer remoteConnectionServer = new TcpServer();
 
     public static final Map<String, String> CURRENT_STATUS = new ConcurrentHashMap<>();
 
-    private static ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    private static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     private int port;
 
@@ -73,7 +73,7 @@ public class HpServerHandler extends HpCommonHandler {
         try {
             CURRENT_STATUS.remove(String.valueOf(port));
             Statistics statistics = remoteConnectionServer.getStatistics();
-            if (statistics!=null) {
+            if (statistics != null) {
                 IocUtil.getBean(StatisticsServiceImpl.class).add(statistics);
             }
         } catch (Throwable ignored) {
@@ -103,7 +103,7 @@ public class HpServerHandler extends HpCommonHandler {
          */
         if (login == null) {
             metaData.put("success", false);
-            metaData.put("reason", "用户非法，有疑问请联系管理员");
+            metaData.put("reason", "非法用户，登录失败，有疑问请联系管理员");
         } else {
             try {
                 if (!login.getPorts().contains(tempPort) || tempPort < 0) {
@@ -113,16 +113,21 @@ public class HpServerHandler extends HpCommonHandler {
                 remoteConnectionServer.bind(tempPort, new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new HpByteArrayDecoder(remoteConnectionServer), new HpByteArrayEncoder(remoteConnectionServer), new RemoteProxyHandler(thisHandler, remoteConnectionServer));
+                        ch.pipeline().addLast(
+                                //添加编码器作用是进行统计，包数据
+                                new HpByteArrayDecoder(remoteConnectionServer),
+                                new HpByteArrayEncoder(remoteConnectionServer),
+                                new RemoteProxyHandler(thisHandler, remoteConnectionServer)
+                        );
                         channels.add(ch);
                     }
                 }, login.getUsername());
                 metaData.put("success", true);
                 this.port = tempPort;
                 register = true;
-                CURRENT_STATUS.put(String.valueOf(tempPort),login.getUsername());
-                metaData.put("reason", "注册成功，外网地址是:  "+ IocUtil.getBean(WebConfig.class).getHost() +":" + tempPort);
-                System.out.println("注册成功，外网地址是:  "+ IocUtil.getBean(WebConfig.class).getHost() +":" + tempPort);
+                CURRENT_STATUS.put(String.valueOf(tempPort), login.getUsername());
+                metaData.put("reason", "注册成功，外网地址是:  " + IocUtil.getBean(WebConfig.class).getHost() + ":" + tempPort);
+                System.out.println("注册成功，外网地址是:  " + IocUtil.getBean(WebConfig.class).getHost() + ":" + tempPort);
             } catch (Exception e) {
                 metaData.put("success", false);
                 metaData.put("reason", e.getMessage());

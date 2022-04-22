@@ -20,13 +20,17 @@ public class TcpServer {
 
     private Channel channel;
 
-    private AtomicLong connectNum = new AtomicLong();
+    /**
+     * 统计
+     */
 
-    private AtomicLong packNum = new AtomicLong();
+    private final AtomicLong connectNum = new AtomicLong();
 
-    private AtomicLong send = new AtomicLong();
+    private final AtomicLong packNum = new AtomicLong();
 
-    private AtomicLong receive = new AtomicLong();
+    private final AtomicLong send = new AtomicLong();
+
+    private final AtomicLong receive = new AtomicLong();
 
 
     public synchronized void bind(int port, ChannelInitializer channelInitializer, String username) throws InterruptedException {
