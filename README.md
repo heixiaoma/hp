@@ -52,7 +52,7 @@ java -jar hp-client.jar -server_addr 127.0.0.1 -server_port 9090 -username jishu
 
 <img src="https://gitee.com/HServer/hp/raw/master/doc/img.png" width="500" />
 <img src="https://gitee.com/HServer/hp/raw/master/doc/img1.png" width="500" />
-<img src="https://gitee.com/HServer/hp/raw/master/doc/img2.png" width="500" />
+<img src="https://gitee.com/HServer/hp/raw/master/doc/img3.png" width="500" />
 
 ### 安卓客服端
 
