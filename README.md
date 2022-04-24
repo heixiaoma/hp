@@ -51,8 +51,8 @@ java -jar hp-client.jar -server_addr 127.0.0.1 -server_port 9090 -username jishu
 ### hp-windows 模块是一个可视化的客服端，可以在支持java的电脑上运行
 
 <img src="https://gitee.com/HServer/hp/raw/master/doc/img.png" width="500" />
-<img src="https://gitee.com/HServer/hp/raw/master/doc/img_1.png" width="500" />
-<img src="https://gitee.com/HServer/hp/raw/master/doc/img_2.png" width="500" />
+<img src="https://gitee.com/HServer/hp/raw/master/doc/img1.png" width="500" />
+<img src="https://gitee.com/HServer/hp/raw/master/doc/img2.png" width="500" />
 
 ### 安卓客服端
 
