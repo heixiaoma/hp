@@ -5,7 +5,6 @@ import net.hserver.hp.windows.form.LoginWindow;
 
 public class Start {
     public static void main(String[] args) {
-        LoginWindow.login();
+        new LoginWindow().showLogin();
     }
-
 }

@@ -3,7 +3,7 @@ package net.hserver.hp.server.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.bytes.ByteArrayDecoder;
-import net.hserver.hp.server.init.TcpServer;
+import net.hserver.hp.server.handler.TcpServer;
 
 import java.util.List;
 

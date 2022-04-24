@@ -4,8 +4,8 @@ import net.hserver.hp.windows.vo.UserVo;
 
 public class ConstConfig {
 
-    public final static String IP = "ksweb.club";
-//    public final static String IP = "192.168.123.220";
+//    public final static String IP = "ksweb.club";
+    public final static String IP = "192.168.123.220";
 
     public final static Integer PORT = 9090;
 

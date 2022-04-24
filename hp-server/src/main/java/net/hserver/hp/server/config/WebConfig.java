@@ -27,4 +27,12 @@ public class WebConfig {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    @Override
+    public String toString() {
+        return "WebConfig{" +
+                "host='" + host + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }

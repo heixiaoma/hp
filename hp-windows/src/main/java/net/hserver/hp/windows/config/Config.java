@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class Config {
-    private final static File configFile = new File(top.hserver.core.server.context.ConstConfig.PATH + "app.properties");
+    private final static File configFile = new File(top.hserver.core.server.context.ConstConfig.PATH + "config.properties");
     private final static Properties p = new Properties();
     private static Config config = null;
 
@@ -41,7 +41,7 @@ public class Config {
         if (ps != null && ps.trim().length() > 0 && u != null && u.trim().length() > 0) {
             UserVo userVo = new UserVo();
             userVo.setUsername(u);
-            userVo.setUsername(ps);
+            userVo.setPassword(ps);
             return userVo;
         }
         return null;

@@ -1,4 +1,4 @@
-package net.hserver.hp.server.init;
+package net.hserver.hp.server.handler;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
