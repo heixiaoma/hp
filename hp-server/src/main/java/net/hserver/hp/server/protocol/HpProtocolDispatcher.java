@@ -22,7 +22,7 @@ public class HpProtocolDispatcher implements ProtocolDispatcherAdapter {
         if (bytes[3] == 'H' && bytes[7] == 'P') {
             channelPipeline.addLast(
                     new IdleStateHandler(60, 30, 0),
-                    new HpMessageDecoder(HpMessage.class), new HpMessageEncoder(HpMessage.class),
+                    new HpMessageDecoder(), new HpMessageEncoder(HpMessage.class),
                     new HpServerHandler());
             return true;
         }

@@ -10,7 +10,7 @@ import net.hserver.hp.common.utils.SerializationUtil;
  */
 public class HpMessageEncoder extends MessageToByteEncoder {
 
-    private Class<?> genericClass;
+    private final Class<?> genericClass;
 
     public HpMessageEncoder(Class<?> genericClass) {
         this.genericClass = genericClass;
@@ -20,7 +20,7 @@ public class HpMessageEncoder extends MessageToByteEncoder {
     protected void encode(ChannelHandlerContext ctx, Object in, ByteBuf out) {
         if (genericClass.isInstance(in)) {
             byte[] data = SerializationUtil.serialize(in);
-            //header RPC 72,80
+            //header HP 72,80
             out.writeInt(72);
             out.writeInt(80);
             out.writeInt(data.length);

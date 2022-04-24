@@ -41,7 +41,7 @@ public class HpClient {
                             proxyAddress, proxyPort, callMsg);
                     ch.pipeline().addLast(
                             new IdleStateHandler(60, 30, 0),
-                            new HpMessageDecoder(HpMessage.class), new HpMessageEncoder(HpMessage.class),
+                            new HpMessageDecoder(), new HpMessageEncoder(HpMessage.class),
                             hpClientHandler);
                 }
             });

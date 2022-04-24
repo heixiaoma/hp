@@ -12,12 +12,6 @@ import java.util.List;
  */
 public class HpMessageDecoder extends ByteToMessageDecoder {
 
-    private Class<?> genericClass;
-
-    public HpMessageDecoder(Class<?> genericClass) {
-        this.genericClass = genericClass;
-    }
-
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
         //因为之前编码的时候写入4个Int型，4个字节来表示长度
