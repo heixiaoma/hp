@@ -125,8 +125,9 @@ public class HpServerHandler extends HpCommonHandler {
                 this.port = tempPort;
                 register = true;
                 CURRENT_STATUS.put(String.valueOf(tempPort), login.getUsername());
-                metaData.put("reason", "注册成功，外网地址是:  " + IocUtil.getBean(WebConfig.class).getHost() + ":" + tempPort);
-                System.out.println("注册成功，外网地址是:  " + IocUtil.getBean(WebConfig.class).getHost() + ":" + tempPort);
+                String host = IocUtil.getBean(WebConfig.class).getHost();
+                metaData.put("reason", "注册成功，外网TCP地址是:" + host + ":" + tempPort+",外网HTTP地址是：http://"+login.getUsername()+"."+host);
+                System.out.println("注册成功，外网地址是:  " +host + ":" + tempPort);
             } catch (Exception e) {
                 metaData.put("success", false);
                 metaData.put("reason", e.getMessage());

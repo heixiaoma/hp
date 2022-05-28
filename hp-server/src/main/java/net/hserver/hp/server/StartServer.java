@@ -9,6 +9,6 @@ import top.hserver.core.ioc.annotation.HServerBoot;
 @HServerBoot
 public class StartServer {
     public static void main(String[] args) {
-        HServerApplication.run(StartServer.class, 9090, args);
+        HServerApplication.run(StartServer.class, args);
     }
 }
