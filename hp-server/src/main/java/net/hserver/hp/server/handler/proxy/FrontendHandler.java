@@ -1,6 +1,5 @@
 package net.hserver.hp.server.handler.proxy;
 
-import com.google.common.net.HttpHeaders;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -11,7 +10,10 @@ import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequest;
 import net.hserver.hp.server.handler.HpServerHandler;
+import net.hserver.hp.server.utils.FileUtil;
 import top.hserver.core.server.handlers.BuildResponse;
+
+import static net.hserver.hp.server.utils.FileUtil.readFile;
 
 public class FrontendHandler extends ChannelInboundHandlerAdapter {
     public static final EventLoopGroup backendWorkerGroup = new NioEventLoopGroup();
@@ -42,7 +44,7 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
              * host为空直接断开
              */
             if (host == null) {
-                ctx.writeAndFlush(BuildResponse.buildString(Res.res));
+               ctx.writeAndFlush(BuildResponse.buildString(readFile(FileUtil.class.getResourceAsStream("/static/tmp.html"))));
                 ctx.close();
                 return;
             }
@@ -57,7 +59,7 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
             });
             //如果为负说明用户不存在，将他删除掉
             if (userPort[0] == -1) {
-                ctx.writeAndFlush(BuildResponse.buildString(Res.res));
+                ctx.writeAndFlush(BuildResponse.buildString(readFile(FileUtil.class.getResourceAsStream("/static/tmp.html"))));
                 ctx.close();
                 return;
             }

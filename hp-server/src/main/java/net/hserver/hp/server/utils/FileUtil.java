@@ -22,4 +22,25 @@ public class FileUtil {
             e.printStackTrace();
         }
     }
+
+
+    public static String readFile(InputStream is) {
+        try {
+            InputStreamReader inputStreamReader = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(inputStreamReader);
+            String st = "";
+            String s = "";
+            while ((st = br.readLine()) != null)
+                s += st+"\r\n";
+
+            br.close();
+            inputStreamReader.close();
+            is.close();
+            return s;
+        } catch (Exception e) {
+
+        }
+        return null;
+    }
+
 }
