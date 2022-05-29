@@ -44,8 +44,7 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
              * host为空直接断开
              */
             if (host == null) {
-               ctx.writeAndFlush(BuildResponse.buildString(readFile(FileUtil.class.getResourceAsStream("/static/tmp.html"))));
-                ctx.close();
+                ctx.writeAndFlush(BuildResponse.buildString(readFile(FileUtil.class.getResourceAsStream("/static/tmp.html"))));
                 return;
             }
             //提取用户名，约定二级域名就是用户的账号
@@ -60,7 +59,6 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
             //如果为负说明用户不存在，将他删除掉
             if (userPort[0] == -1) {
                 ctx.writeAndFlush(BuildResponse.buildString(readFile(FileUtil.class.getResourceAsStream("/static/tmp.html"))));
-                ctx.close();
                 return;
             }
 

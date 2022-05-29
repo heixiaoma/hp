@@ -31,14 +31,14 @@ public class FileUtil {
             String st = "";
             String s = "";
             while ((st = br.readLine()) != null)
-                s += st+"\r\n";
+                s += st + "\r\n";
 
             br.close();
             inputStreamReader.close();
             is.close();
             return s;
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
         return null;
     }

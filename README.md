@@ -1,6 +1,11 @@
 #### 介绍
 
-    内网穿透工具.
+    内网穿透工具 支持TCP HTTP支持域名绑定
+
+### 原理图
+
+<img src="https://gitee.com/HServer/hp/raw/master/doc/img_1.png" width="500" />
+
 
 ## 云后台管理web
 
@@ -19,8 +24,9 @@ java -jar hp-server.jar
 如果自己需要修改配置，可以和jar同目录建立一个配置文件 app.properties 内容如下
 
 ```properties
-#内网穿透端口和web管理后台都是这个端口
-ports=9090
+#9090内网穿透端口数据传输和web管理后台都是这个端口
+#80将外界http数据代理到用户端口上
+ports=9090,80
 #提示域名，没有域名写IP也可以
 host=ksweb.club
 #后台密码
