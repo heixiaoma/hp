@@ -42,7 +42,7 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
              * host为空直接断开
              */
             if (host == null) {
-                ctx.writeAndFlush(BuildResponse.buildString("host检查异常"));
+                ctx.writeAndFlush(BuildResponse.buildString(Res.res));
                 ctx.close();
                 return;
             }
@@ -57,7 +57,7 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
             });
             //如果为负说明用户不存在，将他删除掉
             if (userPort[0] == -1) {
-                ctx.writeAndFlush(BuildResponse.buildString("用户不在线"));
+                ctx.writeAndFlush(BuildResponse.buildString(Res.res));
                 ctx.close();
                 return;
             }
