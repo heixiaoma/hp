@@ -4,6 +4,7 @@ import com.google.common.net.HttpHeaders;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpClientCodec;
@@ -13,6 +14,7 @@ import net.hserver.hp.server.handler.HpServerHandler;
 import top.hserver.core.server.handlers.BuildResponse;
 
 public class FrontendHandler extends ChannelInboundHandlerAdapter {
+    public static final EventLoopGroup backendWorkerGroup = new NioEventLoopGroup();
 
     private Channel outboundChannel;
 
@@ -25,7 +27,6 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
 
     private void read(final ChannelHandlerContext ctx, Object msg) {
         if (msg instanceof FullHttpRequest) {
-            FullHttpRequest httpRequest = (FullHttpRequest) msg;
             outboundChannel.writeAndFlush(msg);
         } else {
             closeOnFlush(ctx.channel());
@@ -64,7 +65,7 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
             final Channel inboundChannel = ctx.channel();
 
             Bootstrap b = new Bootstrap();
-            b.group(inboundChannel.eventLoop());
+            b.group(backendWorkerGroup);
             b.channel(NioSocketChannel.class).handler(new ChannelInitializer<Channel>() {
                 @Override
                 protected void initChannel(Channel ch) {
