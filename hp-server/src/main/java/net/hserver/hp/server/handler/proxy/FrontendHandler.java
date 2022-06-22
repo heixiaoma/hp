@@ -1,5 +1,6 @@
 package net.hserver.hp.server.handler.proxy;
 
+import cn.hserver.core.server.handlers.BuildResponse;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -11,7 +12,6 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequest;
 import net.hserver.hp.server.handler.HpServerHandler;
 import net.hserver.hp.server.utils.FileUtil;
-import top.hserver.core.server.handlers.BuildResponse;
 
 import static net.hserver.hp.server.utils.FileUtil.readFile;
 

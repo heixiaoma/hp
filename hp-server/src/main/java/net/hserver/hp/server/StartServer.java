@@ -1,7 +1,7 @@
 package net.hserver.hp.server;
 
-import top.hserver.HServerApplication;
-import top.hserver.core.ioc.annotation.HServerBoot;
+import cn.hserver.HServerApplication;
+import cn.hserver.core.ioc.annotation.HServerBoot;
 
 /**
  * @author hxm

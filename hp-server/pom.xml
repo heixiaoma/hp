@@ -21,9 +21,8 @@
         </dependency>
 
         <dependency>
-            <groupId>net.hserver.plugins.beetlsql</groupId>
-            <artifactId>plugins.beetlsql</artifactId>
-            <version>3.3</version>
+            <groupId>cn.hserver</groupId>
+            <artifactId>hserver-plugin-beetlsql</artifactId>
         </dependency>
 
         <dependency>
@@ -43,9 +42,8 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>net.hserver.plugins.maven</groupId>
-                <artifactId>hserver-maven-plugin</artifactId>
-                <version>3.0</version>
+                <groupId>cn.hserver</groupId>
+                <artifactId>hserver-plugin-maven</artifactId>
                 <executions>
                     <execution>
                         <phase>package</phase>

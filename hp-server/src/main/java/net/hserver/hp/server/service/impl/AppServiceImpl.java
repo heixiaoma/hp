@@ -5,8 +5,8 @@ import net.hserver.hp.server.domian.entity.AppEntity;
 import net.hserver.hp.server.service.AppService;
 import net.hserver.hp.server.utils.DateUtil;
 import org.beetl.sql.core.page.PageResult;
-import top.hserver.core.ioc.annotation.Autowired;
-import top.hserver.core.ioc.annotation.Bean;
+import cn.hserver.core.ioc.annotation.Autowired;
+import cn.hserver.core.ioc.annotation.Bean;
 
 import java.util.UUID;
 

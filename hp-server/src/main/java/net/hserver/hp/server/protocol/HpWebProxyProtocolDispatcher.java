@@ -5,9 +5,9 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import net.hserver.hp.server.handler.proxy.FrontendHandler;
-import top.hserver.core.interfaces.ProtocolDispatcherAdapter;
-import top.hserver.core.ioc.annotation.Bean;
-import top.hserver.core.ioc.annotation.Order;
+import cn.hserver.core.interfaces.ProtocolDispatcherAdapter;
+import cn.hserver.core.ioc.annotation.Bean;
+import cn.hserver.core.ioc.annotation.Order;
 
 import java.net.InetSocketAddress;
 

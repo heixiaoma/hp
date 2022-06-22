@@ -1,7 +1,7 @@
 package net.hserver.hp.server.config;
 
-import top.hserver.core.ioc.annotation.Bean;
-import top.hserver.core.ioc.annotation.Value;
+import cn.hserver.core.ioc.annotation.Bean;
+import cn.hserver.core.ioc.annotation.Value;
 
 @Bean
 public class WebConfig {

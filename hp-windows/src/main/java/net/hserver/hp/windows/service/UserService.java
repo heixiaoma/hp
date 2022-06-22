@@ -28,10 +28,10 @@ public class UserService {
         Call call = okHttpClient.newCall(request);
         try {
             Response execute = call.execute();
-            JsonNode jsonNode = top.hserver.core.server.context.ConstConfig.JSON.readTree(execute.body().string());
+            JsonNode jsonNode = cn.hserver.core.server.context.ConstConfig.JSON.readTree(execute.body().string());
             int code = jsonNode.get("code").asInt();
             if (code == 200) {
-                return top.hserver.core.server.context.ConstConfig.JSON.readValue(jsonNode.get("data").toString(), UserVo.class);
+                return cn.hserver.core.server.context.ConstConfig.JSON.readValue(jsonNode.get("data").toString(), UserVo.class);
             }
         } catch (Exception e) {
         }
@@ -54,7 +54,7 @@ public class UserService {
 
         try {
             Response execute = call.execute();
-            JsonNode jsonNode = top.hserver.core.server.context.ConstConfig.JSON.readTree(execute.body().string());
+            JsonNode jsonNode = cn.hserver.core.server.context.ConstConfig.JSON.readTree(execute.body().string());
             int code = jsonNode.get("code").asInt();
             if (code == 200) {
                 return true;

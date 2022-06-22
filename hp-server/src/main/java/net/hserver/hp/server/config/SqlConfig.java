@@ -7,8 +7,8 @@ import org.beetl.sql.core.db.SQLiteStyle;
 import org.beetl.sql.core.loader.MarkdownClasspathLoader;
 import org.beetl.sql.ext.DBInitHelper;
 import org.beetl.sql.ext.DebugInterceptor;
-import top.hserver.core.ioc.annotation.Bean;
-import top.hserver.core.ioc.annotation.Configuration;
+import cn.hserver.core.ioc.annotation.Bean;
+import cn.hserver.core.ioc.annotation.Configuration;
 
 import java.io.File;
 import java.io.InputStream;

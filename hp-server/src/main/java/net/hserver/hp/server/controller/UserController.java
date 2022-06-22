@@ -4,12 +4,12 @@ import net.hserver.hp.server.domian.entity.UserEntity;
 import net.hserver.hp.server.domian.vo.UserVo;
 import net.hserver.hp.server.service.UserService;
 import org.beetl.sql.core.page.PageResult;
-import top.hserver.core.interfaces.HttpResponse;
-import top.hserver.core.ioc.annotation.Autowired;
-import top.hserver.core.ioc.annotation.Controller;
-import top.hserver.core.ioc.annotation.GET;
-import top.hserver.core.ioc.annotation.POST;
-import top.hserver.core.server.util.JsonResult;
+import cn.hserver.core.interfaces.HttpResponse;
+import cn.hserver.core.ioc.annotation.Autowired;
+import cn.hserver.core.ioc.annotation.Controller;
+import cn.hserver.core.ioc.annotation.GET;
+import cn.hserver.core.ioc.annotation.POST;
+import cn.hserver.core.server.util.JsonResult;
 
 import java.util.HashMap;
 import java.util.Map;

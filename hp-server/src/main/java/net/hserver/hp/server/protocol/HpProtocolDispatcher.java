@@ -8,9 +8,9 @@ import net.hserver.hp.common.codec.HpMessageDecoder;
 import net.hserver.hp.common.codec.HpMessageEncoder;
 import net.hserver.hp.common.protocol.HpMessage;
 import net.hserver.hp.server.handler.HpServerHandler;
-import top.hserver.core.interfaces.ProtocolDispatcherAdapter;
-import top.hserver.core.ioc.annotation.Bean;
-import top.hserver.core.ioc.annotation.Order;
+import cn.hserver.core.interfaces.ProtocolDispatcherAdapter;
+import cn.hserver.core.ioc.annotation.Bean;
+import cn.hserver.core.ioc.annotation.Order;
 
 @Order(6)
 @Bean

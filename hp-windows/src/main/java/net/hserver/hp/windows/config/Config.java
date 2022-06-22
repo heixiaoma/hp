@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class Config {
-    private final static File configFile = new File(top.hserver.core.server.context.ConstConfig.PATH + "config.properties");
+    private final static File configFile = new File(cn.hserver.core.server.context.ConstConfig.PATH + "config.properties");
     private final static Properties p = new Properties();
     private static Config config = null;
 

@@ -8,8 +8,8 @@ import net.hserver.hp.server.domian.vo.UserVo;
 import net.hserver.hp.server.service.UserService;
 import net.hserver.hp.server.utils.DateUtil;
 import org.beetl.sql.core.page.PageResult;
-import top.hserver.core.ioc.annotation.Autowired;
-import top.hserver.core.ioc.annotation.Bean;
+import cn.hserver.core.ioc.annotation.Autowired;
+import cn.hserver.core.ioc.annotation.Bean;
 
 import java.util.ArrayList;
 import java.util.List;

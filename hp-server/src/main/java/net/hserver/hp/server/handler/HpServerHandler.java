@@ -20,7 +20,7 @@ import net.hserver.hp.server.service.UserService;
 import net.hserver.hp.server.service.impl.StatisticsServiceImpl;
 import net.hserver.hp.server.service.impl.UserServiceImpl;
 import net.hserver.hp.server.utils.NetUtil;
-import top.hserver.core.ioc.IocUtil;
+import cn.hserver.core.ioc.IocUtil;
 
 import java.util.HashMap;
 import java.util.Map;

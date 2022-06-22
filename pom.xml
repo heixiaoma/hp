@@ -9,6 +9,12 @@
     <packaging>pom</packaging>
     <version>3.0</version>
 
+    <parent>
+        <artifactId>hserver-parent</artifactId>
+        <groupId>cn.hserver</groupId>
+        <version>3.0.M1</version>
+    </parent>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -25,9 +31,8 @@
     <dependencies>
 
         <dependency>
-            <groupId>top.hserver</groupId>
-            <artifactId>HServer</artifactId>
-            <version>2.9.88</version>
+            <groupId>cn.hserver</groupId>
+            <artifactId>hserver</artifactId>
         </dependency>
 
         <dependency>
