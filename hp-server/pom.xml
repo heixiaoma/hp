@@ -19,7 +19,10 @@
             <version>3.0</version>
             <scope>compile</scope>
         </dependency>
-
+        <dependency>
+            <groupId>cn.hserver</groupId>
+            <artifactId>hserver-plugin-web</artifactId>
+        </dependency>
         <dependency>
             <groupId>cn.hserver</groupId>
             <artifactId>hserver-plugin-beetlsql</artifactId>
@@ -44,14 +47,6 @@
             <plugin>
                 <groupId>cn.hserver</groupId>
                 <artifactId>hserver-plugin-maven</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

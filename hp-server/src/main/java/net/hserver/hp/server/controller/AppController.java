@@ -1,15 +1,15 @@
 package net.hserver.hp.server.controller;
 
+import cn.hserver.plugin.web.annotation.Controller;
+import cn.hserver.plugin.web.annotation.GET;
+import cn.hserver.plugin.web.annotation.POST;
+import cn.hserver.plugin.web.context.PartFile;
+import cn.hserver.plugin.web.interfaces.HttpRequest;
+import cn.hserver.plugin.web.interfaces.HttpResponse;
 import net.hserver.hp.server.domian.entity.AppEntity;
 import net.hserver.hp.server.service.AppService;
 import org.beetl.sql.core.page.PageResult;
-import cn.hserver.core.interfaces.HttpRequest;
-import cn.hserver.core.interfaces.HttpResponse;
 import cn.hserver.core.ioc.annotation.Autowired;
-import cn.hserver.core.ioc.annotation.Controller;
-import cn.hserver.core.ioc.annotation.GET;
-import cn.hserver.core.ioc.annotation.POST;
-import cn.hserver.core.server.context.PartFile;
 import cn.hserver.core.server.util.JsonResult;
 
 import java.io.File;

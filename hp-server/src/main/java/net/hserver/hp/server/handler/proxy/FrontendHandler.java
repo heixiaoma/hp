@@ -1,6 +1,6 @@
 package net.hserver.hp.server.handler.proxy;
 
-import cn.hserver.core.server.handlers.BuildResponse;
+import cn.hserver.plugin.web.handlers.BuildResponse;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;

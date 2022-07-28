@@ -1,6 +1,7 @@
 package net.hserver.hp.windows.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import net.hserver.hp.windows.config.ConstConfig;
 
 import net.hserver.hp.windows.vo.UserVo;
@@ -28,10 +29,10 @@ public class UserService {
         Call call = okHttpClient.newCall(request);
         try {
             Response execute = call.execute();
-            JsonNode jsonNode = cn.hserver.core.server.context.ConstConfig.JSON.readTree(execute.body().string());
-            int code = jsonNode.get("code").asInt();
+            JSONObject jsonObject = JSON.parseObject(execute.body().string());
+            int code = jsonObject.getInteger("code");
             if (code == 200) {
-                return cn.hserver.core.server.context.ConstConfig.JSON.readValue(jsonNode.get("data").toString(), UserVo.class);
+                return JSON.parseObject(jsonObject.get("data").toString(), UserVo.class);
             }
         } catch (Exception e) {
         }
@@ -54,12 +55,12 @@ public class UserService {
 
         try {
             Response execute = call.execute();
-            JsonNode jsonNode = cn.hserver.core.server.context.ConstConfig.JSON.readTree(execute.body().string());
-            int code = jsonNode.get("code").asInt();
+            JSONObject jsonObject = JSON.parseObject(execute.body().string());
+            int code = jsonObject.getInteger("code");
             if (code == 200) {
                 return true;
             } else {
-                throw new Exception(jsonNode.get("msg").asText());
+                throw new Exception(jsonObject.getString("msg"));
             }
         } catch (Exception e) {
             throw new Exception(e.getMessage());

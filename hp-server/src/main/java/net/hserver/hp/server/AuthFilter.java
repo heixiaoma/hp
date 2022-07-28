@@ -1,15 +1,11 @@
 package net.hserver.hp.server;
 
+import cn.hserver.plugin.web.context.Webkit;
+import cn.hserver.plugin.web.interfaces.FilterAdapter;
+import cn.hserver.plugin.web.interfaces.HttpRequest;
 import net.hserver.hp.server.config.WebConfig;
-import cn.hserver.core.interfaces.FilterAdapter;
-import cn.hserver.core.interfaces.HttpRequest;
 import cn.hserver.core.ioc.annotation.Autowired;
 import cn.hserver.core.ioc.annotation.Bean;
-import cn.hserver.core.server.context.ConstConfig;
-import cn.hserver.core.server.context.Webkit;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
 
 /**
  * @author hxm
