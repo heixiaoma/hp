@@ -53,7 +53,7 @@ public interface UserService {
      * @param password
      * @param ports
      */
-    void editUser(String username, String password, String ports);
+    void editUser(String username, String password, String ports,Integer type);
 
     /**
      * 添加用户

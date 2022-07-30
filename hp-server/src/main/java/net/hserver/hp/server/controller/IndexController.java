@@ -57,4 +57,16 @@ public class IndexController {
         return list == null ? JsonResult.error() : JsonResult.ok().put("data", list);
     }
 
+
+    @GET("/set/tips")
+    public JsonResult addTips(String tips) {
+        HpServerHandler.tips=tips;
+        return JsonResult.ok(HpServerHandler.tips);
+    }
+
+    @GET("/get/tips")
+    public JsonResult getTips() {
+        return JsonResult.ok(HpServerHandler.tips);
+    }
+
 }

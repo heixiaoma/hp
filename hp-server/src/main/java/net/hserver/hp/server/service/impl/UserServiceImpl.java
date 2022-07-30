@@ -5,6 +5,7 @@ import net.hserver.hp.server.dao.UserDao;
 import net.hserver.hp.server.domian.entity.PortEntity;
 import net.hserver.hp.server.domian.entity.UserEntity;
 import net.hserver.hp.server.domian.vo.UserVo;
+import net.hserver.hp.server.handler.HpServerHandler;
 import net.hserver.hp.server.service.UserService;
 import net.hserver.hp.server.utils.DateUtil;
 import org.beetl.sql.core.page.PageResult;
@@ -83,9 +84,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void editUser(String username, String password, String ports) {
+    public void editUser(String username, String password, String ports, Integer type) {
         UserEntity user = getUser(username);
         if (user != null) {
+            if (type != null) {
+                user.setType(type);
+                if (type == -1) {
+                    //强制下线操作
+                    HpServerHandler.offline(username);
+                }
+            }
             user.setPassword(password);
             userDao.updateById(user);
         }
@@ -140,7 +148,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void remove(String username) {
         UserEntity user = getUser(username);
-        if (user==null){
+        if (user == null) {
             return;
         }
         List<PortEntity> port = getPort(user.getId());

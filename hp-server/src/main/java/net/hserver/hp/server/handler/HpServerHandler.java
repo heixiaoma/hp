@@ -14,6 +14,7 @@ import net.hserver.hp.common.protocol.HpMessageType;
 import net.hserver.hp.server.codec.HpByteArrayDecoder;
 import net.hserver.hp.server.codec.HpByteArrayEncoder;
 import net.hserver.hp.server.config.WebConfig;
+import net.hserver.hp.server.domian.bean.ConnectInfo;
 import net.hserver.hp.server.domian.bean.Statistics;
 import net.hserver.hp.server.domian.vo.UserVo;
 import net.hserver.hp.server.service.UserService;
@@ -33,9 +34,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @ChannelHandler.Sharable
 public class HpServerHandler extends HpCommonHandler {
 
+
+    public static String tips = "";
+
     private final TcpServer remoteConnectionServer = new TcpServer();
 
-    public static final Map<String, String> CURRENT_STATUS = new ConcurrentHashMap<>();
+    public static final Map<String, ConnectInfo> CURRENT_STATUS = new ConcurrentHashMap<>();
 
     private static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
@@ -47,6 +51,13 @@ public class HpServerHandler extends HpCommonHandler {
 
     }
 
+    public static void offline(String username) {
+        CURRENT_STATUS.forEach((k, v) -> {
+            if (v.getUsername().equals(username)) {
+                v.getChannel().close();
+            }
+        });
+    }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HpMessage hpMessage) throws Exception {
@@ -58,7 +69,7 @@ public class HpServerHandler extends HpCommonHandler {
             } else if (hpMessage.getType() == HpMessageType.DATA) {
                 processData(hpMessage);
             } else if (hpMessage.getType() == HpMessageType.KEEPALIVE) {
-                // 心跳包, 不处理
+                // 心跳包
             } else {
                 throw new HpException("未知类型: " + hpMessage.getType());
             }
@@ -103,6 +114,9 @@ public class HpServerHandler extends HpCommonHandler {
         if (login == null) {
             metaData.put("success", false);
             metaData.put("reason", "非法用户，登录失败，有疑问请联系管理员");
+        } else if (login.getType() != null && login.getType() == -1) {
+            metaData.put("success", false);
+            metaData.put("reason", "账号被封，请穿透正能量，有意义的程序哦。用户名：" + username + " 来源IP：" + ctx.channel().remoteAddress());
         } else {
             try {
                 if (!login.getPorts().contains(tempPort) || tempPort < 0) {
@@ -124,10 +138,10 @@ public class HpServerHandler extends HpCommonHandler {
                 metaData.put("success", true);
                 this.port = tempPort;
                 register = true;
-                CURRENT_STATUS.put(String.valueOf(tempPort), login.getUsername());
+                CURRENT_STATUS.put(String.valueOf(tempPort), new ConnectInfo(login.getUsername(), ctx.channel()));
                 String host = IocUtil.getBean(WebConfig.class).getHost();
-                metaData.put("reason", "注册成功，外网TCP地址是:" + host + ":" + tempPort+",外网HTTP地址是：http://"+login.getUsername()+"."+host);
-                System.out.println("注册成功，外网地址是:  " +host + ":" + tempPort);
+                metaData.put("reason", "连接成功，外网TCP地址是:" + host + ":" + tempPort + ",外网HTTP地址是：http://" + login.getUsername() + "." + host + " " + (tips.trim().length() > 0 ? "公告提示："+tips : ""));
+                System.out.println("注册成功，外网地址是:  " + host + ":" + tempPort);
             } catch (Exception e) {
                 metaData.put("success", false);
                 metaData.put("reason", e.getMessage());

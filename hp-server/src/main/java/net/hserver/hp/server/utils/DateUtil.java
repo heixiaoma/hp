@@ -15,4 +15,11 @@ public class DateUtil {
         res = simpleDateFormat.format(date);
         return res;
     }
+
+    public static String dateToStamp(Date date){
+        String res;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        res = simpleDateFormat.format(date);
+        return res;
+    }
 }

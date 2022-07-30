@@ -65,9 +65,9 @@ public class UserController {
 
 
     @POST("/user/edit")
-    public void edit(Integer page, HttpResponse response, String username, String password, String ports) {
+    public void edit(Integer page, HttpResponse response, String username, String password, String ports,Integer type) {
         if (username != null) {
-            userService.editUser(username, password, ports);
+            userService.editUser(username, password, ports,type);
         }
         index(page, response);
     }

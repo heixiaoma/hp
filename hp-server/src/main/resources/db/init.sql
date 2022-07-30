@@ -62,7 +62,7 @@ CREATE TABLE "sys_statistics" (
   PRIMARY KEY ("id")
 );
 
---添加管理员信息
+# --添加管理员信息
 INSERT INTO "sys_user"("id", "username", "password", "type","create_time") VALUES ('1', 'admin', '123456', '1','1609660694000');
 
 INSERT INTO "sys_user"("id", "username", "password", "type","create_time") VALUES ('2', 'heixiaoma', '123456', '2','1609660694000');

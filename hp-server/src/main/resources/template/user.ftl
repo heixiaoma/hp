@@ -17,6 +17,7 @@
                 <th>密码</th>
                 <th>开通端口</th>
                 <th>创建时间</th>
+                <th>账号类型</th>
                 <th>操作</th>
             </tr>
             </thead>
@@ -35,6 +36,10 @@
                                     <div class="mdui-textfield">
                                         <input class="mdui-textfield-input" name="password" type="text"
                                                value="${userVo.password}"/>
+                                    </div>
+                                    <div class="mdui-textfield">
+                                        <input class="mdui-textfield-input" name="type" type="text"
+                                               value="${userVo.type}"/>
                                     </div>
                                     <div class="mdui-textfield">
                                         <input class="mdui-textfield-input" name="ports" type="text"
@@ -56,6 +61,13 @@
                             </#list>
                         </td>
                         <td>${userVo.createTime}</td>
+                        <td>
+                          <#if userVo.type==-1>
+                              封号(${userVo.type})
+                           <#else>
+                               正常(${userVo.type})
+                          </#if>
+                        </td>
                         <td>
                             <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-purple-accent mdui-ripple"
                                     onclick="new mdui.Dialog('#${userVo.username}').open()">
@@ -99,7 +111,7 @@
 
 </div>
 <script>
-    var pageConst =${page?c};
+    var pageConst = ${page?c};
     $('#box').paging({
         initPageNo: ${page?c}, // 初始页码
         totalPages: ${totalPage?c}, //总页数
