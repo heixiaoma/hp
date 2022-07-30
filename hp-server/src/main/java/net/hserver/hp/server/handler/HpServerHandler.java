@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class HpServerHandler extends HpCommonHandler {
 
 
-    public static String tips = "";
+    public static String tips = "禁止穿透违法程序，免费不易 请大家谅解";
 
     private final TcpServer remoteConnectionServer = new TcpServer();
 
