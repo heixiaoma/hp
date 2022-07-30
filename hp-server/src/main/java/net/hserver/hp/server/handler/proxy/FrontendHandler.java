@@ -52,7 +52,7 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
             String username = split[0];
             final Integer[] userPort = {-1};
             HpServerHandler.CURRENT_STATUS.forEach((k, v) -> {
-                if (v.equals(username)) {
+                if (v.getUsername().equals(username)) {
                     userPort[0] = Integer.parseInt(k);
                 }
             });
