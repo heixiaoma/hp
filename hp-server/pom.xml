@@ -12,12 +12,16 @@
     <artifactId>hp-server</artifactId>
     <dependencies>
 
-
         <dependency>
             <groupId>net.hserver.hp</groupId>
             <artifactId>hp-common</artifactId>
             <version>3.0</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.hserver</groupId>
+            <artifactId>hserver</artifactId>
         </dependency>
         <dependency>
             <groupId>cn.hserver</groupId>
