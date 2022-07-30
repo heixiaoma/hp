@@ -13,9 +13,9 @@ import java.util.HashMap;
  */
 public class RemoteProxyHandler extends HpAbsHandler {
 
-    private HpCommonHandler proxyHandler;
+    private final HpCommonHandler proxyHandler;
 
-    private TcpServer tcpServer;
+    private final TcpServer tcpServer;
 
     public RemoteProxyHandler(HpCommonHandler proxyHandler, TcpServer tcpServer) {
         this.proxyHandler = proxyHandler;

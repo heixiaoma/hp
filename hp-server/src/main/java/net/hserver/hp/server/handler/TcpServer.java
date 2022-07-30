@@ -6,6 +6,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.traffic.GlobalChannelTrafficShapingHandler;
 import io.netty.handler.traffic.TrafficCounter;
+import net.hserver.hp.server.domian.bean.GlobalStat;
 import net.hserver.hp.server.domian.bean.Statistics;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -64,6 +65,7 @@ public class TcpServer {
      * 添加链接数
      */
     public void addConnectNum() {
+        GlobalStat.addConnectNum();
         connectNum.incrementAndGet();
     }
 
@@ -71,14 +73,17 @@ public class TcpServer {
      * 添加发包数
      */
     public void addPackNum() {
+        GlobalStat.addPackNum();
         packNum.incrementAndGet();
     }
 
     public void addSend(Long num){
+        GlobalStat.addSend(num);
         send.addAndGet(num);
     }
 
     public void addReceive(Long num){
+        GlobalStat.addReceive(num);
         receive.addAndGet(num);
     }
 

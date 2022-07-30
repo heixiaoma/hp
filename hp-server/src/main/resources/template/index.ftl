@@ -1,10 +1,13 @@
 <#include "/header.ftl">
+<script type="text/javascript" src="/js/echarts.min.js"></script>
 <#--监控页面-->
 <div style="padding: 1rem">
 
     <div class="mdui-card">
         <div class="mdui-card-actions mdui-card-actions-stacked">
             <button class="mdui-btn mdui-ripple">连接使用数：${statisticsSize}</button>
+        </div>
+        <div class="mdui-card-actions mdui-card-actions-stacked" id="chart" style="height: 800px;width: 100%">
         </div>
         <#if (statisticsSize>0)>
             <div class="mdui-card-actions mdui-card-actions-stacked">
@@ -19,14 +22,14 @@
                     </thead>
                     <tbody>
                     <#if statisticsData?exists>
-                    <#list statisticsData?keys as key>
-                        <tr>
-                            <td>${statisticsData[key].username}</td>
-                            <td>${statisticsData[key].ip}</td>
-                            <td>${statisticsData[key].date}</td>
-                            <td>${key}</td>
-                        </tr>
-                    </#list>
+                        <#list statisticsData?keys as key>
+                            <tr>
+                                <td>${statisticsData[key].username}</td>
+                                <td>${statisticsData[key].ip}</td>
+                                <td>${statisticsData[key].date}</td>
+                                <td>${key}</td>
+                            </tr>
+                        </#list>
                     </#if>
                     </tbody>
                 </table>
@@ -77,8 +80,75 @@
 
 
 </div>
+
+
+<script type="text/javascript">
+    var dom = document.getElementById('chart');
+    var myChart = echarts.init(dom, null, {
+        renderer: 'canvas',
+        useDirtyRect: false
+    });
+    var app = {};
+
+    var option;
+
+    option = {
+        title: {
+            text: '流量图'
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        toolbox: {
+            feature: {
+                saveAsImage: {}
+            }
+        },
+        legend: {
+            data: ['入网', '出网']
+        },
+        xAxis: {
+            type: 'category',
+            data: [${flowType}]
+        },
+        yAxis:  {
+            show: true,
+            type: 'value',
+            boundaryGap: ['0%', '20%'],
+            //添加单位$
+            axisLabel: {
+                formatter: '{value}/KB'
+            }
+        },
+        series: [
+            {
+                data: [${flowSend}],
+                type: 'line',
+                smooth: true,
+                name: '入网',
+                stack: 'Total',
+
+            },
+            {
+                data: [${flowReceive}],
+                type: 'line',
+                smooth: true,
+                name: '出网',
+                stack: 'Total',
+            },
+        ]
+    };
+
+    if (option && typeof option === 'object') {
+        myChart.setOption(option);
+    }
+
+    window.addEventListener('resize', myChart.resize);
+</script>
+
+
 <script>
-    var pageConst =${page?c};
+    var pageConst = ${page?c};
     $('#box').paging({
         initPageNo: ${page?c}, // 初始页码
         totalPages: ${totalPage?c}, //总页数

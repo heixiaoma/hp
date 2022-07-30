@@ -3,6 +3,7 @@ package net.hserver.hp.server.controller;
 import cn.hserver.plugin.web.annotation.Controller;
 import cn.hserver.plugin.web.annotation.GET;
 import cn.hserver.plugin.web.interfaces.HttpResponse;
+import net.hserver.hp.server.domian.bean.GlobalStat;
 import net.hserver.hp.server.domian.entity.AppEntity;
 import net.hserver.hp.server.domian.entity.StatisticsEntity;
 import net.hserver.hp.server.handler.HpServerHandler;
@@ -40,6 +41,33 @@ public class IndexController {
         data.put("totalPage", list.getTotalPage());
         data.put("statisticsSize", HpServerHandler.CURRENT_STATUS.size());
         data.put("statisticsData", HpServerHandler.CURRENT_STATUS);
+
+        StringBuilder flowType=new StringBuilder();
+        StringBuilder flowConnectNum=new StringBuilder();
+        StringBuilder flowReceive=new StringBuilder();
+        StringBuilder flowSend=new StringBuilder();
+        StringBuilder flowPackNum=new StringBuilder();
+
+        for (int i = 0; i < GlobalStat.STATS.size(); i++) {
+            GlobalStat.Stat stat = GlobalStat.STATS.get(i);
+            flowType.append("\"").append(stat.getDate()).append("\"");
+            flowConnectNum.append(stat.getConnectNum());
+            flowReceive.append(stat.getReceive()/1024);
+            flowSend.append(stat.getSend()/1024);
+            flowPackNum.append(stat.getPackNum());
+            if (i!=GlobalStat.STATS.size()-1){
+                flowType.append(",");
+                flowConnectNum.append(",");
+                flowReceive.append(",");
+                flowSend.append(",");
+                flowPackNum.append(",");
+            }
+        }
+        data.put("flowType",flowType);
+        data.put("flowConnectNum",flowConnectNum);
+        data.put("flowReceive",flowReceive);
+        data.put("flowSend",flowSend);
+        data.put("flowPackNum",flowPackNum);
         response.sendTemplate("/index.ftl", data);
     }
 
@@ -60,7 +88,7 @@ public class IndexController {
 
     @GET("/set/tips")
     public JsonResult addTips(String tips) {
-        HpServerHandler.tips=tips;
+        HpServerHandler.tips = tips;
         return JsonResult.ok(HpServerHandler.tips);
     }
 
