@@ -20,10 +20,6 @@
         </dependency>
         <dependency>
             <groupId>cn.hserver</groupId>
-            <artifactId>hserver</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cn.hserver</groupId>
             <artifactId>hserver-plugin-web</artifactId>
         </dependency>
         <dependency>
