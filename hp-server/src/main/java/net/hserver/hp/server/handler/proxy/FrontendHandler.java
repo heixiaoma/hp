@@ -1,5 +1,6 @@
 package net.hserver.hp.server.handler.proxy;
 
+import cn.hserver.core.server.util.NamedThreadFactory;
 import cn.hserver.plugin.web.handlers.BuildResponse;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
@@ -16,7 +17,7 @@ import net.hserver.hp.server.utils.FileUtil;
 import static net.hserver.hp.server.utils.FileUtil.readFile;
 
 public class FrontendHandler extends ChannelInboundHandlerAdapter {
-    public static final EventLoopGroup backendWorkerGroup = new NioEventLoopGroup();
+    public static final EventLoopGroup backendWorkerGroup = new NioEventLoopGroup(50,new NamedThreadFactory("WebBackendWorkerGroup"));
 
     private Channel outboundChannel;
 

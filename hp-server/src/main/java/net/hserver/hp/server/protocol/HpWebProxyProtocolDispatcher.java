@@ -1,5 +1,6 @@
 package net.hserver.hp.server.protocol;
 
+import cn.hserver.plugin.web.context.WebConstConfig;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpObjectAggregator;
@@ -35,7 +36,7 @@ public class HpWebProxyProtocolDispatcher implements ProtocolDispatcherAdapter {
         ChannelPipeline pipeline = ctx.pipeline();
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(Integer.MAX_VALUE));
-        pipeline.addLast(new FrontendHandler());
+        pipeline.addLast(WebConstConfig.BUSINESS_EVENT,new FrontendHandler());
 
     }
 
