@@ -77,7 +77,7 @@ public class HpClientHandler extends HpCommonHandler {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         channelGroup.close();
-        callMsg.message("与HP服务器的连接断开，请重新启动！");
+        callMsg.message("与HP服务器断开了连接");
     }
     /**
      * if Message.getType() == HpMessageType.REGISTER_RESULT

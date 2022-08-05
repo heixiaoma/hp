@@ -1,16 +1,20 @@
 package net.hserver.hp.server.controller;
 
+import cn.hserver.HServerApplication;
 import cn.hserver.plugin.web.annotation.Controller;
 import cn.hserver.plugin.web.annotation.GET;
 import cn.hserver.plugin.web.annotation.POST;
 import cn.hserver.plugin.web.context.PartFile;
 import cn.hserver.plugin.web.interfaces.HttpRequest;
 import cn.hserver.plugin.web.interfaces.HttpResponse;
+import cn.hserver.plugin.web.interfaces.ProgressStatus;
 import net.hserver.hp.server.domian.entity.AppEntity;
 import net.hserver.hp.server.service.AppService;
 import org.beetl.sql.core.page.PageResult;
 import cn.hserver.core.ioc.annotation.Autowired;
 import cn.hserver.core.server.util.JsonResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +26,7 @@ import java.util.Map;
  */
 @Controller
 public class AppController {
+    private static final Logger log = LoggerFactory.getLogger(AppController.class);
 
     @Autowired
     private AppService appService;
@@ -60,8 +65,23 @@ public class AppController {
     }
 
     @GET("/app/download")
-    public void download(HttpResponse response) {
-        response.setDownloadFile(new File("./hp-client.apk"));
+    public void download(HttpResponse response,HttpRequest request) throws Exception {
+        File file = new File("./hp-client.apk");
+        response.setDownloadBigFile(file, new ProgressStatus() {
+            @Override
+            public void operationComplete(String s) {
+                log.info("下载完成");
+            }
+
+            @Override
+            public void downloading(long progress, long total) {
+                if (total < 0) {
+                    log.warn("file {} transfer progress: {}", file.getName(), progress);
+                } else {
+                    log.debug("file {} transfer progress: {}/{}", file.getName(), progress, total);
+                }
+            }
+        },request.getCtx());
     }
 
     @GET("/app/remove")
