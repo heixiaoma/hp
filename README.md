@@ -26,11 +26,16 @@ java -jar hp-server.jar
 ```properties
 #9090内网穿透端口数据传输和web管理后台都是这个端口
 #80将外界http数据代理到用户端口上
+#内网穿透端口和web管理后台都是这个端口
 ports=9090,80
 #提示域名，没有域名写IP也可以
 host=ksweb.club
 #后台密码
 password=123456
+#关闭Epoll hserver默认开启得 要关闭 epoll下有问题
+epoll=false
+# 所有得链接使用得线程池配置
+web.businessPool=100
 ```
 
 ### 客户端启动
