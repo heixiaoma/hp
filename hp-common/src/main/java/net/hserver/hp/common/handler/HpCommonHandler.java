@@ -28,6 +28,7 @@ public abstract class HpCommonHandler extends SimpleChannelInboundHandler<HpMess
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         System.out.println("Exception caught ...");
         cause.printStackTrace();
+        ctx.close();
     }
 
     @Override

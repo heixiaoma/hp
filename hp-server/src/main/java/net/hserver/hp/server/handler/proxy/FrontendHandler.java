@@ -1,11 +1,9 @@
 package net.hserver.hp.server.handler.proxy;
 
-import cn.hserver.core.server.util.NamedThreadFactory;
 import cn.hserver.plugin.web.handlers.BuildResponse;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpClientCodec;
@@ -14,10 +12,11 @@ import io.netty.handler.codec.http.HttpRequest;
 import net.hserver.hp.server.handler.HpServerHandler;
 import net.hserver.hp.server.utils.FileUtil;
 
+import java.util.Objects;
+
 import static net.hserver.hp.server.utils.FileUtil.readFile;
 
 public class FrontendHandler extends ChannelInboundHandlerAdapter {
-    public static final EventLoopGroup backendWorkerGroup = new NioEventLoopGroup(50,new NamedThreadFactory("WebBackendWorkerGroup"));
 
     private Channel outboundChannel;
 
@@ -45,7 +44,8 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
              * host为空直接断开
              */
             if (host == null) {
-                ctx.writeAndFlush(BuildResponse.buildString(readFile(FileUtil.class.getResourceAsStream("/static/tmp.html"))));
+                ctx.writeAndFlush(BuildResponse.buildString(Objects.requireNonNull(readFile(FileUtil.class.getResourceAsStream("/static/tmp.html")))));
+                closeOnFlush(ctx.channel());
                 return;
             }
             //提取用户名，约定二级域名就是用户的账号
@@ -59,14 +59,15 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
             });
             //如果为负说明用户不存在，将他删除掉
             if (userPort[0] == -1) {
-                ctx.writeAndFlush(BuildResponse.buildString(readFile(FileUtil.class.getResourceAsStream("/static/tmp.html"))));
+                ctx.writeAndFlush(BuildResponse.buildString(Objects.requireNonNull(readFile(FileUtil.class.getResourceAsStream("/static/tmp.html")))));
+                closeOnFlush(ctx.channel());
                 return;
             }
 
             final Channel inboundChannel = ctx.channel();
 
             Bootstrap b = new Bootstrap();
-            b.group(backendWorkerGroup);
+            b.group(ctx.channel().eventLoop());
             b.channel(NioSocketChannel.class).handler(new ChannelInitializer<Channel>() {
                 @Override
                 protected void initChannel(Channel ch) {

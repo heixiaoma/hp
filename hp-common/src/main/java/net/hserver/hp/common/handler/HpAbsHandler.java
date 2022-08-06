@@ -26,8 +26,9 @@ public class HpAbsHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        System.out.println("Exception caught ...");
+        System.out.println("Exception caught ......");
         cause.printStackTrace();
+        ctx.close();
     }
 
     @Override
