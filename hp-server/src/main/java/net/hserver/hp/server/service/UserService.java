@@ -44,7 +44,7 @@ public interface UserService {
      * @param pageSize
      * @return
      */
-    PageResult<UserVo> list(Integer page, Integer pageSize);
+    PageResult<UserVo> list(Integer page, Integer pageSize,String username);
 
     /**
      * 编辑用户
@@ -54,6 +54,12 @@ public interface UserService {
      * @param ports
      */
     void editUser(String username, String password, String ports,Integer type);
+
+    /**
+     * 更新登录时间
+     * @param username
+     */
+    void updateLogin(String username,String ip);
 
     /**
      * 添加用户

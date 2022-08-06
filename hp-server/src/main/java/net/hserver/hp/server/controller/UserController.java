@@ -23,17 +23,22 @@ public class UserController {
     private UserService userService;
 
     @GET("/user")
-    public void index(Integer page, HttpResponse response) {
+    public void index(Integer page, HttpResponse response, String username) {
         if (page == null) {
             page = 1;
         }
-        PageResult<UserVo> list = userService.list(page, 10);
+        if (username == null) {
+            username = "";
+        }
+
+        PageResult<UserVo> list = userService.list(page, 10, username);
         Map<String, Object> data = new HashMap<>(5);
         data.put("page", page);
         data.put("pageSize", 10);
         data.put("totalRow", list.getTotalRow());
         data.put("list", list.getList());
         data.put("totalPage", list.getTotalPage());
+        data.put("username", username);
         response.sendTemplate("/user.ftl", data);
     }
 
@@ -65,11 +70,11 @@ public class UserController {
 
 
     @POST("/user/edit")
-    public void edit(Integer page, HttpResponse response, String username, String password, String ports,Integer type) {
+    public void edit(Integer page, HttpResponse response, String username, String password, String ports, Integer type) {
         if (username != null) {
-            userService.editUser(username, password, ports,type);
+            userService.editUser(username, password, ports, type);
         }
-        index(page, response);
+        index(page, response, null);
     }
 
     @POST("/user/add")
@@ -77,7 +82,7 @@ public class UserController {
         if (username != null) {
             userService.addUser(username, password, ports);
         }
-        index(page, response);
+        index(page, response, null);
     }
 
     @GET("/user/remove")
@@ -85,6 +90,6 @@ public class UserController {
         if (username != null) {
             userService.remove(username);
         }
-        index(page, response);
+        index(page, response, null);
     }
 }

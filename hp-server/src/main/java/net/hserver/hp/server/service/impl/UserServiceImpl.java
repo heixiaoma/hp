@@ -11,6 +11,7 @@ import net.hserver.hp.server.utils.DateUtil;
 import org.beetl.sql.core.page.PageResult;
 import cn.hserver.core.ioc.annotation.Autowired;
 import cn.hserver.core.ioc.annotation.Bean;
+import org.beetl.sql.core.query.LambdaQuery;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,11 +69,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageResult<UserVo> list(Integer page, Integer pageSize) {
-        PageResult<UserVo> page1 = userDao.createLambdaQuery().orderBy("create_time desc").page(page, pageSize, UserVo.class);
+    public PageResult<UserVo> list(Integer page, Integer pageSize,String username) {
+        LambdaQuery<UserEntity> lambdaQuery = userDao.createLambdaQuery();
+        if (username!=null&&username.trim().length()>0){
+            lambdaQuery.andLike(UserEntity::getUsername,"%"+username+"%");
+        }
+        PageResult<UserVo> page1 = lambdaQuery.orderBy("create_time desc").page(page, pageSize, UserVo.class);
         List<UserVo> list = page1.getList();
         for (UserVo userVo : list) {
+            userVo.setLoginIp(userVo.getLoginIp()==null?"":userVo.getLoginIp());
             userVo.setCreateTime(DateUtil.stampToDate(userVo.getCreateTime()));
+            userVo.setLoginTime(DateUtil.stampToDate(userVo.getLoginTime()));
             List<PortEntity> select = getPort(userVo.getId());
             List<Integer> ports = new ArrayList<>();
             for (PortEntity portEntity : select) {
@@ -81,6 +88,11 @@ public class UserServiceImpl implements UserService {
             userVo.setPorts(ports);
         }
         return page1;
+    }
+
+    @Override
+    public void updateLogin(String username,String ip) {
+        userDao.updateLogin(String.valueOf(System.currentTimeMillis()),ip, username);
     }
 
     @Override

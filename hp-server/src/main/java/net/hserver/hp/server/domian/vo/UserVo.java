@@ -13,11 +13,24 @@ public class UserVo {
 
     private String password;
 
+    //-1 封号
     private Integer type;
 
     private List<Integer> ports;
 
     private String createTime;
+
+    private String loginTime;
+
+    private String loginIp;
+
+    public String getLoginTime() {
+        return loginTime;
+    }
+
+    public void setLoginTime(String loginTime) {
+        this.loginTime = loginTime;
+    }
 
     public String getUsername() {
         return username;
@@ -66,6 +79,14 @@ public class UserVo {
 
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
+    }
+
+    public String getLoginIp() {
+        return loginIp;
+    }
+
+    public void setLoginIp(String loginIp) {
+        this.loginIp = loginIp;
     }
 
     @Override

@@ -7,6 +7,20 @@
                 onclick="new mdui.Dialog('#addUser').open()">
             添加
         </button>
+
+        <div style="display: flex">
+            <div class="mdui-textfield" style="width: 100px">
+                <label class="mdui-textfield-label">用戶名</label>
+                <input class="mdui-textfield-input" id="username" name="username" type="text" value="${username}"/>
+            </div>
+            <div style="margin-top: 35px;margin-left: 10px">
+                <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-purple-accent mdui-ripple"
+                        id="selectButton">
+                    查询
+                </button>
+            </div>
+        </div>
+
     </div>
 
     <div class="mdui-table-fluid">
@@ -16,6 +30,8 @@
                 <th>用户名</th>
                 <th>密码</th>
                 <th>开通端口</th>
+                <th>最近登录IP</th>
+                <th>最近登录时间</th>
                 <th>创建时间</th>
                 <th>账号类型</th>
                 <th>操作</th>
@@ -60,13 +76,15 @@
                                 ${port?c} &nbsp;
                             </#list>
                         </td>
+                        <td>${userVo.loginIp}</td>
+                        <td>${userVo.loginTime}</td>
                         <td>${userVo.createTime}</td>
                         <td>
-                          <#if userVo.type==-1>
-                              封号(${userVo.type})
-                           <#else>
-                               正常(${userVo.type})
-                          </#if>
+                            <#if userVo.type==-1>
+                                封号(${userVo.type})
+                            <#else>
+                                正常(${userVo.type})
+                            </#if>
                         </td>
                         <td>
                             <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-purple-accent mdui-ripple"
@@ -112,6 +130,7 @@
 </div>
 <script>
     var pageConst = ${page?c};
+    var username = "${username}";
     $('#box').paging({
         initPageNo: ${page?c}, // 初始页码
         totalPages: ${totalPage?c}, //总页数
@@ -119,7 +138,7 @@
         jump: true, //是否支持跳转
         callback: function (page) { // 回调函数
             if (pageConst != page) {
-                location.href = "/user?page=" + page;
+                location.href = "/user?page=" + page + "&username=" + username;
             }
             console.log(page)
         }
@@ -128,6 +147,10 @@
 
     var tab = new mdui.Tab('#example4-tab');
 
+
+    $("#selectButton").click(function () {
+        location.href = "/user?page=1&username=" + $("#username").val();
+    })
 
 </script>
 </body>

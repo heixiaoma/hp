@@ -1,6 +1,5 @@
 package net.hserver.hp.server.controller;
 
-import cn.hserver.HServerApplication;
 import cn.hserver.plugin.web.annotation.Controller;
 import cn.hserver.plugin.web.annotation.GET;
 import cn.hserver.plugin.web.annotation.POST;
