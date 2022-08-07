@@ -32,64 +32,64 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
             outboundChannel.writeAndFlush(msg);
         } else {
             closeOnFlush(ctx.channel());
+            ReferenceCountUtil.release(msg);
         }
     }
 
     @Override
     public void channelRead(final ChannelHandlerContext ctx, Object msg) {
-        try {
-            if (outboundChannel == null) {
-                HttpRequest httpRequest = (HttpRequest) msg;
-                String host = httpRequest.headers().get("Host");
-                /**
-                 * host为空直接断开
-                 */
-                if (host == null) {
-                    ctx.writeAndFlush(BuildResponse.buildString(Objects.requireNonNull(readFile(FileUtil.class.getResourceAsStream("/static/tmp.html")))));
-                    closeOnFlush(ctx.channel());
-                    return;
-                }
-                //提取用户名，约定二级域名就是用户的账号
-                String[] split = host.split("\\.");
-                String username = split[0];
-                final Integer[] userPort = {-1};
-                HpServerHandler.CURRENT_STATUS.forEach((k, v) -> {
-                    if (v.getUsername().equals(username)) {
-                        userPort[0] = Integer.parseInt(k);
-                    }
-                });
-                //如果为负说明用户不存在，将他删除掉
-                if (userPort[0] == -1) {
-                    ctx.writeAndFlush(BuildResponse.buildString(Objects.requireNonNull(readFile(FileUtil.class.getResourceAsStream("/static/tmp.html")))));
-                    closeOnFlush(ctx.channel());
-                    return;
-                }
 
-                final Channel inboundChannel = ctx.channel();
-
-                Bootstrap b = new Bootstrap();
-                b.group(ctx.channel().eventLoop());
-                b.channel(NioSocketChannel.class).handler(new ChannelInitializer<Channel>() {
-                    @Override
-                    protected void initChannel(Channel ch) {
-                        ch.pipeline().addLast(new HttpClientCodec(), new HttpObjectAggregator(Integer.MAX_VALUE));
-                        ch.pipeline().addLast(new BackendHandler(inboundChannel));
-                    }
-                });
-                ChannelFuture f = b.connect("127.0.0.1", userPort[0]).addListener((ChannelFutureListener) future -> {
-                    if (future.isSuccess()) {
-                        future.channel().writeAndFlush(msg);
-                    } else {
-                        future.channel().close();
-                    }
-                });
-                outboundChannel = f.channel();
-            } else {
-                read(ctx, msg);
+        if (outboundChannel == null) {
+            HttpRequest httpRequest = (HttpRequest) msg;
+            String host = httpRequest.headers().get("Host");
+            /**
+             * host为空直接断开
+             */
+            if (host == null) {
+                ctx.writeAndFlush(BuildResponse.buildString(Objects.requireNonNull(readFile(FileUtil.class.getResourceAsStream("/static/tmp.html")))));
+                closeOnFlush(ctx.channel());
+                return;
             }
-        } finally {
-            ReferenceCountUtil.release(msg);
+            //提取用户名，约定二级域名就是用户的账号
+            String[] split = host.split("\\.");
+            String username = split[0];
+            final Integer[] userPort = {-1};
+            HpServerHandler.CURRENT_STATUS.forEach((k, v) -> {
+                if (v.getUsername().equals(username)) {
+                    userPort[0] = Integer.parseInt(k);
+                }
+            });
+            //如果为负说明用户不存在，将他删除掉
+            if (userPort[0] == -1) {
+                ctx.writeAndFlush(BuildResponse.buildString(Objects.requireNonNull(readFile(FileUtil.class.getResourceAsStream("/static/tmp.html")))));
+                closeOnFlush(ctx.channel());
+                return;
+            }
+
+            final Channel inboundChannel = ctx.channel();
+
+            Bootstrap b = new Bootstrap();
+            b.group(ctx.channel().eventLoop());
+            b.channel(NioSocketChannel.class).handler(new ChannelInitializer<Channel>() {
+                @Override
+                protected void initChannel(Channel ch) {
+                    ch.pipeline().addLast(new HttpClientCodec(), new HttpObjectAggregator(Integer.MAX_VALUE));
+                    ch.pipeline().addLast(new BackendHandler(inboundChannel));
+                }
+            });
+            ChannelFuture f = b.connect("127.0.0.1", userPort[0]).addListener((ChannelFutureListener) future -> {
+                if (future.isSuccess()) {
+                    future.channel().writeAndFlush(msg);
+                } else {
+                    future.channel().close();
+//                    ReferenceCountUtil.release(msg);
+                }
+            });
+            outboundChannel = f.channel();
+        } else {
+            read(ctx, msg);
         }
+
     }
 
     @Override
