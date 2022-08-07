@@ -48,6 +48,7 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
             if (host == null) {
                 ctx.writeAndFlush(BuildResponse.buildString(Objects.requireNonNull(readFile(FileUtil.class.getResourceAsStream("/static/tmp.html")))));
                 closeOnFlush(ctx.channel());
+                ReferenceCountUtil.release(msg);
                 return;
             }
             //提取用户名，约定二级域名就是用户的账号
@@ -63,6 +64,7 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
             if (userPort[0] == -1) {
                 ctx.writeAndFlush(BuildResponse.buildString(Objects.requireNonNull(readFile(FileUtil.class.getResourceAsStream("/static/tmp.html")))));
                 closeOnFlush(ctx.channel());
+                ReferenceCountUtil.release(msg);
                 return;
             }
 
@@ -82,7 +84,7 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
                     future.channel().writeAndFlush(msg);
                 } else {
                     future.channel().close();
-//                    ReferenceCountUtil.release(msg);
+                    ReferenceCountUtil.release(msg);
                 }
             });
             outboundChannel = f.channel();
