@@ -15,7 +15,7 @@ import java.net.InetSocketAddress;
 /**
  * 优先级要调整到自己的管理后台http协议的之上，都是http协议，所以这里需要判断是否是80
  */
-@Order(1)
+@Order(0)
 @Bean
 public class HpWebProxyProtocolDispatcher implements ProtocolDispatcherAdapter {
 
