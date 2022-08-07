@@ -1,6 +1,7 @@
 package net.hserver.hp.server.handler;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.ReferenceCountUtil;
 import net.hserver.hp.common.handler.HpAbsHandler;
 import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessage;
@@ -45,14 +46,18 @@ public class RemoteProxyHandler extends HpAbsHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        byte[] data = (byte[]) msg;
-        tcpServer.addPackNum();
-        HpMessage message = new HpMessage();
-        message.setType(HpMessageType.DATA);
-        message.setData(data);
-        HashMap<String, Object> metaData = new HashMap<>();
-        metaData.put("channelId", ctx.channel().id().asLongText());
-        message.setMetaData(metaData);
-        proxyHandler.getCtx().writeAndFlush(message);
+        try {
+            byte[] data = (byte[]) msg;
+            tcpServer.addPackNum();
+            HpMessage message = new HpMessage();
+            message.setType(HpMessageType.DATA);
+            message.setData(data);
+            HashMap<String, Object> metaData = new HashMap<>();
+            metaData.put("channelId", ctx.channel().id().asLongText());
+            message.setMetaData(metaData);
+            proxyHandler.getCtx().writeAndFlush(message);
+        }finally {
+            ReferenceCountUtil.release(msg);
+        }
     }
 }

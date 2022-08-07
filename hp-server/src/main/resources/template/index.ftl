@@ -91,51 +91,91 @@
     var app = {};
 
     var option;
-
+    const dateList = [${flowType}]
+    const flowSend = [${flowSend}]
+    const flowReceive = [${flowReceive}]
     option = {
-        title: {
-            text: '流量图'
-        },
+        // Make gradient line here
+        visualMap: [
+            {
+                show: false,
+                type: 'continuous',
+                seriesIndex: 0,
+                min: 0,
+                max: 400
+            },
+            {
+                show: false,
+                type: 'continuous',
+                seriesIndex: 1,
+                dimension: 0,
+                min: 0,
+                max: dateList.length - 1
+            }
+        ],
+        title: [
+            {
+                left: 'center',
+                text: '入网'
+            },
+            {
+                top: '55%',
+                left: 'center',
+                text: '出网'
+            }
+        ],
         tooltip: {
             trigger: 'axis'
         },
-        toolbox: {
-            feature: {
-                saveAsImage: {}
+        xAxis: [
+            {
+                data: dateList
+            },
+            {
+                data: dateList,
+                gridIndex: 1
             }
-        },
-        legend: {
-            data: ['入网', '出网']
-        },
-        xAxis: {
-            type: 'category',
-            data: [${flowType}]
-        },
-        yAxis:  {
-            show: true,
-            type: 'value',
-            boundaryGap: ['0%', '20%'],
-            //添加单位$
-            axisLabel: {
-                formatter: '{value}/KB'
+        ],
+        yAxis: [
+            {
+                axisLabel: {
+                    formatter: '{value}/KB'
+                }
+            },
+            {
+                gridIndex: 1,
+                axisLabel: {
+                    formatter: '{value}/KB'
+                }
             }
-        },
+        ],
+        grid: [
+            {
+                bottom: '60%'
+            },
+            {
+                top: '60%'
+            }
+        ],
         series: [
             {
-                data: [${flowSend}],
                 type: 'line',
+                showSymbol: false,
+                data: flowSend,
                 smooth: true,
                 name: '入网',
                 stack: 'Total',
-
             },
             {
-                data: [${flowReceive}],
+                showSymbol: false,
                 type: 'line',
                 smooth: true,
                 name: '出网',
                 stack: 'Total',
-            },
+                data: flowReceive,
+                xAxisIndex: 1,
+                yAxisIndex: 1
+            }
         ]
     };
 
