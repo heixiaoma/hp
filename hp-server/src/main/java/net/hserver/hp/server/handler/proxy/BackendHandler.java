@@ -5,6 +5,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpObject;
 
 public class BackendHandler extends ChannelInboundHandlerAdapter {
 
@@ -16,9 +17,8 @@ public class BackendHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(final ChannelHandlerContext ctx, Object msg) {
-        if (msg instanceof FullHttpResponse) {
-            FullHttpResponse httpResponse = (FullHttpResponse) msg;
-            inboundChannel.writeAndFlush(httpResponse);
+        if (msg instanceof HttpObject) {
+            inboundChannel.writeAndFlush(msg);
         } else {
             ctx.channel().close();
         }

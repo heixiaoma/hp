@@ -9,6 +9,7 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.util.ReferenceCountUtil;
 import net.hserver.hp.server.handler.HpServerHandler;
 import net.hserver.hp.server.utils.FileUtil;
@@ -75,7 +76,7 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
             b.channel(NioSocketChannel.class).handler(new ChannelInitializer<Channel>() {
                 @Override
                 protected void initChannel(Channel ch) {
-                    ch.pipeline().addLast(new HttpClientCodec(), new HttpObjectAggregator(Integer.MAX_VALUE));
+                    ch.pipeline().addLast(new HttpClientCodec(),new ChunkedWriteHandler());
                     ch.pipeline().addLast(new BackendHandler(inboundChannel));
                 }
             });
