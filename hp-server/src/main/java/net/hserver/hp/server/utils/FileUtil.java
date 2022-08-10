@@ -24,7 +24,7 @@ public class FileUtil {
     }
 
 
-    public static String readFile(InputStream is) {
+    public static String readFile(InputStream is) throws IOException {
         try {
             InputStreamReader inputStreamReader = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(inputStreamReader);
@@ -39,6 +39,8 @@ public class FileUtil {
             return s;
         } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            is.close();
         }
         return null;
     }

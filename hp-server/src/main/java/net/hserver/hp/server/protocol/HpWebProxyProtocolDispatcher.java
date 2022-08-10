@@ -6,6 +6,7 @@ import cn.hserver.core.server.util.protocol.HostUtil;
 import cn.hserver.plugin.web.annotation.POST;
 import cn.hserver.plugin.web.context.WebConstConfig;
 import cn.hserver.plugin.web.handlers.BuildResponse;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpObjectAggregator;
@@ -16,6 +17,7 @@ import net.hserver.hp.server.handler.proxy.FrontendHandler;
 import cn.hserver.core.interfaces.ProtocolDispatcherAdapter;
 import cn.hserver.core.ioc.annotation.Bean;
 import cn.hserver.core.ioc.annotation.Order;
+import net.hserver.hp.server.handler.proxy.RouterHandler;
 import net.hserver.hp.server.utils.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,18 +53,28 @@ public class HpWebProxyProtocolDispatcher implements ProtocolDispatcherAdapter {
                         }
                     });
                     if (userPort[0] == -1) {
-                        ctx.writeAndFlush(BuildResponse.buildString(Objects.requireNonNull(readFile(FileUtil.class.getResourceAsStream("/static/tmp.html")))));
-                        return false;
+                        addErrorHandler(channelPipeline, RouterHandler.ERROR.OFF_LINE);
+                        return true;
                     }
-
-                    channelPipeline.addLast(WebConstConfig.BUSINESS_EVENT, new FrontendHandler(userPort[0]));
+                    addProxyHandler(channelPipeline,userPort[0]);
                     return true;
                 }
             } catch (Exception e) {
                 log.error(ExceptionUtil.getMessage(e));
-                return false;
+                addErrorHandler(channelPipeline, RouterHandler.ERROR.ERROR);
+                return true;
             }
         }
         return false;
     }
+
+    public void addErrorHandler(ChannelPipeline pipeline, RouterHandler.ERROR error) {
+        pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new HttpServerCodec());
+        pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new RouterHandler(error));
+    }
+
+    public void addProxyHandler(ChannelPipeline pipeline,Integer port) {
+        pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new FrontendHandler(port));
+    }
+
 }
