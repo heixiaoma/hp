@@ -16,14 +16,14 @@ public class RouterHandler extends SimpleChannelInboundHandler<HttpRequest> {
     private final ERROR error;
 
     public RouterHandler(ERROR error) {
-        this.error=error;
+        this.error = error;
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HttpRequest request) throws Exception {
-        if (error==ERROR.ERROR){
+        if (error == ERROR.ERROR) {
             ctx.writeAndFlush(BuildResponse.buildString(Objects.requireNonNull(readFile(FileUtil.class.getResourceAsStream("/static/tmp.html")))));
-        }else {
+        } else {
             ctx.writeAndFlush(BuildResponse.buildString(Objects.requireNonNull(readFile(FileUtil.class.getResourceAsStream("/static/tmp.html")))));
         }
     }
@@ -37,7 +37,7 @@ public class RouterHandler extends SimpleChannelInboundHandler<HttpRequest> {
         BuildResponse.writeException(ctx, cause);
     }
 
-    public enum ERROR{
+    public enum ERROR {
         OFF_LINE,
         ERROR
     }

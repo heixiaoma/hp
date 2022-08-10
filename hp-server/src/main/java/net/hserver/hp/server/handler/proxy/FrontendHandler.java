@@ -41,8 +41,14 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(final ChannelHandlerContext ctx, Object msg) {
-        if (outboundChannel != null && outboundChannel.isActive()) {
-            write(ctx, msg);
+        if (outboundChannel != null) {
+            if (outboundChannel.isActive()) {
+                write(ctx, msg);
+            } else {
+                outboundChannel.close();
+                outboundChannel = null;
+                ReferenceCountUtil.release(msg);
+            }
         } else {
             final Channel inboundChannel = ctx.channel();
             Bootstrap b = new Bootstrap();

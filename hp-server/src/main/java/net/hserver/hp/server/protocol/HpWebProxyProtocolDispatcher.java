@@ -3,6 +3,8 @@ package net.hserver.hp.server.protocol;
 import cn.hserver.HServerApplication;
 import cn.hserver.core.server.util.ExceptionUtil;
 import cn.hserver.core.server.util.protocol.HostUtil;
+import cn.hserver.core.server.util.protocol.ProtocolUtil;
+import cn.hserver.core.server.util.protocol.SSLUtils;
 import cn.hserver.plugin.web.annotation.POST;
 import cn.hserver.plugin.web.context.WebConstConfig;
 import cn.hserver.plugin.web.handlers.BuildResponse;
@@ -43,6 +45,7 @@ public class HpWebProxyProtocolDispatcher implements ProtocolDispatcherAdapter {
         if (socketAddress.getPort() == 80 || socketAddress.getPort() == 443 || socketAddress.getPort() == 8443) {
             try {
                 String host = HostUtil.getHost(ByteBuffer.wrap(headers));
+                log.debug("version:{},host:{}", SSLUtils.verifyPacket(ByteBuffer.wrap(headers)), host);
                 if (host != null) {
                     final Integer[] userPort = {-1};
                     String[] split = host.split("\\.");
@@ -54,15 +57,14 @@ public class HpWebProxyProtocolDispatcher implements ProtocolDispatcherAdapter {
                     });
                     if (userPort[0] == -1) {
                         addErrorHandler(channelPipeline, RouterHandler.ERROR.OFF_LINE);
-                        return true;
+                    } else {
+                        addProxyHandler(channelPipeline, userPort[0]);
                     }
-                    addProxyHandler(channelPipeline,userPort[0]);
                     return true;
                 }
             } catch (Exception e) {
                 log.error(ExceptionUtil.getMessage(e));
-                addErrorHandler(channelPipeline, RouterHandler.ERROR.ERROR);
-                return true;
+                return false;
             }
         }
         return false;
@@ -73,7 +75,7 @@ public class HpWebProxyProtocolDispatcher implements ProtocolDispatcherAdapter {
         pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new RouterHandler(error));
     }
 
-    public void addProxyHandler(ChannelPipeline pipeline,Integer port) {
+    public void addProxyHandler(ChannelPipeline pipeline, Integer port) {
         pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new FrontendHandler(port));
     }
 
