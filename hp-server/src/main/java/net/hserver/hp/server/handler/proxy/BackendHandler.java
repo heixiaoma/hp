@@ -6,6 +6,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpObject;
+import io.netty.util.ReferenceCountUtil;
 
 public class BackendHandler extends ChannelInboundHandlerAdapter {
 
@@ -16,12 +17,20 @@ public class BackendHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
+    public void channelActive(ChannelHandlerContext ctx) {
+        ctx.read();
+    }
+
+    @Override
     public void channelRead(final ChannelHandlerContext ctx, Object msg) {
-        if (msg instanceof HttpObject) {
-            inboundChannel.writeAndFlush(msg);
-        } else {
-            ctx.channel().close();
-        }
+        inboundChannel.writeAndFlush(msg).addListener((ChannelFutureListener) future -> {
+            if (future.isSuccess()) {
+                ctx.channel().read();
+            } else {
+                future.channel().close();
+                ReferenceCountUtil.release(msg);
+            }
+        });
     }
 
     @Override

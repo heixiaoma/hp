@@ -1,16 +1,30 @@
 package net.hserver.hp.server.protocol;
 
+import cn.hserver.HServerApplication;
+import cn.hserver.core.server.util.ExceptionUtil;
+import cn.hserver.core.server.util.protocol.HostUtil;
+import cn.hserver.plugin.web.annotation.POST;
 import cn.hserver.plugin.web.context.WebConstConfig;
+import cn.hserver.plugin.web.handlers.BuildResponse;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.util.ReferenceCountUtil;
+import net.hserver.hp.server.handler.HpServerHandler;
 import net.hserver.hp.server.handler.proxy.FrontendHandler;
 import cn.hserver.core.interfaces.ProtocolDispatcherAdapter;
 import cn.hserver.core.ioc.annotation.Bean;
 import cn.hserver.core.ioc.annotation.Order;
+import net.hserver.hp.server.utils.FileUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.util.Objects;
+
+import static net.hserver.hp.server.utils.FileUtil.readFile;
 
 /**
  * 优先级要调整到自己的管理后台http协议的之上，都是http协议，所以这里需要判断是否是80
@@ -18,30 +32,37 @@ import java.net.InetSocketAddress;
 @Order(0)
 @Bean
 public class HpWebProxyProtocolDispatcher implements ProtocolDispatcherAdapter {
+    private static final Logger log = LoggerFactory.getLogger(HpWebProxyProtocolDispatcher.class);
 
     //判断HP头
     @Override
     public boolean dispatcher(ChannelHandlerContext ctx, ChannelPipeline channelPipeline, byte[] headers) {
         InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().localAddress();
-        if (socketAddress.getPort() == 80) {
-            if (this.isHttp(headers[0], headers[1])) {
-                httpProxyHandler(ctx);
-                return true;
+        if (socketAddress.getPort() == 80 || socketAddress.getPort() == 443 || socketAddress.getPort() == 8443) {
+            try {
+                String host = HostUtil.getHost(ByteBuffer.wrap(headers));
+                if (host != null) {
+                    final Integer[] userPort = {-1};
+                    String[] split = host.split("\\.");
+                    String username = split[0];
+                    HpServerHandler.CURRENT_STATUS.forEach((k, v) -> {
+                        if (v.getUsername().equals(username)) {
+                            userPort[0] = Integer.parseInt(k);
+                        }
+                    });
+                    if (userPort[0] == -1) {
+                        ctx.writeAndFlush(BuildResponse.buildString(Objects.requireNonNull(readFile(FileUtil.class.getResourceAsStream("/static/tmp.html")))));
+                        return false;
+                    }
+
+                    channelPipeline.addLast(WebConstConfig.BUSINESS_EVENT, new FrontendHandler(userPort[0]));
+                    return true;
+                }
+            } catch (Exception e) {
+                log.error(ExceptionUtil.getMessage(e));
+                return false;
             }
         }
         return false;
     }
-
-    public static void httpProxyHandler(ChannelHandlerContext ctx) {
-        ChannelPipeline pipeline = ctx.pipeline();
-        pipeline.addLast(new HttpServerCodec());
-        pipeline.addLast(new HttpObjectAggregator(Integer.MAX_VALUE));
-        pipeline.addLast(WebConstConfig.BUSINESS_EVENT,new FrontendHandler());
-
-    }
-
-    private boolean isHttp(int magic1, int magic2) {
-        return magic1 == 71 && magic2 == 69 || magic1 == 80 && magic2 == 79 || magic1 == 80 && magic2 == 85 || magic1 == 72 && magic2 == 69 || magic1 == 79 && magic2 == 80 || magic1 == 80 && magic2 == 65 || magic1 == 68 && magic2 == 69 || magic1 == 84 && magic2 == 82 || magic1 == 67 && magic2 == 79;
-    }
-
 }
