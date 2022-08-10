@@ -54,7 +54,7 @@ public class UserController {
                 return JsonResult.error("用户名已经存在请换一个");
             }
         }
-        return JsonResult.error("登录失败");
+        return JsonResult.error("注册失败");
     }
 
     @POST("/user/login")
@@ -62,10 +62,10 @@ public class UserController {
         if (username != null && password != null) {
             UserVo login = userService.login(username, password);
             if (login != null) {
-                return JsonResult.ok("登录成功").put("data", login);
+                return JsonResult.ok("登录成功.").put("data", login);
             }
         }
-        return JsonResult.error("登录失败");
+        return JsonResult.error("登录失败.请尝试重新注册");
     }
 
 
