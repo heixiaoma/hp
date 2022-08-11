@@ -46,18 +46,22 @@
                                 <div class="mdui-dialog-title">编辑</div>
                                 <div class="mdui-dialog-content">
                                     <div class="mdui-textfield">
+                                        <label class="mdui-textfield-label">用户名</label>
                                         <input class="mdui-textfield-input" name="username" readonly type="text"
                                                value="${userVo.username}"/>
                                     </div>
                                     <div class="mdui-textfield">
+                                        <label class="mdui-textfield-label">密码</label>
                                         <input class="mdui-textfield-input" name="password" type="text"
                                                value="${userVo.password}"/>
                                     </div>
                                     <div class="mdui-textfield">
+                                        <label class="mdui-textfield-label">类型：-1(封号) 1(正常) 2(待审核，目前也是正常后期放开)</label>
                                         <input class="mdui-textfield-input" name="type" type="text"
                                                value="${userVo.type}"/>
                                     </div>
                                     <div class="mdui-textfield">
+                                        <label class="mdui-textfield-label">TCP端口号固定 多个逗号隔开</label>
                                         <input class="mdui-textfield-input" name="ports" type="text"
                                                value="<#list userVo.ports as port>${port?c},</#list>"/>
                                     </div>

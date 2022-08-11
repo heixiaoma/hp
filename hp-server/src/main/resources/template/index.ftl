@@ -15,6 +15,7 @@
                     <thead>
                     <tr>
                         <th>用户名</th>
+                        <th>前往穿透</th>
                         <th>来源IP</th>
                         <th>连接时间</th>
                         <th>端口</th>
@@ -25,6 +26,7 @@
                         <#list statisticsData?keys as key>
                             <tr>
                                 <td>${statisticsData[key].username}</td>
+                                <td><a href="//${statisticsData[key].username}.${host}" target="_blank">访问${statisticsData[key].username}</a></td>
                                 <td>${statisticsData[key].ip}</td>
                                 <td>${statisticsData[key].date}</td>
                                 <td>${key}</td>

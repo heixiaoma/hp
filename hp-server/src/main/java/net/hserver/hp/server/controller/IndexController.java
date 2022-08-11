@@ -3,6 +3,7 @@ package net.hserver.hp.server.controller;
 import cn.hserver.plugin.web.annotation.Controller;
 import cn.hserver.plugin.web.annotation.GET;
 import cn.hserver.plugin.web.interfaces.HttpResponse;
+import net.hserver.hp.server.config.WebConfig;
 import net.hserver.hp.server.domian.bean.GlobalStat;
 import net.hserver.hp.server.domian.entity.AppEntity;
 import net.hserver.hp.server.domian.entity.StatisticsEntity;
@@ -25,6 +26,8 @@ import java.util.Map;
 public class IndexController {
 
     @Autowired
+    private WebConfig webConfig;
+    @Autowired
     private StatisticsService statisticsService;
 
     @GET("/")
@@ -39,6 +42,7 @@ public class IndexController {
         data.put("totalRow", list.getTotalRow());
         data.put("list", list.getList());
         data.put("totalPage", list.getTotalPage());
+        data.put("host", webConfig.getHost());
         data.put("statisticsSize", HpServerHandler.CURRENT_STATUS.size());
         data.put("statisticsData", HpServerHandler.CURRENT_STATUS);
 
