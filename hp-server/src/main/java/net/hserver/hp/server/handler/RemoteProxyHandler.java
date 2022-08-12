@@ -5,7 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
 import net.hserver.hp.common.handler.HpAbsHandler;
 import net.hserver.hp.common.handler.HpCommonHandler;
-import net.hserver.hp.common.protocol.HpMessageOuterClass;
+import net.hserver.hp.common.protocol.HpMessageData;
 
 /**
  * @author hxm
@@ -24,17 +24,17 @@ public class RemoteProxyHandler extends HpAbsHandler {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         tcpServer.addConnectNum();
-        HpMessageOuterClass.HpMessage.Builder messageBuilder = HpMessageOuterClass.HpMessage.newBuilder();
-        messageBuilder.setType(HpMessageOuterClass.HpMessage.HpMessageType.CONNECTED);
-        messageBuilder.setMetaData(HpMessageOuterClass.HpMessage.MetaData.newBuilder().setChannelId(ctx.channel().id().asLongText()).build());
+        HpMessageData.HpMessage.Builder messageBuilder = HpMessageData.HpMessage.newBuilder();
+        messageBuilder.setType(HpMessageData.HpMessage.HpMessageType.CONNECTED);
+        messageBuilder.setMetaData(HpMessageData.HpMessage.MetaData.newBuilder().setChannelId(ctx.channel().id().asLongText()).build());
         proxyHandler.getCtx().writeAndFlush(messageBuilder.build());
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        HpMessageOuterClass.HpMessage.Builder messageBuilder = HpMessageOuterClass.HpMessage.newBuilder();
-        messageBuilder.setType(HpMessageOuterClass.HpMessage.HpMessageType.DISCONNECTED);
-        messageBuilder.setMetaData(HpMessageOuterClass.HpMessage.MetaData.newBuilder().setChannelId(ctx.channel().id().asLongText()).build());
+        HpMessageData.HpMessage.Builder messageBuilder = HpMessageData.HpMessage.newBuilder();
+        messageBuilder.setType(HpMessageData.HpMessage.HpMessageType.DISCONNECTED);
+        messageBuilder.setMetaData(HpMessageData.HpMessage.MetaData.newBuilder().setChannelId(ctx.channel().id().asLongText()).build());
         proxyHandler.getCtx().writeAndFlush(messageBuilder.build());
     }
 
@@ -43,9 +43,9 @@ public class RemoteProxyHandler extends HpAbsHandler {
         try {
             byte[] data = (byte[]) msg;
             tcpServer.addPackNum();
-            HpMessageOuterClass.HpMessage.Builder messageBuilder = HpMessageOuterClass.HpMessage.newBuilder();
-            messageBuilder.setType(HpMessageOuterClass.HpMessage.HpMessageType.DATA);
-            messageBuilder.setMetaData(HpMessageOuterClass.HpMessage.MetaData.newBuilder().setChannelId(ctx.channel().id().asLongText()).build());
+            HpMessageData.HpMessage.Builder messageBuilder = HpMessageData.HpMessage.newBuilder();
+            messageBuilder.setType(HpMessageData.HpMessage.HpMessageType.DATA);
+            messageBuilder.setMetaData(HpMessageData.HpMessage.MetaData.newBuilder().setChannelId(ctx.channel().id().asLongText()).build());
             messageBuilder.setData(ByteString.copyFrom(data));
             proxyHandler.getCtx().writeAndFlush(messageBuilder.build());
         }finally {

@@ -18,7 +18,7 @@ func ClientHandleError(err error, when string) {
 }
 
 func IntToBytes(n int) []byte {
-	data := int64(n)
+	data := int8(n)
 	bytebuf := bytes.NewBuffer([]byte{})
 	binary.Write(bytebuf, binary.BigEndian, data)
 	return bytebuf.Bytes()
@@ -35,9 +35,9 @@ func main() {
 	//拨号远程地址，简历tcp连接
 	conn, err := net.Dial("tcp", "127.0.0.1:9091")
 	ClientHandleError(err, "client conn error")
-	//HpMessageOuterClass.HpMessage.Builder messageBuild = HpMessageOuterClass.HpMessage.newBuilder();
-	//messageBuild.setType(HpMessageOuterClass.HpMessage.HpMessageType.REGISTER);
-	//HpMessageOuterClass.HpMessage.MetaData.Builder metaDataBuild = HpMessageOuterClass.HpMessage.MetaData.newBuilder();
+	//HpMessageData.HpMessage.Builder messageBuild = HpMessageData.HpMessage.newBuilder();
+	//messageBuild.setType(HpMessageData.HpMessage.HpMessageType.REGISTER);
+	//HpMessageData.HpMessage.MetaData.Builder metaDataBuild = HpMessageData.HpMessage.MetaData.newBuilder();
 	//metaDataBuild.setPort(port);
 	//metaDataBuild.setUsername(username);
 	//metaDataBuild.setPassword(password);
@@ -52,6 +52,7 @@ func main() {
 		},
 	}
 	data, _ := proto.Marshal(message)
+	conn.Write(IntToBytes(len(data)))
 	conn.Write(data)
 	//buffer := make([]byte, 1024)
 	for {

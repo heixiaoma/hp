@@ -29,6 +29,7 @@ public class HpProtocolDispatcher implements ProtocolDispatcherAdapter {
         InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().localAddress();
         if (socketAddress.getPort() == 9091) {
             ProtocolUtil.print(ctx,"HpProtocolDispatcher",bytes);
+            System.out.println(bytes[0]);
             channelPipeline.addLast(new IdleStateHandler(60, 30, 0));
             //拆包解码
             channelPipeline.addLast(new ProtobufVarint32FrameDecoder());

@@ -4,12 +4,12 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
-import net.hserver.hp.common.protocol.HpMessageOuterClass;
+import net.hserver.hp.common.protocol.HpMessageData;
 
 /**
  * @author hxm
  */
-public abstract class HpCommonHandler extends SimpleChannelInboundHandler<HpMessageOuterClass.HpMessage> {
+public abstract class HpCommonHandler extends SimpleChannelInboundHandler<HpMessageData.HpMessage> {
 
     protected ChannelHandlerContext ctx;
 
@@ -37,7 +37,7 @@ public abstract class HpCommonHandler extends SimpleChannelInboundHandler<HpMess
                 System.out.println("Read idle loss connection.");
                 ctx.close();
             } else if (e.state() == IdleState.WRITER_IDLE) {
-                HpMessageOuterClass.HpMessage keepMessage = HpMessageOuterClass.HpMessage.newBuilder().setType(HpMessageOuterClass.HpMessage.HpMessageType.KEEPALIVE).build();
+                HpMessageData.HpMessage keepMessage = HpMessageData.HpMessage.newBuilder().setType(HpMessageData.HpMessage.HpMessageType.KEEPALIVE).build();
                 ctx.writeAndFlush(keepMessage);
             }
         }
