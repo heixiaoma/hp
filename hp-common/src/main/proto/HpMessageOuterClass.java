@@ -73,10 +73,6 @@ public final class HpMessageOuterClass {
     com.google.protobuf.ByteString getData();
   }
   /**
-   * <pre>
-   *生成的代码的类名和文件名
-   * </pre>
-   *
    * Protobuf type {@code HpMessage}
    */
   public static final class HpMessage extends
@@ -1752,10 +1748,6 @@ public final class HpMessageOuterClass {
       return builder;
     }
     /**
-     * <pre>
-     *生成的代码的类名和文件名
-     * </pre>
-     *
      * Protobuf type {@code HpMessage}
      */
     public static final class Builder extends
@@ -2276,7 +2268,8 @@ public final class HpMessageOuterClass {
       "\004 \001(\t\022\017\n\007success\030\005 \001(\010\022\016\n\006reason\030\006 \001(\t\"l" +
       "\n\rHpMessageType\022\014\n\010REGISTER\020\000\022\023\n\017REGISTE" +
       "R_RESULT\020\001\022\r\n\tCONNECTED\020\002\022\020\n\014DISCONNECTE" +
-      "D\020\003\022\010\n\004DATA\020\004\022\r\n\tKEEPALIVE\020\005b\006proto3"
+      "D\020\003\022\010\n\004DATA\020\004\022\r\n\tKEEPALIVE\020\005B\017Z\rHpMessag" +
+      "eDatab\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

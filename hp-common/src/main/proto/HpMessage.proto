@@ -1,6 +1,7 @@
 //定义版本
 syntax = "proto3";
 //生成的代码的类名和文件名
+option go_package = "./HpMessage";
 message HpMessage{
 
   //枚举消息类型
