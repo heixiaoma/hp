@@ -9,8 +9,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import net.hserver.hp.common.exception.HpException;
 import net.hserver.hp.common.handler.HpCommonHandler;
-import net.hserver.hp.common.protocol.HpMessage;
-import net.hserver.hp.common.protocol.HpMessageType;
+import net.hserver.hp.common.protocol.HpMessageOuterClass;
 import net.hserver.hp.server.codec.HpByteArrayDecoder;
 import net.hserver.hp.server.codec.HpByteArrayEncoder;
 import net.hserver.hp.server.config.WebConfig;
@@ -60,15 +59,15 @@ public class HpServerHandler extends HpCommonHandler {
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, HpMessage hpMessage) throws Exception {
-        if (hpMessage.getType() == HpMessageType.REGISTER) {
+    protected void channelRead0(ChannelHandlerContext ctx, HpMessageOuterClass.HpMessage hpMessage) throws Exception {
+        if (hpMessage.getType() == HpMessageOuterClass.HpMessage.HpMessageType.REGISTER) {
             processRegister(hpMessage);
         } else if (register) {
-            if (hpMessage.getType() == HpMessageType.DISCONNECTED) {
+            if (hpMessage.getType() == HpMessageOuterClass.HpMessage.HpMessageType.DISCONNECTED) {
                 processDisconnected(hpMessage);
-            } else if (hpMessage.getType() == HpMessageType.DATA) {
+            } else if (hpMessage.getType() == HpMessageOuterClass.HpMessage.HpMessageType.DATA) {
                 processData(hpMessage);
-            } else if (hpMessage.getType() == HpMessageType.KEEPALIVE) {
+            } else if (hpMessage.getType() == HpMessageOuterClass.HpMessage.HpMessageType.KEEPALIVE) {
                 // 心跳包
             } else {
                 throw new HpException("未知类型: " + hpMessage.getType());
@@ -97,12 +96,11 @@ public class HpServerHandler extends HpCommonHandler {
     /**
      * if HpMessage.getType() == HpMessageType.REGISTER
      */
-    private void processRegister(HpMessage hpMessage) {
-        HashMap<String, Object> metaData = new HashMap<>();
-        String password = hpMessage.getMetaData().get("password").toString();
-        String username = hpMessage.getMetaData().get("username").toString();
+    private void processRegister(HpMessageOuterClass.HpMessage hpMessage) {
+        String password = hpMessage.getMetaData().getPassword();
+        String username = hpMessage.getMetaData().getUsername();
         int tempPort = 0;
-        Object port = hpMessage.getMetaData().get("port");
+        Object port = hpMessage.getMetaData().getPort();
         if (port != null) {
             tempPort = (int) port;
         }
@@ -111,12 +109,13 @@ public class HpServerHandler extends HpCommonHandler {
         /**
          * 查询这个用户是否是合法的，不是合法的直接干掉
          */
+        HpMessageOuterClass.HpMessage.MetaData.Builder metaDataBuild = HpMessageOuterClass.HpMessage.MetaData.newBuilder();
         if (login == null) {
-            metaData.put("success", false);
-            metaData.put("reason", "非法用户，登录失败，有疑问请联系管理员");
+            metaDataBuild.setSuccess(false);
+            metaDataBuild.setReason("非法用户，登录失败，有疑问请联系管理员");
         } else if (login.getType() != null && login.getType() == -1) {
-            metaData.put("success", false);
-            metaData.put("reason", "账号被封，请穿透正能量，有意义的程序哦。用户名：" + username + " 来源IP：" + ctx.channel().remoteAddress());
+            metaDataBuild.setSuccess(false);
+            metaDataBuild.setReason("账号被封，请穿透正能量，有意义的程序哦。用户名：" + username + " 来源IP：" + ctx.channel().remoteAddress());
         } else {
             try {
                 if (!login.getPorts().contains(tempPort) || tempPort < 0) {
@@ -135,27 +134,28 @@ public class HpServerHandler extends HpCommonHandler {
                         channels.add(ch);
                     }
                 }, login.getUsername());
-                metaData.put("success", true);
+                metaDataBuild.setSuccess(true);
                 this.port = tempPort;
                 register = true;
                 CURRENT_STATUS.put(String.valueOf(tempPort), new ConnectInfo(login.getUsername(), ctx.channel()));
                 String host = IocUtil.getBean(WebConfig.class).getHost();
-                metaData.put("reason", "连接成功，外网TCP地址是:" + host + ":" + tempPort + ",外网HTTP地址是：http://" + login.getUsername() + "." + host + " " + (tips.trim().length() > 0 ? "公告提示："+tips : ""));
+                metaDataBuild.setReason( "连接成功，外网TCP地址是:" + host + ":" + tempPort + ",外网HTTP地址是：http://" + login.getUsername() + "." + host + " " + (tips.trim().length() > 0 ? "公告提示："+tips : ""));
                 System.out.println("注册成功，外网地址是:  " + host + ":" + tempPort);
                 System.out.println("用户名：" + username + " 来源IP：" + ctx.channel().remoteAddress());
                 userService.updateLogin(username, ctx.channel().remoteAddress().toString());
             } catch (Exception e) {
-                metaData.put("success", false);
-                metaData.put("reason", e.getMessage());
+                metaDataBuild.setSuccess(false);
+                metaDataBuild.setReason(e.getMessage());
                 e.printStackTrace();
             }
         }
-        HpMessage sendBackMessage = new HpMessage();
-        sendBackMessage.setType(HpMessageType.REGISTER_RESULT);
-        sendBackMessage.setMetaData(metaData);
-        ctx.writeAndFlush(sendBackMessage);
+        HpMessageOuterClass.HpMessage.Builder sendBackMessageBuilder = HpMessageOuterClass.HpMessage.newBuilder();
+        sendBackMessageBuilder.setType(HpMessageOuterClass.HpMessage.HpMessageType.REGISTER_RESULT);
+        HpMessageOuterClass.HpMessage.MetaData metaData = metaDataBuild.build();
+        sendBackMessageBuilder.setMetaData(metaData);
+        ctx.writeAndFlush(sendBackMessageBuilder.build());
         if (!register) {
-            System.out.println("客户注册错误: " + metaData.get("reason"));
+            System.out.println("客户注册错误: " + metaData.getReason());
             ctx.close();
         }
     }
@@ -163,8 +163,8 @@ public class HpServerHandler extends HpCommonHandler {
     /**
      * if HpMessage.getType() == HpMessageType.DATA
      */
-    private void processData(HpMessage hpMessage) {
-        channels.writeAndFlush(hpMessage.getData(), channel -> channel.id().asLongText().equals(hpMessage.getMetaData().get("channelId")));
+    private void processData(HpMessageOuterClass.HpMessage hpMessage) {
+        channels.writeAndFlush(hpMessage.getData().toByteArray(), channel -> channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId()));
     }
 
     /**
@@ -172,7 +172,7 @@ public class HpServerHandler extends HpCommonHandler {
      *
      * @param hpMessage
      */
-    private void processDisconnected(HpMessage hpMessage) {
-        channels.close(channel -> channel.id().asLongText().equals(hpMessage.getMetaData().get("channelId")));
+    private void processDisconnected(HpMessageOuterClass.HpMessage hpMessage) {
+        channels.close(channel -> channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId()));
     }
 }

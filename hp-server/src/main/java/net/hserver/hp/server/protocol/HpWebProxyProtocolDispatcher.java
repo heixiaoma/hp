@@ -42,7 +42,7 @@ public class HpWebProxyProtocolDispatcher implements ProtocolDispatcherAdapter {
     @Override
     public boolean dispatcher(ChannelHandlerContext ctx, ChannelPipeline channelPipeline, byte[] headers) {
         InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().localAddress();
-        if (socketAddress.getPort() == 80 || socketAddress.getPort() == 443 || socketAddress.getPort() == 8443) {
+        if (socketAddress.getPort() == 80 || socketAddress.getPort() == 443) {
             try {
                 String host = HostUtil.getHost(ByteBuffer.wrap(headers));
                 log.debug("version:{},host:{}", SSLUtils.verifyPacket(ByteBuffer.wrap(headers)), host);

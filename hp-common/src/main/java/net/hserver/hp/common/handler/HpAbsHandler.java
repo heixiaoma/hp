@@ -2,11 +2,9 @@ package net.hserver.hp.common.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
-import net.hserver.hp.common.protocol.HpMessage;
-import net.hserver.hp.common.protocol.HpMessageType;
+import net.hserver.hp.common.protocol.HpMessageOuterClass;
 
 /**
  * @author hxm
@@ -39,9 +37,9 @@ public class HpAbsHandler extends ChannelInboundHandlerAdapter {
                 System.out.println("Read idle loss connection.");
                 ctx.close();
             } else if (e.state() == IdleState.WRITER_IDLE) {
-                HpMessage message = new HpMessage();
-                message.setType(HpMessageType.KEEPALIVE);
-                ctx.writeAndFlush(message);
+                HpMessageOuterClass.HpMessage.Builder messageBuild = HpMessageOuterClass.HpMessage.newBuilder();
+                messageBuild.setType(HpMessageOuterClass.HpMessage.HpMessageType.KEEPALIVE);
+                ctx.writeAndFlush(messageBuild.build());
             }
         }
     }

@@ -1,13 +1,11 @@
 package net.hserver.hp.server.handler;
 
+import com.google.protobuf.ByteString;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
 import net.hserver.hp.common.handler.HpAbsHandler;
 import net.hserver.hp.common.handler.HpCommonHandler;
-import net.hserver.hp.common.protocol.HpMessage;
-import net.hserver.hp.common.protocol.HpMessageType;
-
-import java.util.HashMap;
+import net.hserver.hp.common.protocol.HpMessageOuterClass;
 
 /**
  * @author hxm
@@ -26,22 +24,18 @@ public class RemoteProxyHandler extends HpAbsHandler {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         tcpServer.addConnectNum();
-        HpMessage message = new HpMessage();
-        message.setType(HpMessageType.CONNECTED);
-        HashMap<String, Object> metaData = new HashMap<>();
-        metaData.put("channelId", ctx.channel().id().asLongText());
-        message.setMetaData(metaData);
-        proxyHandler.getCtx().writeAndFlush(message);
+        HpMessageOuterClass.HpMessage.Builder messageBuilder = HpMessageOuterClass.HpMessage.newBuilder();
+        messageBuilder.setType(HpMessageOuterClass.HpMessage.HpMessageType.CONNECTED);
+        messageBuilder.setMetaData(HpMessageOuterClass.HpMessage.MetaData.newBuilder().setChannelId(ctx.channel().id().asLongText()).build());
+        proxyHandler.getCtx().writeAndFlush(messageBuilder.build());
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        HpMessage message = new HpMessage();
-        message.setType(HpMessageType.DISCONNECTED);
-        HashMap<String, Object> metaData = new HashMap<>();
-        metaData.put("channelId", ctx.channel().id().asLongText());
-        message.setMetaData(metaData);
-        proxyHandler.getCtx().writeAndFlush(message);
+        HpMessageOuterClass.HpMessage.Builder messageBuilder = HpMessageOuterClass.HpMessage.newBuilder();
+        messageBuilder.setType(HpMessageOuterClass.HpMessage.HpMessageType.DISCONNECTED);
+        messageBuilder.setMetaData(HpMessageOuterClass.HpMessage.MetaData.newBuilder().setChannelId(ctx.channel().id().asLongText()).build());
+        proxyHandler.getCtx().writeAndFlush(messageBuilder.build());
     }
 
     @Override
@@ -49,13 +43,11 @@ public class RemoteProxyHandler extends HpAbsHandler {
         try {
             byte[] data = (byte[]) msg;
             tcpServer.addPackNum();
-            HpMessage message = new HpMessage();
-            message.setType(HpMessageType.DATA);
-            message.setData(data);
-            HashMap<String, Object> metaData = new HashMap<>();
-            metaData.put("channelId", ctx.channel().id().asLongText());
-            message.setMetaData(metaData);
-            proxyHandler.getCtx().writeAndFlush(message);
+            HpMessageOuterClass.HpMessage.Builder messageBuilder = HpMessageOuterClass.HpMessage.newBuilder();
+            messageBuilder.setType(HpMessageOuterClass.HpMessage.HpMessageType.DATA);
+            messageBuilder.setMetaData(HpMessageOuterClass.HpMessage.MetaData.newBuilder().setChannelId(ctx.channel().id().asLongText()).build());
+            messageBuilder.setData(ByteString.copyFrom(data));
+            proxyHandler.getCtx().writeAndFlush(messageBuilder.build());
         }finally {
             ReferenceCountUtil.release(msg);
         }

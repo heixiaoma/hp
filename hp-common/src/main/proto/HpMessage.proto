@@ -1,0 +1,33 @@
+//定义版本
+syntax = "proto3";
+//生成的代码的类名和文件名
+message HpMessage{
+
+  //枚举消息类型
+  enum HpMessageType
+  {
+      REGISTER=0;
+      REGISTER_RESULT=1;
+      CONNECTED=2;
+      DISCONNECTED=3;
+      DATA=4;
+      KEEPALIVE=5;
+  }
+
+  message MetaData{
+    int32 port=1;
+    string username=2;
+    string password=3;
+    string channelId=4;
+    bool success=5;
+    string reason=6;
+  }
+
+  //消息类型
+  HpMessageType type = 1;
+  //元数据
+  MetaData metaData = 2;
+  //穿透真实数据流
+  bytes data=3;
+}
+

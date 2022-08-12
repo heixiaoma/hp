@@ -14,8 +14,7 @@ import net.hserver.hp.client.net.TcpConnection;
 import net.hserver.hp.common.exception.HpException;
 import net.hserver.hp.common.handler.HpAbsHandler;
 import net.hserver.hp.common.handler.HpCommonHandler;
-import net.hserver.hp.common.protocol.HpMessage;
-import net.hserver.hp.common.protocol.HpMessageType;
+import net.hserver.hp.common.protocol.HpMessageOuterClass;
 
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,27 +46,27 @@ public class HpClientHandler extends HpCommonHandler {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         // register client information
-        HpMessage message = new HpMessage();
-        message.setType(HpMessageType.REGISTER);
-        HashMap<String, Object> metaData = new HashMap<>();
-        metaData.put("port", port);
-        metaData.put("username", username);
-        metaData.put("password", password);
-        message.setMetaData(metaData);
-        ctx.writeAndFlush(message);
+        HpMessageOuterClass.HpMessage.Builder messageBuild = HpMessageOuterClass.HpMessage.newBuilder();
+        messageBuild.setType(HpMessageOuterClass.HpMessage.HpMessageType.REGISTER);
+        HpMessageOuterClass.HpMessage.MetaData.Builder metaDataBuild = HpMessageOuterClass.HpMessage.MetaData.newBuilder();
+        metaDataBuild.setPort(port);
+        metaDataBuild.setUsername(username);
+        metaDataBuild.setPassword(password);
+        messageBuild.setMetaData(metaDataBuild.build());
+        ctx.writeAndFlush(messageBuild.build());
         super.channelActive(ctx);
     }
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, HpMessage message) throws Exception {
-        if (message.getType() == HpMessageType.REGISTER_RESULT) {
+    protected void channelRead0(ChannelHandlerContext ctx, HpMessageOuterClass.HpMessage message) throws Exception {
+        if (message.getType() == HpMessageOuterClass.HpMessage.HpMessageType.REGISTER_RESULT) {
             processRegisterResult(message);
-        } else if (message.getType() == HpMessageType.CONNECTED) {
+        } else if (message.getType() == HpMessageOuterClass.HpMessage.HpMessageType.CONNECTED) {
             processConnected(message);
-        } else if (message.getType() == HpMessageType.DISCONNECTED) {
+        } else if (message.getType() == HpMessageOuterClass.HpMessage.HpMessageType.DISCONNECTED) {
             processDisconnected(message);
-        } else if (message.getType() == HpMessageType.DATA) {
+        } else if (message.getType() == HpMessageOuterClass.HpMessage.HpMessageType.DATA) {
             processData(message);
-        } else if (message.getType() == HpMessageType.KEEPALIVE) {
+        } else if (message.getType() == HpMessageOuterClass.HpMessage.HpMessageType.KEEPALIVE) {
             // 心跳包, 不处理
         } else {
             throw new HpException("Unknown type: " + message.getType());
@@ -82,11 +81,11 @@ public class HpClientHandler extends HpCommonHandler {
     /**
      * if Message.getType() == HpMessageType.REGISTER_RESULT
      */
-    private void processRegisterResult(HpMessage message) {
-        if ((Boolean) message.getMetaData().get("success")) {
-            callMsg.message(message.getMetaData().get("reason").toString());
+    private void processRegisterResult(HpMessageOuterClass.HpMessage message) {
+        if ((Boolean) message.getMetaData().getSuccess()) {
+            callMsg.message(message.getMetaData().getReason());
         } else {
-            callMsg.message(message.getMetaData().get("reason").toString());
+            callMsg.message(message.getMetaData().getReason());
             ctx.close();
         }
     }
@@ -94,27 +93,27 @@ public class HpClientHandler extends HpCommonHandler {
     /**
      * if HpMessage.getType() == HpMessageType.CONNECTED
      */
-    private void processConnected(final HpMessage message) throws Exception {
+    private void processConnected(final HpMessageOuterClass.HpMessage message) throws Exception {
         try {
             final HpClientHandler thisHandler = this;
             TcpConnection localConnection = new TcpConnection();
             localConnection.connect(proxyAddress, proxyPort, new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
-                    LocalProxyHandler localProxyHandler = new LocalProxyHandler(thisHandler, message.getMetaData().get("channelId").toString());
+                    LocalProxyHandler localProxyHandler = new LocalProxyHandler(thisHandler, message.getMetaData().getChannelId());
                     ch.pipeline().addLast(new ByteArrayDecoder(), new ByteArrayEncoder(), localProxyHandler);
-                    channelHandlerMap.put(message.getMetaData().get("channelId").toString(), localProxyHandler);
+                    channelHandlerMap.put(message.getMetaData().getChannelId(), localProxyHandler);
                     channelGroup.add(ch);
                 }
             });
         } catch (Exception e) {
-            HpMessage msg = new HpMessage();
-            msg.setType(HpMessageType.DISCONNECTED);
-            HashMap<String, Object> metaData = new HashMap<>();
-            metaData.put("channelId", message.getMetaData().get("channelId"));
-            msg.setMetaData(metaData);
-            ctx.writeAndFlush(msg);
-            channelHandlerMap.remove(message.getMetaData().get("channelId"));
+            HpMessageOuterClass.HpMessage.Builder messageBuild = HpMessageOuterClass.HpMessage.newBuilder();
+            messageBuild.setType(HpMessageOuterClass.HpMessage.HpMessageType.DISCONNECTED);
+            HpMessageOuterClass.HpMessage.MetaData.Builder metaDataBuild = HpMessageOuterClass.HpMessage.MetaData.newBuilder();
+            metaDataBuild.setChannelId(message.getMetaData().getChannelId());
+            messageBuild.setMetaData(metaDataBuild.build());
+            ctx.writeAndFlush(messageBuild.build());
+            channelHandlerMap.remove(message.getMetaData().getChannelId());
             callMsg.message(e.getMessage());
             throw e;
         }
@@ -123,8 +122,8 @@ public class HpClientHandler extends HpCommonHandler {
     /**
      * if HpMessage.getType() == HpMessageType.DISCONNECTED
      */
-    private void processDisconnected(HpMessage message) {
-        String channelId = message.getMetaData().get("channelId").toString();
+    private void processDisconnected(HpMessageOuterClass.HpMessage message) {
+        String channelId = message.getMetaData().getChannelId();
         HpAbsHandler handler = channelHandlerMap.get(channelId);
         if (handler != null) {
             handler.getCtx().close();
@@ -135,12 +134,12 @@ public class HpClientHandler extends HpCommonHandler {
     /**
      * if HpMessage.getType() == HpMessageType.DATA
      */
-    private void processData(HpMessage message) {
-        String channelId = message.getMetaData().get("channelId").toString();
+    private void processData(HpMessageOuterClass.HpMessage message) {
+        String channelId = message.getMetaData().getChannelId();
         HpAbsHandler handler = channelHandlerMap.get(channelId);
         if (handler != null) {
             ChannelHandlerContext ctx = handler.getCtx();
-            ctx.writeAndFlush(message.getData());
+            ctx.writeAndFlush(message.getData().toByteArray());
         }
     }
 }
