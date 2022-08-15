@@ -59,18 +59,21 @@ func decode(reader *bufio.Reader) ([]byte, error) {
 		return []byte{}, err
 	}
 	//转成Buffer对象,设置为从小端读取
+	contentLen := int(lenByte[0]) + int(lenByte[1])
+	log.Printf("粘包处理 需求大小：%d,实际大小：%d", contentLen, reader.Buffered())
+
 	buff := bytes.NewBuffer(lenByte)
-	var lenth uint8                                      //读取的数据大小，初始化为0
-	err = binary.Read(buff, binary.LittleEndian, &lenth) //从小端读取
+	var lenth uint8                                   //读取的数据大小，初始化为0
+	err = binary.Read(buff, binary.BigEndian, &lenth) //从小端读取
 	if err != nil {
 		return []byte{}, err
 	}
 	//读取消息
 	pkg := make([]byte, int(lenth)+lenHeader)
 	//Buffered返回缓冲区中现有的可读取的字节数
-	if reader.Buffered() < int(lenth)+lenHeader { //如果读取的包头的数据大小和读取到的不符合
+	if reader.Buffered() < contentLen { //如果读取的包头的数据大小和读取到的不符合
 		hr := 0
-		for hr < int(lenth)+lenHeader {
+		for hr < contentLen {
 			l, err := reader.Read(pkg[hr:])
 			if err != nil {
 				return []byte{}, err
@@ -83,8 +86,6 @@ func decode(reader *bufio.Reader) ([]byte, error) {
 			return []byte{}, err
 		}
 	}
-
-	log.Printf("粘包处理 实际大小： %d需求大小：%d", len(pkg), int(lenth)+lenHeader)
 
 	return pkg[lenHeader:], nil
 }
