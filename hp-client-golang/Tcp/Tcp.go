@@ -25,8 +25,8 @@ func (client *HpClient) clientHandleError(err error, when string) {
 	}
 }
 
-// New 创建实体
-func New(Host string, Port int, isHpServer bool) *HpClient {
+// NewHpClient 创建实体
+func NewHpClient(Host string, Port int, isHpServer bool) *HpClient {
 	client := &HpClient{
 		host: Host,
 		port: Port,
@@ -80,4 +80,8 @@ func (client *HpClient) ReadHpMessage(f func(message *HpMessage.HpMessage)) {
 // Write 写原始数据
 func (client *HpClient) Write(b []byte) {
 	client.conn.Write(b)
+}
+
+func (client *HpClient) Close() {
+	client.conn.Close()
 }
