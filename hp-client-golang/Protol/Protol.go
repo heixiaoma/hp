@@ -9,6 +9,7 @@ import (
 	"log"
 )
 
+
 func Encode(message *HpMessage.HpMessage) []byte {
 	d, _ := proto.Marshal(message)
 	i, _ := encode(d)
@@ -23,6 +24,7 @@ func Decode(reader *bufio.Reader) (*HpMessage.HpMessage, error) {
 	message := &HpMessage.HpMessage{}
 	err2 := proto.Unmarshal(d, message)
 	if err2 != nil {
+		panic(err2)
 		return nil, err2
 	}
 	return message, nil
@@ -53,39 +55,34 @@ func encode(mes []byte) ([]byte, error) {
 // decode 解码数据包
 func decode(reader *bufio.Reader) ([]byte, error) {
 	//读取数据包的长度（从包头获取）
-	lenHeader := 2
-	lenByte, err := reader.Peek(lenHeader) //读取前2个字节的数据
+	lenByte, err := reader.Peek(1) //读取前2个字节的数据
 	if err != nil {
 		return []byte{}, err
 	}
-	//转成Buffer对象,设置为从小端读取
-	contentLen := int(lenByte[0]) + int(lenByte[1])
-	log.Printf("粘包处理 需求大小：%d,实际大小：%d", contentLen, reader.Buffered())
 
-	buff := bytes.NewBuffer(lenByte)
-	var lenth uint8                                   //读取的数据大小，初始化为0
-	err = binary.Read(buff, binary.BigEndian, &lenth) //从小端读取
-	if err != nil {
-		return []byte{}, err
+	headerLen := int(lenByte[0])
+
+	if reader.Buffered() > headerLen {
+		log.Printf("字节大小：%d 小端读取大小：%d ",headerLen,reader.Buffered())
 	}
+
 	//读取消息
-	pkg := make([]byte, int(lenth)+lenHeader)
+	pkg := make([]byte, headerLen)
 	//Buffered返回缓冲区中现有的可读取的字节数
-	if reader.Buffered() < contentLen { //如果读取的包头的数据大小和读取到的不符合
-		hr := 0
-		for hr < contentLen {
-			l, err := reader.Read(pkg[hr:])
-			if err != nil {
-				return []byte{}, err
-			}
-			hr += l
+	if reader.Buffered() > headerLen { //如果读取的包头的数据大小和读取到的不符合
+		var temp=2
+		if headerLen<127 {
+			temp=1
 		}
-	} else {
+		header := make([]byte, temp)
+		reader.Read(header)
+
 		_, err := reader.Read(pkg)
 		if err != nil {
 			return []byte{}, err
 		}
 	}
 
-	return pkg[lenHeader:], nil
+	println(pkg)
+	return pkg, nil
 }

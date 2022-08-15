@@ -73,15 +73,21 @@ func (client *HpClient) ReadHpMessage(f func(message *HpMessage.HpMessage)) {
 }
 
 // ReadLocalMessage 读取本地代理通信数据
-func (client *HpClient) ReadLocalMessage(remote *HpClient) {
+func (client *HpClient) ReadLocalMessage(remote *HpClient, message *HpMessage.HpMessage) {
 	go func() {
 		reader := bufio.NewReader(client.conn)
 		//读消息
 		for {
 			size := reader.Size()
 			if size > 0 {
-				peek, _ := reader.Peek(size)
-				remote.Write(peek)
+				pkg := make([]byte, size)
+				reader.Read(pkg)
+				hpMessage := &HpMessage.HpMessage{
+					Type: HpMessage.HpMessage_DATA,
+					Data: pkg,
+					MetaData: &HpMessage.HpMessage_MetaData{ChannelId: message.MetaData.ChannelId},
+				}
+				remote.WriteHpMessage(hpMessage)
 			}
 		}
 	}()
