@@ -57,11 +57,6 @@ func (client *HpClient) connect(isHpServer bool) net.Conn {
 	return conn
 }
 
-// WriteHpMessage 写HP 通信数据
-func (client *HpClient) WriteHpMessage(h *HpMessage.HpMessage) {
-	client.conn.Write(Protol.Encode(h))
-}
-
 // ReadHpMessage 读取HP通信数据
 func (client *HpClient) ReadHpMessage(f func(message *HpMessage.HpMessage)) {
 	go func() {
@@ -70,11 +65,31 @@ func (client *HpClient) ReadHpMessage(f func(message *HpMessage.HpMessage)) {
 		for {
 			decode, err := Protol.Decode(reader)
 			if err != nil {
-				panic(err)
+				continue
 			}
 			f(decode)
 		}
 	}()
+}
+
+// ReadLocalMessage 读取本地代理通信数据
+func (client *HpClient) ReadLocalMessage(remote *HpClient) {
+	go func() {
+		reader := bufio.NewReader(client.conn)
+		//读消息
+		for {
+			size := reader.Size()
+			if size > 0 {
+				peek, _ := reader.Peek(size)
+				remote.Write(peek)
+			}
+		}
+	}()
+}
+
+// WriteHpMessage 写HP 通信数据
+func (client *HpClient) WriteHpMessage(h *HpMessage.HpMessage) {
+	client.conn.Write(Protol.Encode(h))
 }
 
 // Write 写原始数据

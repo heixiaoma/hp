@@ -4,6 +4,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"hp-client-golang/HpMessage"
 	"hp-client-golang/Tcp"
+	"log"
 )
 
 func main() {
@@ -18,7 +19,7 @@ func main() {
 	}
 
 	handler := Tcp.NewRemoteHandler("127.0.0.1", 8888, client, func(string2 string) {
-		println(string2)
+		log.Printf(string2)
 	})
 
 	client.ReadHpMessage(handler.Read)

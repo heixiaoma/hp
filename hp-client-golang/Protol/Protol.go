@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"github.com/golang/protobuf/proto"
 	"hp-client-golang/HpMessage"
+	"log"
 )
 
 func Encode(message *HpMessage.HpMessage) []byte {
@@ -20,7 +21,10 @@ func Decode(reader *bufio.Reader) (*HpMessage.HpMessage, error) {
 		return nil, err
 	}
 	message := &HpMessage.HpMessage{}
-	proto.Unmarshal(d, message)
+	err2 := proto.Unmarshal(d, message)
+	if err2 != nil {
+		return nil, err2
+	}
 	return message, nil
 }
 
@@ -56,17 +60,17 @@ func decode(reader *bufio.Reader) ([]byte, error) {
 	}
 	//转成Buffer对象,设置为从小端读取
 	buff := bytes.NewBuffer(lenByte)
-	var len uint8                                      //读取的数据大小，初始化为0
-	err = binary.Read(buff, binary.LittleEndian, &len) //从小端读取
+	var lenth uint8                                      //读取的数据大小，初始化为0
+	err = binary.Read(buff, binary.LittleEndian, &lenth) //从小端读取
 	if err != nil {
 		return []byte{}, err
 	}
 	//读取消息
-	pkg := make([]byte, int(len)+lenHeader)
+	pkg := make([]byte, int(lenth)+lenHeader)
 	//Buffered返回缓冲区中现有的可读取的字节数
-	if reader.Buffered() < int(len)+lenHeader { //如果读取的包头的数据大小和读取到的不符合
+	if reader.Buffered() < int(lenth)+lenHeader { //如果读取的包头的数据大小和读取到的不符合
 		hr := 0
-		for hr < int(len)+lenHeader {
+		for hr < int(lenth)+lenHeader {
 			l, err := reader.Read(pkg[hr:])
 			if err != nil {
 				return []byte{}, err
@@ -79,5 +83,8 @@ func decode(reader *bufio.Reader) ([]byte, error) {
 			return []byte{}, err
 		}
 	}
+
+	log.Printf("粘包处理 实际大小： %d需求大小：%d", len(pkg), int(lenth)+lenHeader)
+
 	return pkg[lenHeader:], nil
 }

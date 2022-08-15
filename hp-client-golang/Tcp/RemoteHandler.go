@@ -2,6 +2,7 @@ package Tcp
 
 import (
 	"hp-client-golang/HpMessage"
+	"log"
 )
 
 type RemoteHandler struct {
@@ -21,6 +22,7 @@ func NewRemoteHandler(host string, port int, hpClient *HpClient, f func(string2 
 }
 
 func (handler *RemoteHandler) Read(message *HpMessage.HpMessage) {
+	log.Printf("收到消息类型：%s\n", message.Type.String())
 	switch message.Type {
 	case HpMessage.HpMessage_REGISTER_RESULT:
 		handler.processRegisterResult(message)
@@ -48,6 +50,7 @@ func (handler *RemoteHandler) processRegisterResult(message *HpMessage.HpMessage
 //远端发送连接指令
 func (handler *RemoteHandler) processConnected(message *HpMessage.HpMessage) {
 	//连接本地的服务器
-	NewHpClient(handler.host, handler.port, false)
-
+	log.Printf("远端要求本地连接本地服务：%s:%d\n", handler.host, handler.port)
+	client := NewHpClient(handler.host, handler.port, false)
+	client.ReadLocalMessage(handler.hpClient)
 }
