@@ -24,7 +24,7 @@ func Decode(reader *bufio.Reader) (*HpMessage.HpMessage, error) {
 	return message, nil
 }
 
-//将数据包编码（即加上包头再转为二进制）
+// encode 将数据包编码（即加上包头再转为二进制）
 func encode(mes []byte) ([]byte, error) {
 	//获取发送数据的长度，并转换为四个字节的长度，即int32
 	len := int8(len(mes))
@@ -46,7 +46,7 @@ func encode(mes []byte) ([]byte, error) {
 	return dataPackage.Bytes(), nil
 }
 
-//解码数据包
+// decode 解码数据包
 func decode(reader *bufio.Reader) ([]byte, error) {
 	//读取数据包的长度（从包头获取）
 	lenHeader := 2

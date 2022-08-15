@@ -17,9 +17,7 @@ type HpClient struct {
 	conn net.Conn
 }
 
-/**
-链接失败错误
-*/
+// clientHandleError 链接失败错误
 func (client *HpClient) clientHandleError(err error, when string) {
 	if err != nil {
 		fmt.Println(err, when)
@@ -27,6 +25,7 @@ func (client *HpClient) clientHandleError(err error, when string) {
 	}
 }
 
+// New 创建实体
 func New(Host string, Port int, isHpServer bool) *HpClient {
 	client := &HpClient{
 		host: Host,
@@ -37,9 +36,7 @@ func New(Host string, Port int, isHpServer bool) *HpClient {
 	return client
 }
 
-/**
-TCP连接
-*/
+// connect TCP连接
 func (client *HpClient) connect(isHpServer bool) net.Conn {
 	//拨号远程地址，简历tcp连接
 	conn, err := net.Dial("tcp", client.host+":"+strconv.Itoa(client.port))
@@ -60,16 +57,12 @@ func (client *HpClient) connect(isHpServer bool) net.Conn {
 	return conn
 }
 
-/**
-写HP 通信数据
-*/
+// WriteHpMessage 写HP 通信数据
 func (client *HpClient) WriteHpMessage(h *HpMessage.HpMessage) {
 	client.conn.Write(Protol.Encode(h))
 }
 
-/**
-读取HP通信数据
-*/
+// ReadHpMessage 读取HP通信数据
 func (client *HpClient) ReadHpMessage(f func(message *HpMessage.HpMessage)) {
 	go func() {
 		reader := bufio.NewReader(client.conn)
@@ -84,9 +77,7 @@ func (client *HpClient) ReadHpMessage(f func(message *HpMessage.HpMessage)) {
 	}()
 }
 
-/**
-写原始数据
-*/
+// Write 写原始数据
 func (client *HpClient) Write(b []byte) {
 	client.conn.Write(b)
 }
