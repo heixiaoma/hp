@@ -8,7 +8,6 @@ import (
 	"net"
 	"os"
 	"strconv"
-	"time"
 )
 
 type HpClient struct {
@@ -25,72 +24,23 @@ func (client *HpClient) clientHandleError(err error, when string) {
 	}
 }
 
-// New 创建实体
-func New(Host string, Port int, isHpServer bool) *HpClient {
+// NewHpClient 创建实体
+func NewHpClient(Host string, Port int) *HpClient {
 	client := &HpClient{
 		host: Host,
 		port: Port,
 	}
-	connect := client.connect(isHpServer)
+	connect := client.connect()
 	client.conn = connect
 	return client
 }
 
 // connect TCP连接
-func (client *HpClient) connect(isHpServer bool) net.Conn {
+func (client *HpClient) connect() net.Conn {
 	//拨号远程地址，简历tcp连接
 	conn, err := net.Dial("tcp", client.host+":"+strconv.Itoa(client.port))
 	client.clientHandleError(err, "client conn error")
-	if isHpServer {
-		//开启心跳处理
-		go func() {
-			for {
-				time.Sleep(3 * time.Second)
-				client.WriteHpMessage(
-					&HpMessage.HpMessage{
-						Type: HpMessage.HpMessage_KEEPALIVE,
-					},
-				)
-			}
-		}()
-	}
 	return conn
-}
-
-// ReadHpMessage 读取HP通信数据
-func (client *HpClient) ReadHpMessage(f func(message *HpMessage.HpMessage)) {
-	go func() {
-		reader := bufio.NewReader(client.conn)
-		//读消息
-		for {
-			decode, err := Protol.Decode(reader)
-			if err != nil {
-				continue
-			}
-			f(decode)
-		}
-	}()
-}
-
-// ReadLocalMessage 读取本地代理通信数据
-func (client *HpClient) ReadLocalMessage(remote *HpClient, message *HpMessage.HpMessage) {
-	go func() {
-		reader := bufio.NewReader(client.conn)
-		//读消息
-		for {
-			size := reader.Size()
-			if size > 0 {
-				pkg := make([]byte, size)
-				reader.Read(pkg)
-				hpMessage := &HpMessage.HpMessage{
-					Type:     HpMessage.HpMessage_DATA,
-					Data:     pkg,
-					MetaData: &HpMessage.HpMessage_MetaData{ChannelId: message.MetaData.ChannelId},
-				}
-				remote.WriteHpMessage(hpMessage)
-			}
-		}
-	}()
 }
 
 // WriteHpMessage 写HP 通信数据
@@ -98,7 +48,45 @@ func (client *HpClient) WriteHpMessage(h *HpMessage.HpMessage) {
 	client.conn.Write(Protol.Encode(h))
 }
 
+// ReadHpMessage 读取HP通信数据
+func (client *HpClient) ReadHpMessage(f func(client *HpClient, message *HpMessage.HpMessage)) {
+	go func() {
+		reader := bufio.NewReader(client.conn)
+		//读消息
+		for {
+			decode, err := Protol.Decode(reader)
+			if err != nil {
+				panic(err)
+			}
+			if decode != nil {
+				f(client, decode)
+			}
+		}
+	}()
+}
+
+// ReadLocalMessage 读取本地代理通信数据
+func (client *HpClient) ReadLocalMessage(remote *HpClient) {
+	go func() {
+		reader := bufio.NewReader(client.conn)
+		//读消息
+		for {
+			size := reader.Size()
+			if size > 0 {
+				data := make([]byte, size)
+				println(string(data))
+				reader.Read(data)
+				remote.Write(data)
+			}
+		}
+	}()
+}
+
 // Write 写原始数据
 func (client *HpClient) Write(b []byte) {
 	client.conn.Write(b)
+}
+
+func (client *HpClient) Close() {
+	client.conn.Close()
 }
