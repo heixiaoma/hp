@@ -4,11 +4,10 @@ import (
 	"github.com/golang/protobuf/proto"
 	"hp-client-golang/HpMessage"
 	"hp-client-golang/Tcp"
-	"log"
 )
 
 func main() {
-	client := Tcp.NewHpClient("127.0.0.1", 9091, true)
+	client := Tcp.New("127.0.0.1", 9091, true)
 	message := &HpMessage.HpMessage{
 		Type: HpMessage.HpMessage_REGISTER,
 		MetaData: &HpMessage.HpMessage_MetaData{
@@ -17,14 +16,14 @@ func main() {
 			Password: *proto.String("123456"),
 		},
 	}
-
-	handler := Tcp.NewRemoteHandler("127.0.0.1", 8888, client, func(string2 string) {
-		log.Printf(string2)
-	})
-
-	client.ReadHpMessage(handler.Read)
+	client.ReadHpMessage(read)
 	client.WriteHpMessage(message)
+
 	for true {
 
 	}
+}
+
+func read(message *HpMessage.HpMessage) {
+	println(message.String())
 }

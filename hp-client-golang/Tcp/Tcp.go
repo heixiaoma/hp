@@ -25,8 +25,8 @@ func (client *HpClient) clientHandleError(err error, when string) {
 	}
 }
 
-// NewHpClient 创建实体
-func NewHpClient(Host string, Port int, isHpServer bool) *HpClient {
+// New 创建实体
+func New(Host string, Port int, isHpServer bool) *HpClient {
 	client := &HpClient{
 		host: Host,
 		port: Port,
@@ -83,8 +83,8 @@ func (client *HpClient) ReadLocalMessage(remote *HpClient, message *HpMessage.Hp
 				pkg := make([]byte, size)
 				reader.Read(pkg)
 				hpMessage := &HpMessage.HpMessage{
-					Type: HpMessage.HpMessage_DATA,
-					Data: pkg,
+					Type:     HpMessage.HpMessage_DATA,
+					Data:     pkg,
 					MetaData: &HpMessage.HpMessage_MetaData{ChannelId: message.MetaData.ChannelId},
 				}
 				remote.WriteHpMessage(hpMessage)
@@ -101,8 +101,4 @@ func (client *HpClient) WriteHpMessage(h *HpMessage.HpMessage) {
 // Write 写原始数据
 func (client *HpClient) Write(b []byte) {
 	client.conn.Write(b)
-}
-
-func (client *HpClient) Close() {
-	client.conn.Close()
 }

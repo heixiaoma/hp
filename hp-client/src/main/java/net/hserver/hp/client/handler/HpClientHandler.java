@@ -83,7 +83,7 @@ public class HpClientHandler extends HpCommonHandler {
      * if Message.getType() == HpMessageType.REGISTER_RESULT
      */
     private void processRegisterResult(HpMessageData.HpMessage message) {
-        if (message.getMetaData().getSuccess()) {
+        if ((Boolean) message.getMetaData().getSuccess()) {
             callMsg.message(message.getMetaData().getReason());
         } else {
             callMsg.message(message.getMetaData().getReason());
