@@ -4,8 +4,6 @@ import cn.hserver.core.server.util.protocol.ProtocolUtil;
 import cn.hserver.plugin.web.context.WebConstConfig;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
-import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
-import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
 import net.hserver.hp.common.codec.HpMessageDecoder;
 import net.hserver.hp.common.codec.HpMessageEncoder;
@@ -21,6 +19,7 @@ import java.net.InetSocketAddress;
 @Order(6)
 @Bean
 public class HpProtocolDispatcher implements ProtocolDispatcherAdapter {
+
     private static final Logger log = LoggerFactory.getLogger(HpProtocolDispatcher.class);
 
     //判断HP头
@@ -32,8 +31,6 @@ public class HpProtocolDispatcher implements ProtocolDispatcherAdapter {
             System.out.println(bytes[0]);
             channelPipeline.addLast(new IdleStateHandler(60, 30, 0));
             //拆包解码
-            channelPipeline.addLast(new ProtobufVarint32FrameDecoder());
-            channelPipeline.addLast(new ProtobufVarint32LengthFieldPrepender());
             channelPipeline.addLast(new HpMessageDecoder());
             channelPipeline.addLast(new HpMessageEncoder());
             channelPipeline.addLast(WebConstConfig.BUSINESS_EVENT, new HpServerHandler());

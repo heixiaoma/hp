@@ -3,8 +3,6 @@ package net.hserver.hp.client;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
-import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -42,8 +40,6 @@ public class HpClient {
                             proxyAddress, proxyPort, callMsg);
                     ch.pipeline().addLast(
                             new IdleStateHandler(60, 30, 0),
-                            new ProtobufVarint32FrameDecoder(),
-                            new ProtobufVarint32LengthFieldPrepender(),
                             new HpMessageDecoder(),
                             new HpMessageEncoder(),
                             hpClientHandler);

@@ -1,6 +1,7 @@
 package net.hserver.hp.client.handler;
 
 
+import com.google.protobuf.ByteString;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.group.ChannelGroup;
@@ -137,7 +138,7 @@ public class HpClientHandler extends HpCommonHandler {
     private void processData(HpMessageData.HpMessage message) {
         String channelId = message.getMetaData().getChannelId();
         HpAbsHandler handler = channelHandlerMap.get(channelId);
-        if (handler != null) {
+        if (handler != null&&handler.getCtx()!=null) {
             ChannelHandlerContext ctx = handler.getCtx();
             ctx.writeAndFlush(message.getData().toByteArray());
         }
