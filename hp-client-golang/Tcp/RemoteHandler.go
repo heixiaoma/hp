@@ -29,7 +29,7 @@ func (handler *RemoteHandler) Read(client *HpClient, message *HpMessage.HpMessag
 		handler.processRegisterResult(message)
 		break
 	case HpMessage.HpMessage_CONNECTED:
-		handler.processConnected(message)
+		go handler.processConnected(message)
 		break
 	case HpMessage.HpMessage_DISCONNECTED:
 	case HpMessage.HpMessage_DATA:
@@ -57,7 +57,8 @@ func (handler *RemoteHandler) processConnected(message *HpMessage.HpMessage) {
 	//连接本地的服务器
 	client := NewHpClient(handler.host, handler.port)
 	handler.meClient = client
-	client.ReadLocalMessage(handler.hpClient)
+	go client.ReadLocalMessage(handler.hpClient)
+	println("------设置本地自定读----------")
 }
 
 func (handler *RemoteHandler) writeLocal(data []byte) {

@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"hp-client-golang/HpMessage"
 	"hp-client-golang/Protol"
+	"io/ioutil"
+	"log"
 	"net"
 	"os"
 	"strconv"
+	"time"
 )
 
 type HpClient struct {
@@ -67,19 +70,16 @@ func (client *HpClient) ReadHpMessage(f func(client *HpClient, message *HpMessag
 
 // ReadLocalMessage 读取本地代理通信数据
 func (client *HpClient) ReadLocalMessage(remote *HpClient) {
-	go func() {
-		reader := bufio.NewReader(client.conn)
-		//读消息
-		for {
-			size := reader.Size()
-			if size > 0 {
-				data := make([]byte, size)
-				println(string(data))
-				reader.Read(data)
-				remote.Write(data)
-			}
+	reader := bufio.NewReader(client.conn)
+	//读消息
+	for {
+		all, err := ioutil.ReadAll(reader)
+		if err != nil {
+			panic(err)
 		}
-	}()
+		time.Sleep(time.Second * 2)
+		log.Printf("本地响应：字节大小：%d---内容：%s\n", len(all), string(all))
+	}
 }
 
 // Write 写原始数据
