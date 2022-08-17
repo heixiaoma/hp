@@ -1,4 +1,4 @@
-package handler
+package tcp
 
 import "net"
 

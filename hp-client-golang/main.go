@@ -1,13 +1,13 @@
 package main
 
 import (
-	"hp-client-golang/net"
+	"hp-client-golang/tcp"
 	"log"
 )
 
 func main() {
 
-	hpClient := net.NewHpClient(func(message string) {
+	hpClient := tcp.NewHpClient(func(message string) {
 		log.Printf(message)
 	})
 	hpClient.Connect("127.0.0.1", 9091, "test", "123456", 1200, "127.0.0.1", 8888)

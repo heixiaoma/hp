@@ -1,7 +1,6 @@
-package net
+package tcp
 
 import (
-	"hp-client-golang/handler"
 	"io"
 	"net"
 )
@@ -21,8 +20,8 @@ func (hpClient *HpClient) Connect(serverAddress string, serverPort int, username
 	if hpClient.conn != nil {
 		hpClient.conn.Close()
 	}
-	connection := TcpConnection{}
-	hpClient.conn = connection.connect(serverAddress, serverPort, &handler.HpClientHandler{
+	connection := Connection{}
+	hpClient.conn = connection.Connect(serverAddress, serverPort, true, &HpClientHandler{
 		Port:         remotePort,
 		Password:     password,
 		Username:     username,

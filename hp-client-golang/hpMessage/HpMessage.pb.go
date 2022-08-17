@@ -6,7 +6,7 @@
 // 	protoc        v3.21.5
 // source: HpMessage.proto
 
-package HpMessage
+package hpMessage
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
