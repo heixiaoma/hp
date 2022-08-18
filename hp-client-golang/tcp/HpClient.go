@@ -1,6 +1,7 @@
 package tcp
 
 import (
+	"bufio"
 	"io"
 	"net"
 )
@@ -33,8 +34,9 @@ func (hpClient *HpClient) Connect(serverAddress string, serverPort int, username
 
 func (hpClient *HpClient) GetStatus() bool {
 	if hpClient.conn != nil {
+		reader := bufio.NewReader(hpClient.conn)
 		var one []byte
-		_, err := hpClient.conn.Read(one)
+		_, err := reader.Read(one)
 		if err != nil {
 			return false
 		}

@@ -3,6 +3,7 @@ package main
 import (
 	"hp-client-golang/tcp"
 	"log"
+	"time"
 )
 
 func main() {
@@ -27,7 +28,8 @@ func main() {
 	//
 	//client.ReadHpMessage(handler.Read)
 	//client.WriteHpMessage(message)
-	for true {
-
+	for {
+		println("状态：", hpClient.GetStatus())
+		time.Sleep(time.Duration(2) * time.Second)
 	}
 }
