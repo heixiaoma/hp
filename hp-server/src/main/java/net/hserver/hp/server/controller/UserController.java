@@ -6,6 +6,7 @@ import cn.hserver.plugin.web.annotation.POST;
 import cn.hserver.plugin.web.interfaces.HttpResponse;
 import net.hserver.hp.server.domian.vo.UserVo;
 import net.hserver.hp.server.service.UserService;
+import net.hserver.hp.server.utils.UserCheckUtil;
 import org.beetl.sql.core.page.PageResult;
 import cn.hserver.core.ioc.annotation.Autowired;
 import cn.hserver.core.server.util.JsonResult;
@@ -45,8 +46,13 @@ public class UserController {
     @POST("/user/reg")
     public JsonResult reg(String username, String password) {
         if (username != null && password != null) {
-            if (username.trim().length() < 5) {
+            //todo  检查特殊符号
+            username = username.trim();
+            if (username.length() <= 5) {
                 return JsonResult.error("注册的长度太短");
+            }
+            if (!UserCheckUtil.checkUsername(username)) {
+                return JsonResult.error("注册只能小写字母和数字");
             }
             if (userService.addUser(username.trim(), password.trim(), null)) {
                 return JsonResult.ok("注册成功");
