@@ -15,6 +15,7 @@ type HpClientHandler struct {
 	ProxyPort    int
 	CallMsg      func(message string)
 	Conn         net.Conn
+	Active       bool
 }
 
 var ConnGroup = make(map[string]net.Conn)
@@ -22,6 +23,7 @@ var ConnGroup = make(map[string]net.Conn)
 // ChannelActive 连接激活时，发送注册信息给云端
 func (h *HpClientHandler) ChannelActive(conn net.Conn) {
 	h.Conn = conn
+	h.Active = true
 	message := &hpMessage.HpMessage{
 		Type: hpMessage.HpMessage_REGISTER,
 		MetaData: &hpMessage.HpMessage_MetaData{
@@ -61,7 +63,7 @@ func (h *HpClientHandler) ChannelRead(conn net.Conn, data interface{}) {
 }
 
 func (h *HpClientHandler) ChannelInactive(conn net.Conn) {
-
+	h.Active = false
 }
 
 func (h *HpClientHandler) connected(message *hpMessage.HpMessage) {

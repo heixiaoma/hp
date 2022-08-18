@@ -22,18 +22,26 @@ func (connection *Connection) Connect(host string, port int, redType bool, handl
 		for {
 			if redType {
 				//hp读
-				decode, _ := protol.Decode(reader)
+				decode, err := protol.Decode(reader)
+				if err != nil {
+					handler.ChannelInactive(conn)
+				}
 				if decode != nil {
 					handler.ChannelRead(conn, decode)
 				}
 			} else {
 				//字节读
-				testData, _ := reader.Peek(1)
-				if testData != nil {
-					if reader.Buffered() > 0 {
-						data := make([]byte, reader.Buffered())
-						reader.Read(data)
-						handler.ChannelRead(conn, data)
+				if reader.Size() > 0 {
+					testData, err := reader.Peek(1)
+					if err != nil {
+						handler.ChannelInactive(conn)
+					}
+					if testData != nil {
+						if reader.Buffered() > 0 {
+							data := make([]byte, reader.Buffered())
+							reader.Read(data)
+							handler.ChannelRead(conn, data)
+						}
 					}
 				}
 			}

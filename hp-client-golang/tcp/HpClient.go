@@ -1,14 +1,13 @@
 package tcp
 
 import (
-	"bufio"
-	"io"
 	"net"
 )
 
 type HpClient struct {
 	CallMsg func(message string)
 	conn    net.Conn
+	handler *HpClientHandler
 }
 
 func NewHpClient(callMsg func(message string)) *HpClient {
@@ -22,28 +21,21 @@ func (hpClient *HpClient) Connect(serverAddress string, serverPort int, username
 		hpClient.conn.Close()
 	}
 	connection := Connection{}
-	hpClient.conn = connection.Connect(serverAddress, serverPort, true, &HpClientHandler{
+	handler := &HpClientHandler{
 		Port:         remotePort,
 		Password:     password,
 		Username:     username,
 		ProxyAddress: proxyAddress,
 		ProxyPort:    proxyPort,
 		CallMsg:      hpClient.CallMsg,
-	})
+	}
+	hpClient.handler = handler
+	hpClient.conn = connection.Connect(serverAddress, serverPort, true, handler)
 }
 
 func (hpClient *HpClient) GetStatus() bool {
-	if hpClient.conn != nil {
-		reader := bufio.NewReader(hpClient.conn)
-		var one []byte
-		_, err := reader.Read(one)
-		if err != nil {
-			return false
-		}
-		if err == io.EOF {
-			return false
-		}
-		return true
+	if hpClient.handler != nil {
+		return hpClient.handler.Active
 	} else {
 		return false
 	}
