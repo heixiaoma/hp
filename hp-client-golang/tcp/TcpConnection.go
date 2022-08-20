@@ -30,7 +30,6 @@ func (connection *Connection) Connect(host string, port int, redType bool, handl
 			//尝试读检查连接激活
 			_, err := reader.Peek(1)
 			if err != nil {
-				println("异常" + err.Error())
 				handler.ChannelInactive(conn)
 				return
 			}

@@ -3,7 +3,6 @@ package tcp
 import (
 	"hp-client-golang/HpMessage"
 	"hp-client-golang/Protol"
-	"log"
 	"net"
 	"sync"
 )
@@ -34,12 +33,10 @@ func (h *HpClientHandler) ChannelActive(conn net.Conn) {
 		},
 	}
 	conn.Write(protol.Encode(message))
-	h.CallMsg("HpClientHandler-ChannelActive:注册信息已发送")
 }
 
 func (h *HpClientHandler) ChannelRead(conn net.Conn, data interface{}) {
 	message := data.(*hpMessage.HpMessage)
-	log.Printf("消息类型：%s,消息内容：%s\n", message.Type.String(), message.String())
 	switch message.Type {
 	case hpMessage.HpMessage_REGISTER_RESULT:
 		h.CallMsg(message.MetaData.Reason)
@@ -94,9 +91,7 @@ func (h *HpClientHandler) writeData(message *hpMessage.HpMessage) {
 	if ok {
 		conn := load.(net.Conn)
 		if conn != nil {
-			log.Printf("写数据到本地")
 			conn.Write(message.Data)
-			log.Printf("写数据到本地完成")
 		}
 	}
 }

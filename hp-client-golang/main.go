@@ -4,7 +4,6 @@ import (
 	"hp-client-golang/tcp"
 	"log"
 	"sync"
-	"time"
 )
 
 var mutex sync.Mutex
@@ -14,7 +13,7 @@ func main() {
 	hpClient := tcp.NewHpClient(func(message string) {
 		log.Printf(message)
 	})
-	hpClient.Connect("127.0.0.1", 9091, "test", "123456", 1200, "127.0.0.1", 8888)
+	hpClient.Connect("127.0.0.1", 9091, "test", "123456", 12000, "192.168.5.1", 3306)
 
 	//client := Tcp.NewHpClient("127.0.0.1", 9091)
 	//message := &HpMessage.HpMessage{
@@ -32,7 +31,5 @@ func main() {
 	//client.ReadHpMessage(handler.Read)
 	//client.WriteHpMessage(message)
 	for {
-		println("状态：", hpClient.GetStatus())
-		time.Sleep(time.Duration(2) * time.Second)
 	}
 }
