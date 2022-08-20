@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"github.com/golang/protobuf/proto"
 	"hp-client-golang/HpMessage"
+	"io"
 )
 
 func Encode(message *hpMessage.HpMessage) []byte {
@@ -59,10 +60,11 @@ func decode(reader *bufio.Reader) ([]byte, error) {
 	}
 	header := bytesToInt(headerAndLength[0:4])
 	length := bytesToInt(headerAndLength[4:])
-	if header == 9999 && reader.Buffered() > length {
+	if header == 9999 {
 		//读取 header+长度
 		data := make([]byte, 8+length)
-		reader.Read(data)
+		//直接读完，不够的直接等待
+		_, err := io.ReadFull(reader, data)
 		return data[8:], err
 	} else {
 		return nil, nil

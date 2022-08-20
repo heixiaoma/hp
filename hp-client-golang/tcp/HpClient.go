@@ -20,7 +20,7 @@ func (hpClient *HpClient) Connect(serverAddress string, serverPort int, username
 	if hpClient.conn != nil {
 		hpClient.conn.Close()
 	}
-	connection := Connection{}
+	connection := NewConnection()
 	handler := &HpClientHandler{
 		Port:         remotePort,
 		Password:     password,

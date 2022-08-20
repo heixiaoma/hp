@@ -3,8 +3,11 @@ package main
 import (
 	"hp-client-golang/tcp"
 	"log"
+	"sync"
 	"time"
 )
+
+var mutex sync.Mutex
 
 func main() {
 

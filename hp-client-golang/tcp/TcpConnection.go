@@ -3,11 +3,18 @@ package tcp
 import (
 	"bufio"
 	"hp-client-golang/Protol"
+	"io"
+	"time"
+
 	"net"
 	"strconv"
 )
 
 type Connection struct {
+}
+
+func NewConnection() *Connection {
+	return &Connection{}
 }
 
 func (connection *Connection) Connect(host string, port int, redType bool, handler TcpHandler) net.Conn {
@@ -20,31 +27,30 @@ func (connection *Connection) Connect(host string, port int, redType bool, handl
 	go func() {
 		reader := bufio.NewReader(conn)
 		for {
+			//尝试读检查连接激活
+			_, err := reader.Peek(1)
+			if err != nil {
+				println("异常" + err.Error())
+				handler.ChannelInactive(conn)
+				return
+			}
 			if redType {
-				//hp读
-				decode, err := protol.Decode(reader)
-				if err != nil {
-					handler.ChannelInactive(conn)
+				decode, e := protol.Decode(reader)
+				if e != nil {
+					println(e.Error())
 				}
 				if decode != nil {
 					handler.ChannelRead(conn, decode)
 				}
+
 			} else {
-				//字节读
-				if reader.Size() > 0 {
-					testData, err := reader.Peek(1)
-					if err != nil {
-						handler.ChannelInactive(conn)
-					}
-					if testData != nil {
-						if reader.Buffered() > 0 {
-							data := make([]byte, reader.Buffered())
-							reader.Read(data)
-							handler.ChannelRead(conn, data)
-						}
-					}
+				if reader.Buffered() > 0 {
+					data := make([]byte, reader.Buffered())
+					io.ReadFull(reader, data)
+					handler.ChannelRead(conn, data)
 				}
 			}
+			time.Sleep(time.Duration(1) * time.Millisecond)
 		}
 	}()
 	return conn

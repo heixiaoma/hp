@@ -5,6 +5,7 @@ import (
 	"hp-client-golang/Protol"
 	"log"
 	"net"
+	"sync"
 )
 
 type HpClientHandler struct {
@@ -18,7 +19,7 @@ type HpClientHandler struct {
 	Active       bool
 }
 
-var ConnGroup = make(map[string]net.Conn)
+var ConnGroup = sync.Map{}
 
 // ChannelActive 连接激活时，发送注册信息给云端
 func (h *HpClientHandler) ChannelActive(conn net.Conn) {
@@ -67,29 +68,35 @@ func (h *HpClientHandler) ChannelInactive(conn net.Conn) {
 }
 
 func (h *HpClientHandler) connected(message *hpMessage.HpMessage) {
-	connection := Connection{}
-	connection.Connect(h.ProxyAddress, h.ProxyPort, false, &LocalProxyHandler{
+	NewConnection().Connect(h.ProxyAddress, h.ProxyPort, false, &LocalProxyHandler{
 		HpClientHandler: h,
 		RemoteChannelId: message.MetaData.ChannelId,
 	})
 }
 func (h *HpClientHandler) Add(channelId string, conn net.Conn) {
-	ConnGroup[channelId] = conn
+	ConnGroup.Store(channelId, conn)
 }
 
 func (h *HpClientHandler) Close(channelId string) {
-	conn := ConnGroup[channelId]
-	if conn != nil {
-		conn.Close()
+	load, ok := ConnGroup.Load(channelId)
+	if ok {
+		conn := load.(net.Conn)
+		if conn != nil {
+			conn.Close()
+			ConnGroup.Delete(channelId)
+		}
 	}
+
 }
 
 func (h *HpClientHandler) writeData(message *hpMessage.HpMessage) {
-	conn := ConnGroup[message.MetaData.ChannelId]
-	if conn != nil {
-		log.Printf("写数据到本地")
-		conn.Write(message.Data)
-		log.Printf("写数据到本地完成")
-
+	load, ok := ConnGroup.Load(message.MetaData.ChannelId)
+	if ok {
+		conn := load.(net.Conn)
+		if conn != nil {
+			log.Printf("写数据到本地")
+			conn.Write(message.Data)
+			log.Printf("写数据到本地完成")
+		}
 	}
 }
