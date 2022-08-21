@@ -8,14 +8,13 @@ import net.hserver.hp.server.domian.vo.UserVo;
 import net.hserver.hp.server.handler.HpServerHandler;
 import net.hserver.hp.server.service.UserService;
 import net.hserver.hp.server.utils.DateUtil;
+import org.beetl.sql.core.SQLReady;
 import org.beetl.sql.core.page.PageResult;
 import cn.hserver.core.ioc.annotation.Autowired;
 import cn.hserver.core.ioc.annotation.Bean;
 import org.beetl.sql.core.query.LambdaQuery;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author hxm
@@ -168,5 +167,15 @@ public class UserServiceImpl implements UserService {
             portDao.deleteById(portEntity.getId());
         }
         userDao.deleteById(user.getId());
+    }
+
+    @Override
+    public void removeExp() {
+        Calendar instance = Calendar.getInstance();
+        instance.setTime(new Date());
+        instance.add(Calendar.MONTH,-1);
+        userDao.getSQLManager().executeUpdate(
+                new SQLReady("delete from sys_user where login_time < "+instance.getTimeInMillis())
+        );
     }
 }

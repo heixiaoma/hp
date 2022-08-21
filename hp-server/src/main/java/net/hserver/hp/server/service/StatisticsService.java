@@ -29,6 +29,7 @@ public interface StatisticsService {
 
     /**
      * 按用户名查询
+     *
      * @param page
      * @param pageSize
      * @param username
@@ -43,5 +44,10 @@ public interface StatisticsService {
      * @param id
      */
     void remove(String id);
+
+    /**
+     * 删除超过1个月的日志
+     */
+    void removeExpData();
 
 }

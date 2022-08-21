@@ -77,4 +77,9 @@ public interface UserService {
      */
     void remove(String username);
 
+    /**
+     * 移除过期用户
+     */
+    void removeExp();
+
 }

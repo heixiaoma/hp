@@ -6,10 +6,13 @@ import net.hserver.hp.server.domian.entity.AppEntity;
 import net.hserver.hp.server.domian.entity.StatisticsEntity;
 import net.hserver.hp.server.service.StatisticsService;
 import net.hserver.hp.server.utils.DateUtil;
+import org.beetl.sql.core.SQLReady;
 import org.beetl.sql.core.page.PageResult;
 import cn.hserver.core.ioc.annotation.Autowired;
 import cn.hserver.core.ioc.annotation.Bean;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -60,5 +63,15 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Override
     public void remove(String id) {
         statisticsDao.deleteById(id);
+    }
+
+    @Override
+    public void removeExpData() {
+        Calendar instance = Calendar.getInstance();
+        instance.setTime(new Date());
+        instance.add(Calendar.MONTH,-1);
+        statisticsDao.getSQLManager().executeUpdate(
+                new SQLReady("delete from sys_statistics where create_time <"+instance.getTimeInMillis())
+        );
     }
 }
