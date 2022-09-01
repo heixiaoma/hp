@@ -1,5 +1,5 @@
 <#include "/header.ftl">
-<script type="text/javascript" src="/js/echarts.min.js"></script>
+<script type="text/javascript" src="/admin/js/echarts.min.js"></script>
 <#--监控页面-->
 <div style="padding: 1rem">
 
