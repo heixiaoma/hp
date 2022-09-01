@@ -49,6 +49,12 @@ public class HpWebProxyProtocolDispatcher extends DispatchHttp {
     @Override
     public boolean dispatcher(ChannelHandlerContext ctx, ChannelPipeline channelPipeline, byte[] headers) {
         InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().localAddress();
+
+        //老的接口进行兼容
+        if (socketAddress.getPort()==9090){
+            return super.dispatcher(ctx, channelPipeline, headers);
+        }
+
         if (socketAddress.getPort() == 80 || socketAddress.getPort() == 443) {
             try {
                 String host = HostUtil.getHost(ByteBuffer.wrap(headers));

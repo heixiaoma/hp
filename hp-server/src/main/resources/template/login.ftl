@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>认证识别</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/admin/css/style.css">
 </head>
 <body>
 
