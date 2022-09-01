@@ -42,7 +42,7 @@
                 <#list list as userVo>
                     <tr>
                         <div class="mdui-dialog" id="${userVo.username}">
-                            <form method="post" action="/user/edit?page=${page}">
+                            <form method="post" action="/admin/user/edit?page=${page}">
                                 <div class="mdui-dialog-title">编辑</div>
                                 <div class="mdui-dialog-content">
                                     <div class="mdui-textfield">
@@ -96,7 +96,7 @@
                                 编辑
                             </button>
                             <a class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-orange-accent mdui-ripple"
-                               href="/user/remove?page=${page}&username=${userVo.username}">
+                               href="/admin/user/remove?page=${page}&username=${userVo.username}">
                                 删除
                             </a>
                         </td>
@@ -111,7 +111,7 @@
     <#--  添加  -->
 
     <div class="mdui-dialog" id="addUser">
-        <form method="post" action="/user/add?page=${page}">
+        <form method="post" action="/admin/user/add?page=${page}">
             <div class="mdui-dialog-content">
                 <div class="mdui-textfield">
                     <input class="mdui-textfield-input" name="username" placeholder="用户名" type="text"/>
@@ -142,7 +142,7 @@
         jump: true, //是否支持跳转
         callback: function (page) { // 回调函数
             if (pageConst != page) {
-                location.href = "/user?page=" + page + "&username=" + username;
+                location.href = "/admin/user?page=" + page + "&username=" + username;
             }
             console.log(page)
         }
@@ -153,7 +153,7 @@
 
 
     $("#selectButton").click(function () {
-        location.href = "/user?page=1&username=" + $("#username").val();
+        location.href = "/admin/user?page=1&username=" + $("#username").val();
     })
 
 </script>

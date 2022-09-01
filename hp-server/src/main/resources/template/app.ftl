@@ -8,7 +8,7 @@
             添加版本
         </button>
 
-        <form method="post" action="/app/upload?page=${page}" style="margin-top: 10px" enctype="multipart/form-data">
+        <form method="post" action="/admin/app/upload?page=${page}" style="margin-top: 10px" enctype="multipart/form-data">
             <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-purple-accent mdui-ripple"
                     onclick="">
                 上传最新APK
@@ -38,7 +38,7 @@
                         <td>${app.createTime}</td>
                         <td>
                             <a class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-orange-accent mdui-ripple"
-                               href="/app/remove?page=${page}&id=${app.id}">
+                               href="/admin/app/remove?page=${page}&id=${app.id}">
                                 删除
                             </a>
                         </td>
@@ -53,7 +53,7 @@
     <#--  添加  -->
 
     <div class="mdui-dialog" id="add">
-        <form method="post" action="/app/add?page=${page}">
+        <form method="post" action="/admin/app/add?page=${page}">
             <div class="mdui-dialog-content">
                 <div class="mdui-textfield">
                     <input class="mdui-textfield-input" name="versionCode" placeholder="版本号" type="text"/>
@@ -80,7 +80,7 @@
         jump: true, //是否支持跳转
         callback: function (page) { // 回调函数
             if (pageConst != page) {
-                location.href = "/app?page=" + page;
+                location.href = "/admin/app?page=" + page;
             }
             console.log(page)
         }

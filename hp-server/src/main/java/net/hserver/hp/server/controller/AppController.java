@@ -30,7 +30,7 @@ public class AppController {
     @Autowired
     private AppService appService;
 
-    @GET("/app")
+    @GET("/admin/app")
     public void index(Integer page, HttpResponse response) {
         if (page == null) {
             page = 1;
@@ -45,7 +45,7 @@ public class AppController {
         response.sendTemplate("/app.ftl", data);
     }
 
-    @POST("/app/add")
+    @POST("/admin/app/add")
     public void add(Integer page, HttpResponse response, AppEntity appEntity) {
         try {
             if (appEntity != null && appEntity.getVersionCode().trim().length() > 0 && appEntity.getUpdateContent().trim().length() > 0) {
@@ -56,7 +56,7 @@ public class AppController {
         index(page, response);
     }
 
-    @POST("/app/upload")
+    @POST("/admin/app/upload")
     public void add(Integer page, HttpResponse response, HttpRequest request) throws IOException {
         PartFile apk = request.queryFile("apk");
         apk.moveTo(new File("./hp-client.apk"));
@@ -83,7 +83,7 @@ public class AppController {
         },request.getCtx());
     }
 
-    @GET("/app/remove")
+    @GET("/admin/app/remove")
     public void remove(Integer page, HttpResponse response, String id) {
         if (id != null) {
             appService.remove(id);

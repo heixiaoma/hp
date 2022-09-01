@@ -3,14 +3,9 @@ package net.hserver.hp.server.task;
 import cn.hserver.core.ioc.annotation.Autowired;
 import cn.hserver.core.ioc.annotation.Bean;
 import cn.hserver.core.ioc.annotation.Task;
-import net.hserver.hp.server.dao.StatisticsDao;
-import net.hserver.hp.server.dao.UserDao;
 import net.hserver.hp.server.domian.bean.GlobalStat;
 import net.hserver.hp.server.service.StatisticsService;
 import net.hserver.hp.server.service.UserService;
-
-import java.util.Calendar;
-import java.util.Date;
 
 @Bean
 public class FlowTask {

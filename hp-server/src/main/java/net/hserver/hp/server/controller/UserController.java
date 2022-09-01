@@ -23,7 +23,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GET("/user")
+    @GET("/admin/user")
     public void index(Integer page, HttpResponse response, String username) {
         if (page == null) {
             page = 1;
@@ -75,7 +75,7 @@ public class UserController {
     }
 
 
-    @POST("/user/edit")
+    @POST("/admin/user/edit")
     public void edit(Integer page, HttpResponse response, String username, String password, String ports, Integer type) {
         if (username != null) {
             userService.editUser(username, password, ports, type);
@@ -83,7 +83,7 @@ public class UserController {
         index(page, response, null);
     }
 
-    @POST("/user/add")
+    @POST("/admin/user/add")
     public void add(Integer page, HttpResponse response, String username, String password, String ports) {
         if (username != null) {
             userService.addUser(username, password, ports);
@@ -91,7 +91,7 @@ public class UserController {
         index(page, response, null);
     }
 
-    @GET("/user/remove")
+    @GET("/admin/user/remove")
     public void remove(Integer page, HttpResponse response, String username) {
         if (username != null) {
             userService.remove(username);

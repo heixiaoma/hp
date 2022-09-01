@@ -32,7 +32,7 @@
         let value = elementById.value;
         if (value) {
             document.cookie = "auth=" + value;
-            location.href = "/";
+            location.href = "/admin";
         }
     }
 

@@ -1,6 +1,7 @@
 package net.hserver.hp.server.protocol;
 
 import cn.hserver.HServerApplication;
+import cn.hserver.core.ioc.annotation.Autowired;
 import cn.hserver.core.server.util.ExceptionUtil;
 import cn.hserver.core.server.util.protocol.HostUtil;
 import cn.hserver.core.server.util.protocol.ProtocolUtil;
@@ -8,12 +9,14 @@ import cn.hserver.core.server.util.protocol.SSLUtils;
 import cn.hserver.plugin.web.annotation.POST;
 import cn.hserver.plugin.web.context.WebConstConfig;
 import cn.hserver.plugin.web.handlers.BuildResponse;
+import cn.hserver.plugin.web.protocol.DispatchHttp;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.util.ReferenceCountUtil;
+import net.hserver.hp.server.config.WebConfig;
 import net.hserver.hp.server.handler.HpServerHandler;
 import net.hserver.hp.server.handler.proxy.FrontendHandler;
 import cn.hserver.core.interfaces.ProtocolDispatcherAdapter;
@@ -35,7 +38,11 @@ import static net.hserver.hp.server.utils.FileUtil.readFile;
  */
 @Order(0)
 @Bean
-public class HpWebProxyProtocolDispatcher implements ProtocolDispatcherAdapter {
+public class HpWebProxyProtocolDispatcher extends DispatchHttp {
+
+    @Autowired
+    private WebConfig webConfig;
+
     private static final Logger log = LoggerFactory.getLogger(HpWebProxyProtocolDispatcher.class);
 
     //判断HP头
@@ -47,6 +54,10 @@ public class HpWebProxyProtocolDispatcher implements ProtocolDispatcherAdapter {
                 String host = HostUtil.getHost(ByteBuffer.wrap(headers));
                 log.debug("version:{},host:{}", SSLUtils.verifyPacket(ByteBuffer.wrap(headers)), host);
                 if (host != null) {
+                    // 检查是否是否官方主域名？如果是主域名走内部接口
+                    if (host.startsWith(webConfig.getHost())) {
+                        return super.dispatcher(ctx, channelPipeline, headers);
+                    }
                     final Integer[] userPort = {-1};
                     String[] split = host.split("\\.");
                     String username = split[0];

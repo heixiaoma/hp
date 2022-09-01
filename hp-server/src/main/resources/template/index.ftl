@@ -198,7 +198,7 @@
         jump: true, //是否支持跳转
         callback: function (page) { // 回调函数
             if (pageConst != page) {
-                location.href = "/?page=" + page;
+                location.href = "/admin/?page=" + page;
             }
             console.log(page)
         }

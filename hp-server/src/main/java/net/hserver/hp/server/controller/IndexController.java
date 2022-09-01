@@ -30,7 +30,7 @@ public class IndexController {
     @Autowired
     private StatisticsService statisticsService;
 
-    @GET("/")
+    @GET("/admin")
     public void index(Integer page, HttpResponse response) {
         if (page == null) {
             page = 1;
