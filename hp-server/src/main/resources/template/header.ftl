@@ -38,6 +38,12 @@
                 <div class="mdui-list-item-content">用户管理</div>
             </div>
         </a>
+        <a class="mdui-collapse-item mdui-collapse-item-open" href="/admin/tips">
+            <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                <i class="mdui-list-item-icon mdui-icon  material-icons mdui-text-color-purple">layers</i>
+                <div class="mdui-list-item-content">公告管理</div>
+            </div>
+        </a>
         <a class="mdui-collapse-item mdui-collapse-item-open" href="/admin/app">
             <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
                 <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-green">layers</i>

@@ -16,8 +16,6 @@ public class AuthFilter implements FilterAdapter {
     @Autowired
     private WebConfig webConfig;
 
-    private static final String[] URI = {"login", "reg", "getVersion", "download", "getMyInfo"};
-
     @Override
     public void doFilter(Webkit webkit) throws Exception {
         HttpRequest request = webkit.httpRequest;
