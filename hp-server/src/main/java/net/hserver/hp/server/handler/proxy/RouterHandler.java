@@ -26,6 +26,7 @@ public class RouterHandler extends SimpleChannelInboundHandler<HttpRequest> {
         } else {
             ctx.writeAndFlush(BuildResponse.buildString(Objects.requireNonNull(readFile(FileUtil.class.getResourceAsStream("/static/tmp.html")))));
         }
+        ctx.close();
     }
 
 

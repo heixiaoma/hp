@@ -1,35 +1,37 @@
 package main
 
 import (
+	"fmt"
+	"github.com/spf13/viper"
 	"hp-client-golang/tcp"
 	"log"
-	"sync"
 )
-
-var mutex sync.Mutex
 
 func main() {
 
+
+	config := viper.New()
+	config.AddConfigPath("./")  // 文件所在目录
+	config.SetConfigName("config")        // 文件名
+	config.SetConfigType("ini")      // 文件类型
+	if err := config.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			fmt.Println("找不到配置文件..")
+		} else {
+			fmt.Println("配置文件出错..")
+		}
+	}
+	username := config.GetString("hp.username")
+	password := config.GetString("hp.password")
+	remote_port := config.GetInt("hp.remote_port")
+	log.Printf("用户名:%s 密码:%s ,外部访问的端口：%d",username,password,remote_port)
+	ip := config.GetString("proxy.ip")
+	port := config.GetInt("proxy.port")
+	log.Printf("本地IP:%s 本地端口：%d",ip,port)
 	hpClient := tcp.NewHpClient(func(message string) {
 		log.Printf(message)
 	})
-	hpClient.Connect("127.0.0.1", 9091, "test", "123456", 12000, "192.168.5.1", 3306)
-
-	//client := Tcp.NewHpClient("127.0.0.1", 9091)
-	//message := &HpMessage.HpMessage{
-	//	Type: HpMessage.HpMessage_REGISTER,
-	//	MetaData: &HpMessage.HpMessage_MetaData{
-	//		Port:     *proto.Int32(12000),
-	//		Username: *proto.String("test"),
-	//		Password: *proto.String("123456"),
-	//	},
-	//}
-	//handler := Tcp.NewRemoteHandler("127.0.0.1", 777, client, func(data string) {
-	//	log.Printf(data)
-	//})
-	//
-	//client.ReadHpMessage(handler.Read)
-	//client.WriteHpMessage(message)
+	hpClient.Connect("ksweb.club", 9091, username, password, remote_port, ip, port)
 	for {
 	}
 }
