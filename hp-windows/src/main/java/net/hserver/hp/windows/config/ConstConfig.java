@@ -7,9 +7,9 @@ public class ConstConfig {
     public final static String IP = "ksweb.club";
 //    public final static String IP = "192.168.123.220";
 
-    public final static Integer PORT = 9090;
+    public final static Integer PORT = 9091;
 
-    public final static String URL = "http://" + IP + ":" + PORT;
+    public final static String URL = "http://" + IP;
 
     public final static String USERNAME = "USERNAME";
 
