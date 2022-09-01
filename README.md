@@ -64,6 +64,6 @@ java -jar hp-client.jar -server_addr 127.0.0.1 -server_port 9090 -username jishu
 
 ### Golang客服端
 为了跨平台我们提供golang的实现
-<img src="https://gitee.com/HServer/hp/raw/master/doc/c.jpg" width="500" />
+<img src="https://gitee.com/HServer/hp/raw/master/doc/c.png" width="500" />
 
 [![HServer/hp-android-client](https://gitee.com/HServer/hp-android-client/widgets/widget_card.svg?colors=4183c4,ffffff,ffffff,e3e9ed,666666,9b9b9b)](https://gitee.com/HServer/hp-android-client)
