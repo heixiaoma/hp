@@ -7,6 +7,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.util.ReferenceCountUtil;
+import io.netty.util.ReferenceCounted;
 
 public class BackendHandler extends ChannelInboundHandlerAdapter {
 
@@ -28,7 +29,13 @@ public class BackendHandler extends ChannelInboundHandlerAdapter {
                 ctx.channel().read();
             } else {
                 future.channel().close();
-                ReferenceCountUtil.release(msg);
+                inboundChannel.close();
+                if (msg == ReferenceCounted.class) {
+                    ReferenceCounted msg1 = (ReferenceCounted) msg;
+                    if (msg1.refCnt() > 0) {
+                        ReferenceCountUtil.release(msg);
+                    }
+                }
             }
         });
     }
