@@ -2,6 +2,7 @@ package net.hserver.hp.common.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import net.hserver.hp.common.protocol.HpMessageData;
@@ -9,7 +10,7 @@ import net.hserver.hp.common.protocol.HpMessageData;
 /**
  * @author hxm
  */
-public class HpAbsHandler extends ChannelInboundHandlerAdapter {
+public abstract class HpAbsHandler extends SimpleChannelInboundHandler<byte[]> {
 
     protected ChannelHandlerContext ctx;
 
@@ -27,6 +28,12 @@ public class HpAbsHandler extends ChannelInboundHandlerAdapter {
         System.out.println("Exception caught ......");
         cause.printStackTrace();
         ctx.close();
+    }
+
+
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+        ctx.flush();
     }
 
     @Override

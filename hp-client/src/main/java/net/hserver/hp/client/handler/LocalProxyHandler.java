@@ -12,25 +12,14 @@ import net.hserver.hp.common.protocol.HpMessageData;
 /**
  * @author hxm
  */
-public class LocalProxyHandler extends SimpleChannelInboundHandler<byte[]> {
+public class LocalProxyHandler extends HpAbsHandler  {
 
-    private final HpCommonHandler proxyHandler;
+    private final HpClientHandler proxyHandler;
     private final String remoteChannelId;
-    private ChannelHandlerContext ctx;
 
-    public ChannelHandlerContext getCtx() {
-        return ctx;
-    }
-
-    public LocalProxyHandler(HpCommonHandler proxyHandler, String remoteChannelId) {
-        this.proxyHandler = proxyHandler;
+    public LocalProxyHandler(HpClientHandler hpClientHandler, String remoteChannelId) {
+        this.proxyHandler = hpClientHandler;
         this.remoteChannelId = remoteChannelId;
-    }
-
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        this.ctx = ctx;
-        super.channelActive(ctx);
     }
 
     @Override
@@ -50,4 +39,6 @@ public class LocalProxyHandler extends SimpleChannelInboundHandler<byte[]> {
                         setChannelId(remoteChannelId).build()).setType(HpMessageData.HpMessage.HpMessageType.DISCONNECTED).build();
         proxyHandler.getCtx().writeAndFlush(build);
     }
+
+
 }

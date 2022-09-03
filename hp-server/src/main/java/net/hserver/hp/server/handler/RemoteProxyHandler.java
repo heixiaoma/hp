@@ -39,17 +39,12 @@ public class RemoteProxyHandler extends HpAbsHandler {
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        try {
-            byte[] data = (byte[]) msg;
-            tcpServer.addPackNum();
-            HpMessageData.HpMessage.Builder messageBuilder = HpMessageData.HpMessage.newBuilder();
-            messageBuilder.setType(HpMessageData.HpMessage.HpMessageType.DATA);
-            messageBuilder.setMetaData(HpMessageData.HpMessage.MetaData.newBuilder().setChannelId(ctx.channel().id().asLongText()).build());
-            messageBuilder.setData(ByteString.copyFrom(data));
-            proxyHandler.getCtx().writeAndFlush(messageBuilder.build());
-        }finally {
-            ReferenceCountUtil.release(msg);
-        }
+    public void channelRead0(ChannelHandlerContext ctx, byte[] msg) throws Exception {
+        tcpServer.addPackNum();
+        HpMessageData.HpMessage.Builder messageBuilder = HpMessageData.HpMessage.newBuilder();
+        messageBuilder.setType(HpMessageData.HpMessage.HpMessageType.DATA);
+        messageBuilder.setMetaData(HpMessageData.HpMessage.MetaData.newBuilder().setChannelId(ctx.channel().id().asLongText()).build());
+        messageBuilder.setData(ByteString.copyFrom(msg));
+        proxyHandler.getCtx().writeAndFlush(messageBuilder.build());
     }
 }

@@ -59,6 +59,7 @@ public class HpClientHandler extends HpCommonHandler {
     }
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HpMessageData.HpMessage message) throws Exception {
+        System.out.println(message);
         if (message.getType() == HpMessageData.HpMessage.HpMessageType.REGISTER_RESULT) {
             processRegisterResult(message);
         } else if (message.getType() == HpMessageData.HpMessage.HpMessageType.CONNECTED) {
@@ -96,12 +97,11 @@ public class HpClientHandler extends HpCommonHandler {
      */
     private void processConnected(final HpMessageData.HpMessage message) throws Exception {
         try {
-            final HpClientHandler thisHandler = this;
+            LocalProxyHandler localProxyHandler = new LocalProxyHandler(this, message.getMetaData().getChannelId());
             TcpConnection localConnection = new TcpConnection();
             localConnection.connect(proxyAddress, proxyPort, new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
-                    LocalProxyHandler localProxyHandler = new LocalProxyHandler(thisHandler, message.getMetaData().getChannelId());
                     ch.pipeline().addLast(new ByteArrayDecoder(), new ByteArrayEncoder(), localProxyHandler);
                     channelHandlerMap.put(message.getMetaData().getChannelId(), localProxyHandler);
                     channelGroup.add(ch);
@@ -141,6 +141,7 @@ public class HpClientHandler extends HpCommonHandler {
         if (handler != null&&handler.getCtx()!=null) {
             ChannelHandlerContext ctx = handler.getCtx();
             ctx.writeAndFlush(message.getData().toByteArray());
+            System.out.println("发送数据："+channelId);
         }
     }
 }

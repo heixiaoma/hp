@@ -26,7 +26,6 @@ public class TcpConnection {
             b.channel(NioSocketChannel.class);
             b.option(ChannelOption.SO_KEEPALIVE, true);
             b.handler(channelInitializer);
-
             Channel channel = b.connect(host, port).sync().channel();
             return channel.closeFuture().addListener(future -> workerGroup.shutdownGracefully());
         } catch (Exception e) {
