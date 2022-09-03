@@ -59,7 +59,6 @@ public class HpClientHandler extends HpCommonHandler {
     }
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HpMessageData.HpMessage message) throws Exception {
-        System.out.println(message);
         if (message.getType() == HpMessageData.HpMessage.HpMessageType.REGISTER_RESULT) {
             processRegisterResult(message);
         } else if (message.getType() == HpMessageData.HpMessage.HpMessageType.CONNECTED) {
