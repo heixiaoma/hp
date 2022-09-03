@@ -32,7 +32,7 @@ public class HpClientHandler extends HpCommonHandler {
     private String proxyAddress;
     private int proxyPort;
     private CallMsg callMsg;
-    private ConcurrentHashMap<String, HpAbsHandler> channelHandlerMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, LocalProxyHandler> channelHandlerMap = new ConcurrentHashMap<>();
     private ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     public HpClientHandler(int port, String username, String password, String proxyAddress, int proxyPort, CallMsg callMsg) {
@@ -125,7 +125,7 @@ public class HpClientHandler extends HpCommonHandler {
      */
     private void processDisconnected(HpMessageData.HpMessage message) {
         String channelId = message.getMetaData().getChannelId();
-        HpAbsHandler handler = channelHandlerMap.get(channelId);
+        LocalProxyHandler handler = channelHandlerMap.get(channelId);
         if (handler != null) {
             handler.getCtx().close();
             channelHandlerMap.remove(channelId);
@@ -137,7 +137,7 @@ public class HpClientHandler extends HpCommonHandler {
      */
     private void processData(HpMessageData.HpMessage message) {
         String channelId = message.getMetaData().getChannelId();
-        HpAbsHandler handler = channelHandlerMap.get(channelId);
+        LocalProxyHandler handler = channelHandlerMap.get(channelId);
         if (handler != null&&handler.getCtx()!=null) {
             ChannelHandlerContext ctx = handler.getCtx();
             ctx.writeAndFlush(message.getData().toByteArray());
