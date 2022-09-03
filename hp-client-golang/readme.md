@@ -6,7 +6,7 @@ docker 方式运行
 docker pull registry.cn-shenzhen.aliyuncs.com/hserver/hp:v1
 ```
 
-- 1.设置映射目录：/hp-client
+- 1.设置映射目录：/hp-client-golang-amd64
 - 2.配置文件放在映射目录里：config.ini
 ```properties
 [hp]
