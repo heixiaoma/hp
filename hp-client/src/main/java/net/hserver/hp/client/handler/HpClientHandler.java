@@ -141,7 +141,6 @@ public class HpClientHandler extends HpCommonHandler {
         if (handler != null&&handler.getCtx()!=null) {
             ChannelHandlerContext ctx = handler.getCtx();
             ctx.writeAndFlush(message.getData().toByteArray());
-            System.out.println("发送数据："+channelId);
         }
     }
 }
