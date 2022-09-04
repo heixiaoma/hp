@@ -66,4 +66,40 @@ java -jar hp-client.jar -server_addr 127.0.0.1 -server_port 9090 -username jishu
 为了跨平台我们提供golang的实现
 <img src="https://gitee.com/HServer/hp/raw/master/doc/c.png" width="500" />
 
+#docker 方式运行
+
+仓库地址：registry.cn-shenzhen.aliyuncs.com/hserver/hp
+
+```shell
+docker pull registry.cn-shenzhen.aliyuncs.com/hserver/hp:v2
+```
+
+启动设置命令行
+```shell
+cmd:./hp-client-golang-amd64 -username xx -password 123 -remote_port 5000 -ip 127.0.0.1 -port 5000
+```
+
+
+#二进制文件运行
+运行方式
+```shell
+./hp-client-golang-amd64 -username xx -password 123 -remote_port 5000 -ip 127.0.0.1 -port 5000
+#或者添加config.ini
+[hp]
+#HP账号
+username='heixiaoma'
+#HP密码
+password='123456'
+#外部端口如果没有，服务会随机分配
+remote_port=5000
+
+
+[proxy]
+#本地代理的IP
+ip='192.168.5.214'
+#本地代理的端口
+port=5000
+```
+
+
 [![HServer/hp-android-client](https://gitee.com/HServer/hp-android-client/widgets/widget_card.svg?colors=4183c4,ffffff,ffffff,e3e9ed,666666,9b9b9b)](https://gitee.com/HServer/hp-android-client)
