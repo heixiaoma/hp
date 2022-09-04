@@ -3,7 +3,7 @@ docker 方式运行
 仓库地址：registry.cn-shenzhen.aliyuncs.com/hserver/hp
 
 ```shell
-docker pull registry.cn-shenzhen.aliyuncs.com/hserver/hp:v1
+docker pull registry.cn-shenzhen.aliyuncs.com/hserver/hp:v2
 ```
 
 - 1.设置映射目录：/hp-client-golang-amd64
@@ -11,7 +11,7 @@ docker pull registry.cn-shenzhen.aliyuncs.com/hserver/hp:v1
 ```properties
 [hp]
 #HP账号
-username='nas'
+username='heixiaoma'
 #HP密码
 password='123456'
 #外部端口如果没有，服务会随机分配
