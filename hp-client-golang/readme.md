@@ -11,16 +11,16 @@ docker pull registry.cn-shenzhen.aliyuncs.com/hserver/hp:v1
 ```properties
 [hp]
 #HP账号
-username='heixiaoma'
+username='nas'
 #HP密码
 password='123456'
 #外部端口如果没有，服务会随机分配
-remote_port=8080
+remote_port=5000
 
 
 [proxy]
 #本地代理的IP
-ip='192.168.123.85'
+ip='192.168.5.214'
 #本地代理的端口
-port=8080
+port=5000
 ```
