@@ -66,7 +66,7 @@ java -jar hp-client.jar -server_addr 127.0.0.1 -server_port 9090 -username jishu
 为了跨平台我们提供golang的实现
 <img src="https://gitee.com/HServer/hp/raw/master/doc/c.png" width="500" />
 
-#docker 方式运行
+# docker 方式运行
 
 仓库地址：registry.cn-shenzhen.aliyuncs.com/hserver/hp
 
@@ -80,11 +80,11 @@ cmd:./hp-client-golang-amd64 -username xx -password 123 -remote_port 5000 -ip 12
 ```
 
 
-#二进制文件运行
+# 二进制文件运行
 运行方式
 ```shell
 ./hp-client-golang-amd64 -username xx -password 123 -remote_port 5000 -ip 127.0.0.1 -port 5000
-#或者添加config.ini
+# 或者添加config.ini
 [hp]
 #HP账号
 username='heixiaoma'
