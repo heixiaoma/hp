@@ -12,3 +12,5 @@ ENV GO111MODULE=on \
     GOARCH=amd64
 
 CMD ["./hp-client-golang-amd64"]
+
+#docker build -t hp-client .
