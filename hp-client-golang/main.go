@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/spf13/viper"
 	"hp-client-golang/tcp"
 	"log"
@@ -16,9 +15,9 @@ func main() {
 	config.SetConfigType("ini")    // 文件类型
 	if err := config.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			fmt.Println("找不到配置文件..")
+			log.Printf("找不到配置文件..")
 		} else {
-			fmt.Println("配置文件出错..")
+			log.Printf("配置文件出错..")
 		}
 	}
 	username := config.GetString("hp.username")
