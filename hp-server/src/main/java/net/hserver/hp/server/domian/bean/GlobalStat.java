@@ -1,70 +1,25 @@
 package net.hserver.hp.server.domian.bean;
 
+import net.hserver.hp.server.domian.entity.ProxyServerEntity;
 import net.hserver.hp.server.utils.DateUtil;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.LongAdder;
 
 public class GlobalStat {
 
-    public final static List<Stat> STATS = new ArrayList<>();
-
-    private static final LongAdder connectNum = new LongAdder();
-
-    private static final LongAdder packNum = new LongAdder();
-
-    private static final LongAdder send = new LongAdder();
-
-    private static final LongAdder receive = new LongAdder();
+    public final static Map<String, List<ProxyServerEntity>> STATS = new ConcurrentHashMap<>();
 
 
-    /**
-     * 添加连接数
-     */
-    public static void addConnectNum() {
-        connectNum.increment();
-    }
-
-    /**
-     * 添加发包总量
-     */
-    public static void addPackNum() {
-        packNum.increment();
-    }
-
-    /**
-     * 发送字节大小
-     *
-     */
-    public static void addSend(long sendSize) {
-        send.add(sendSize);
-    }
-
-    /**
-     * 接受字节大小
-     */
-    public static void addReceive(long receiveSize) {
-        receive.add(receiveSize);
-    }
-
-
-    public static void clear() {
-        Stat stat = new Stat();
-        stat.setReceive(receive.longValue());
-        receive.reset();
-        stat.setConnectNum(connectNum.longValue());
-        connectNum.reset();
-        stat.setSend(send.longValue());
-        send.reset();
-        stat.setPackNum(packNum.longValue());
-        packNum.reset();
-        stat.setDate(DateUtil.dateToStamp(new Date()));
-        STATS.add(stat);
-        while (STATS.size()>500){
-            STATS.remove(0);
+    public static void add(ProxyServerEntity proxyServerEntity) {
+        String name = proxyServerEntity.getName();
+        List<ProxyServerEntity> stats = STATS.computeIfAbsent(name, k -> new ArrayList<>());
+        stats.add(proxyServerEntity);
+        while (stats.size()>500){
+            stats.remove(0);
         }
     }
-
 
     public static class Stat {
         private String date;

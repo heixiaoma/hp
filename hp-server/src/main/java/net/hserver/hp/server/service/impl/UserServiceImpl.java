@@ -5,7 +5,6 @@ import net.hserver.hp.server.dao.UserDao;
 import net.hserver.hp.server.domian.entity.PortEntity;
 import net.hserver.hp.server.domian.entity.UserEntity;
 import net.hserver.hp.server.domian.vo.UserVo;
-import net.hserver.hp.server.handler.HpServerHandler;
 import net.hserver.hp.server.service.UserService;
 import net.hserver.hp.server.utils.DateUtil;
 import org.beetl.sql.core.SQLReady;
@@ -102,7 +101,6 @@ public class UserServiceImpl implements UserService {
                 user.setType(type);
                 if (type == -1) {
                     //强制下线操作
-                    HpServerHandler.offline(username);
                 }
             }
             user.setPassword(password);

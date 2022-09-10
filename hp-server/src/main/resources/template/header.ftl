@@ -19,25 +19,40 @@
     <div class="mdui-toolbar mdui-color-theme">
         <span class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white"
               mdui-drawer="{target: '#main-drawer', swipe: true}"><i class="mdui-icon material-icons">menu</i></span>
-        <a href="/admin" class="mdui-typo-headline mdui-hidden-xs">内网穿透</a>
+        <a href="/admin/proxy" class="mdui-typo-headline mdui-hidden-xs">内网穿透</a>
         <div class="mdui-toolbar-spacer"></div>
     </div>
 </header>
 <!--菜單-->
 <div class="mdui-drawer" id="main-drawer">
     <div class="mdui-list" mdui-collapse="{accordion: true}" style="margin-bottom: 76px;">
-        <div class="mdui-collapse-item mdui-collapse-item-open">
-            <a class="mdui-collapse-item-header mdui-list-item mdui-ripple" href="/admin">
-                <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">near_me</i>
-                <div class="mdui-list-item-content">系统监控</div>
-            </a>
-        </div>
+<#--        <div class="mdui-collapse-item mdui-collapse-item-open">-->
+<#--            <a class="mdui-collapse-item-header mdui-list-item mdui-ripple" href="/admin">-->
+<#--                <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">near_me</i>-->
+<#--                <div class="mdui-list-item-content">系统监控</div>-->
+<#--            </a>-->
+<#--        </div>-->
+
+        <a class="mdui-collapse-item mdui-collapse-item-open" href="/admin/proxy">
+            <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                <i class="mdui-list-item-icon mdui-icon  material-icons mdui-text-color-black">layers</i>
+                <div class="mdui-list-item-content">穿透集群</div>
+            </div>
+        </a>
+
         <a class="mdui-collapse-item mdui-collapse-item-open" href="/admin/user">
             <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
                 <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-deep-orange">layers</i>
                 <div class="mdui-list-item-content">用户管理</div>
             </div>
         </a>
+        <a class="mdui-collapse-item mdui-collapse-item-open" href="/admin/log">
+            <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">layers</i>
+                <div class="mdui-list-item-content">用户日志</div>
+            </div>
+        </a>
+
         <a class="mdui-collapse-item mdui-collapse-item-open" href="/admin/tips">
             <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
                 <i class="mdui-list-item-icon mdui-icon  material-icons mdui-text-color-purple">layers</i>

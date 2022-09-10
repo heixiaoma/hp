@@ -26,6 +26,7 @@
         <module>hp-common</module>
         <module>hp-server</module>
         <module>hp-windows</module>
+        <module>hp-proxy</module>
     </modules>
 
     <dependencies>
