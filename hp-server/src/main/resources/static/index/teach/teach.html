@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>内网穿透教程</title>
+    <style>
+        body{
+            background-color: blur;
+        }
+        .tip{
+            font-size: 0.75em;
+            color: rgb(0,20,15,0.5)
+        }
+        #yl{
+            list-style-type: decimal;
+        }
+        #bz{
+            list-style-type: cjk-ideographic;
+        }
+        .index{
+            width: 100%;
+            heigth: auto;
+            background-color: pink;
+            border-radius:5px;
+        }
+        a{
+            text-decoration: none;
+        }
+        .username{
+            font-size: 1em;
+            color: rgb(13,73,72)
+        }
+        .button{
+            text-align:center;
+            padding: 10px;
+        }
+    </style>
+    <script>
+        function selectText(element) {
+        var text = document.getElementById(index);
+        if (document.body.createTextRange) {
+            var range = document.body.createTextRange();
+            range.moveToElementText(text);
+            range.select();
+            alert("已选中，请复制");
+        } else if (window.getSelection) {
+            var selection = window.getSelection();
+            var range = document.createRange();
+            range.selectNodeContents(text);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            /*if(selection.setBaseAndExtent){
+                selection.setBaseAndExtent(text, 0, text, 1);
+            }*/
+        } else {
+            alert("none");
+        }
+    }
+    <!--function copyUrl() {
+ 
+        var div = document.getElementById('index');
+        if (document.body.createTextRange) {
+            var range = document.body.createTextRange();
+            range.moveToElementText(div);
+            range.select();
+        } else if (window.getSelection) {
+            var selection = window.getSelection();
+            var range = document.createRange();
+            range.selectNodeContents(div);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            /*if(selection.setBaseAndExtent){
+                selection.setBaseAndExtent(text, 0, text, 1);    }*/
+        } else {
+            console.warn("none");
+        }
+        document.execCommand("Copy"); // 执行浏览器复制命令
+ 
+        alert("已复制好，可贴粘。");
+    }-->
+    </script>
+    </head>
+<body>
+    <h1>穿透教程</h1>
+    <small class="tip">博文来自<span class="username"><a href="https://v.kuaishou.com/vsO0ub" target="_blank">情恋海</a></span></small><font size="0.4em">QQ:<a href="https://qm.qq.com/cgi-bin/qm/qr?k=_53zrOP6KBlOVKY4AMw0N712R1VKtmUu&noverify=0">1772712580</a></font>
+    <hr>
+    <div>
+        <span>需要准备的工具，原料：</span>
+        <ul id="yl">
+            <li>一台手机</li>
+            <li>一个路由器</li>
+            <li>软件：<strong>ksweb，内网穿透</strong></li>
+        </ul>
+        <hr>
+    </div>
+    <span>步骤:</span>
+    <ul id="bz">
+        <li>先准备一个手机<span class="tip">(系统建议是安卓10以下)</span></li>
+        <li>安装好<strong>ksweb</strong><span class="tip">(安卓服务器软件)</span>和<strong>hp-Client</strong><span class="tip">(即内网穿透)</span></li>
+        <li>打开ksweb,打开主机<strong>Lighttpd</strong>，点击<br><span class="index">localhost (8080 /mnt/sdcard/htdocs)</span>进入编辑主机,使用默认路径点击✔,进入一个文件管理软件<span class="tip">(推荐MT管理器，路径是/sdcard/htdocs/)</span>，删除index.php，新建文件<a href="#index">index.html</a></li>
+        <li>打开<strong>hp-Client</strong>，完成注册&登录操作</li>
+        <li>将ksweb的IP地址复制到内网穿透的IP行内，点击<strong>开始穿透</strong></li>
+        <li>复制内网穿透的http网址，即http://用户名.ksweb.club/或内网地址<a href="">http://localhost:8080/</a></li>
+    </ul>
+    <hr>index.html的内容↓长按全选后复制
+    <div class="index" id="index" contenteditable="true">
+&lt;!DOCTYPE html&gt;<br>
+&lt;html lang="ch"&gt;<br>
+&lt;head&gt;<br>
+&lt;meta charset="UTF-8"&gt;<br>
+&lt;meta http-equiv="X-UA-Compatible" content="IE=edge"&gt;<br>
+&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;<br>
+&lt;title&gt;测试网页&lt;/title&gt;<br>
+&lt;style&gt;<br><br>
+&lt;/style&gt;<br>
+&lt;script&gt;<br><br>
+&lt;/script&gt;<br>
+&lt;/head&gt;<br>
+&lt;body&gt;<br>
+<div>在自己的网页上看到这段话说明你已经成功了</div>
+&lt;/body&gt;<br>
+&lt;/html&gt;
+    </div>
+    <button onclick="selectText(element)" class="button">一键复制</button><span class="tip">由于浏览器兼容问题，可能复制不成功，请手动复制</span>
+</body>
+</html>
