@@ -65,5 +65,11 @@
                 <div class="mdui-list-item-content">app管理</div>
             </div>
         </a>
+        <a class="mdui-collapse-item mdui-collapse-item-open" href="/admin/reg">
+            <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-amber">layers</i>
+                <div class="mdui-list-item-content">注册管理</div>
+            </div>
+        </a>
     </div>
 </div>

@@ -22,9 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -66,6 +65,16 @@ public class OpenApiController {
 
     @POST("/user/reg")
     public JsonResult reg(String username, String password) {
+
+        int time = ConstConfig.TIME;
+        if (time == -1) {
+            return JsonResult.error("注册功能已经关闭。如有疑问联系管理员");
+        } else if (time > 0) {
+            Date date = new Date();
+            if (date.getHours() != time) {
+                return JsonResult.error("注册功能已经关闭,请在每天的" + time + "点时注册，开放注册时间为一小时");
+            }
+        }
         if (username != null && password != null) {
             //todo  检查特殊符号
             username = username.trim();
@@ -106,7 +115,6 @@ public class OpenApiController {
         return JsonResult.ok();
     }
 
-
     @GET("/load/data")
     public JsonResult data() {
         Collection<ProxyServerEntity> all = ProxyServerEntity.getAll();
@@ -114,7 +122,7 @@ public class OpenApiController {
         if (sort.isEmpty()) {
             return JsonResult.error();
         }
-        return JsonResult.ok().put("ip", sort.get(0).getIp()).put("port",sort.get(0).getPort());
+        return JsonResult.ok().put("data", sort);
     }
 
 
@@ -142,6 +150,6 @@ public class OpenApiController {
                     log.debug("file {} transfer progress: {}/{}", file.getName(), progress, total);
                 }
             }
-        },request.getCtx());
+        }, request.getCtx());
     }
 }
