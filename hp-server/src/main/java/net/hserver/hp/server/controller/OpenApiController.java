@@ -6,16 +6,22 @@ import cn.hserver.plugin.web.annotation.Controller;
 import cn.hserver.plugin.web.annotation.GET;
 import cn.hserver.plugin.web.annotation.POST;
 import cn.hserver.plugin.web.interfaces.HttpRequest;
+import cn.hserver.plugin.web.interfaces.HttpResponse;
+import cn.hserver.plugin.web.interfaces.ProgressStatus;
 import net.hserver.hp.server.config.ConstConfig;
 import net.hserver.hp.server.domian.bean.Statistics;
 import net.hserver.hp.server.domian.entity.ProxyServerEntity;
 import net.hserver.hp.server.domian.entity.StatisticsEntity;
 import net.hserver.hp.server.domian.vo.UserVo;
+import net.hserver.hp.server.service.AppService;
 import net.hserver.hp.server.service.StatisticsService;
 import net.hserver.hp.server.service.UserService;
 import net.hserver.hp.server.utils.UserCheckUtil;
 import org.beetl.sql.core.page.PageResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -26,7 +32,10 @@ import java.util.stream.Collectors;
  */
 @Controller
 public class OpenApiController {
+    private static final Logger log = LoggerFactory.getLogger(OpenApiController.class);
 
+    @Autowired
+    private AppService appService;
     @Autowired
     private StatisticsService statisticsService;
 
@@ -106,5 +115,33 @@ public class OpenApiController {
             return JsonResult.error();
         }
         return JsonResult.ok().put("ip", sort.get(0).getIp()).put("port",sort.get(0).getPort());
+    }
+
+
+    @GET("/app/getVersion")
+    public JsonResult getVersion() {
+        return JsonResult.ok().put("data", appService.getAppVersion());
+    }
+
+    @GET("/app/download")
+    public void download(HttpResponse response, HttpRequest request) throws Exception {
+
+        File file = new File("./hp-client.apk");
+        response.setDownloadBigFile(file, new ProgressStatus() {
+
+            @Override
+            public void operationComplete(String s) {
+                log.info("下载完成");
+            }
+
+            @Override
+            public void downloading(long progress, long total) {
+                if (total < 0) {
+                    log.warn("file {} transfer progress: {}", file.getName(), progress);
+                } else {
+                    log.debug("file {} transfer progress: {}/{}", file.getName(), progress, total);
+                }
+            }
+        },request.getCtx());
     }
 }

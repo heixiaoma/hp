@@ -63,26 +63,6 @@ public class AppController {
         index(page, response);
     }
 
-    @GET("/app/download")
-    public void download(HttpResponse response,HttpRequest request) throws Exception {
-        File file = new File("./hp-client.apk");
-        response.setDownloadBigFile(file, new ProgressStatus() {
-            @Override
-            public void operationComplete(String s) {
-                log.info("下载完成");
-            }
-
-            @Override
-            public void downloading(long progress, long total) {
-                if (total < 0) {
-                    log.warn("file {} transfer progress: {}", file.getName(), progress);
-                } else {
-                    log.debug("file {} transfer progress: {}/{}", file.getName(), progress, total);
-                }
-            }
-        },request.getCtx());
-    }
-
     @GET("/admin/app/remove")
     public void remove(Integer page, HttpResponse response, String id) {
         if (id != null) {
@@ -90,10 +70,4 @@ public class AppController {
         }
         index(page, response);
     }
-
-    @GET("/app/getVersion")
-    public JsonResult getVersion() {
-        return JsonResult.ok().put("data", appService.getAppVersion());
-    }
-
 }
