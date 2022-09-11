@@ -17,21 +17,6 @@ public class LogController {
     @Autowired
     private StatisticsService statisticsService;
 
-    /**
-     * 开放给用得接口
-     * @param page
-     * @param username
-     * @return
-     */
-    @GET("/statistics/getMyInfo")
-    public JsonResult getMyInfo(Integer page, String username) {
-        if (page == null) {
-            page = 1;
-        }
-        PageResult<StatisticsEntity> list = statisticsService.list(page, 10, username);
-        return list == null ? JsonResult.error() : JsonResult.ok().put("data", list);
-    }
-
 
     @GET("/admin/log")
     public void log(Integer page, HttpResponse response) {

@@ -67,7 +67,7 @@ public class ProxyServerEntity {
         this.port = port;
     }
 
-    public int getNum() {
+    public Integer getNum() {
         return num;
     }
 

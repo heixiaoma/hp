@@ -43,38 +43,6 @@ public class UserController {
         response.sendTemplate("/user.ftl", data);
     }
 
-    @POST("/user/reg")
-    public JsonResult reg(String username, String password) {
-        if (username != null && password != null) {
-            //todo  检查特殊符号
-            username = username.trim();
-            if (username.length() <= 5) {
-                return JsonResult.error("注册的长度太短");
-            }
-            if (!UserCheckUtil.checkUsername(username)) {
-                return JsonResult.error("注册只能小写字母和数字");
-            }
-            if (userService.addUser(username.trim(), password.trim(), null)) {
-                return JsonResult.ok("注册成功");
-            } else {
-                return JsonResult.error("用户名已经存在请换一个");
-            }
-        }
-        return JsonResult.error("注册失败");
-    }
-
-    @POST("/user/login")
-    public JsonResult login(String username, String password) {
-        if (username != null && password != null) {
-            UserVo login = userService.login(username, password);
-            if (login != null) {
-                return JsonResult.ok("登录成功.").put("data", login);
-            }
-        }
-        return JsonResult.error("登录失败.请尝试重新注册");
-    }
-
-
     @POST("/admin/user/edit")
     public void edit(Integer page, HttpResponse response, String username, String password, String ports, Integer type) {
         if (username != null) {

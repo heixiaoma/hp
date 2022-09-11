@@ -30,9 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @ChannelHandler.Sharable
 public class HpServerHandler extends HpCommonHandler {
 
-
-    public static String tips = "禁止穿透违法程序，免费不易 请大家谅解";
-
     private final TcpServer remoteConnectionServer = new TcpServer();
 
     public static final Map<String, ConnectInfo> CURRENT_STATUS = new ConcurrentHashMap<>();
@@ -80,7 +77,7 @@ public class HpServerHandler extends HpCommonHandler {
         try {
             CURRENT_STATUS.remove(String.valueOf(port));
             Statistics statistics = remoteConnectionServer.getStatistics();
-            //todo 上报数据
+            HttpService.updateStatistics(statistics);
         } catch (Throwable ignored) {
         }
         remoteConnectionServer.close();
@@ -100,7 +97,7 @@ public class HpServerHandler extends HpCommonHandler {
         if (port != null) {
             tempPort = (int) port;
         }
-        UserVo login = HttpService.login(username, password);
+        UserVo login = HttpService.login(username, password,ctx.channel().remoteAddress().toString());
         /**
          * 查询这个用户是否是合法的，不是合法的直接干掉
          */
@@ -134,10 +131,9 @@ public class HpServerHandler extends HpCommonHandler {
                 register = true;
                 CURRENT_STATUS.put(String.valueOf(tempPort), new ConnectInfo(login.getUsername(), ctx.channel()));
                 String host = IocUtil.getBean(WebConfig.class).getHost();
-                metaDataBuild.setReason( "连接成功，外网TCP地址是:" + host + ":" + tempPort + ",外网HTTP地址是：http://" + login.getUsername() + "." + host + " " + (tips.trim().length() > 0 ? "公告提示："+tips : ""));
+                metaDataBuild.setReason("连接成功，外网TCP地址是:" + host + ":" + tempPort + ",外网HTTP地址是：http://" + login.getUsername() + "." + host + " " + (login.getTips().trim().length() > 0 ? "公告提示：" + login.getTips() : ""));
                 System.out.println("注册成功，外网地址是:  " + host + ":" + tempPort);
                 System.out.println("用户名：" + username + " 来源IP：" + ctx.channel().remoteAddress());
-                HttpService.updateLogin(username, ctx.channel().remoteAddress().toString());
             } catch (Exception e) {
                 metaDataBuild.setSuccess(false);
                 metaDataBuild.setReason(e.getMessage());

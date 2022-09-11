@@ -3,7 +3,9 @@ package net.hserver.hp.proxy.controller;
 import cn.hserver.core.ioc.annotation.Autowired;
 import cn.hserver.plugin.web.annotation.Controller;
 import cn.hserver.plugin.web.annotation.GET;
+import cn.hserver.plugin.web.interfaces.HttpRequest;
 import cn.hserver.plugin.web.interfaces.HttpResponse;
+import net.hserver.hp.proxy.annotation.CheckApi;
 import net.hserver.hp.proxy.config.WebConfig;
 import net.hserver.hp.proxy.domian.bean.GlobalStat;
 import net.hserver.hp.proxy.handler.HpServerHandler;
@@ -20,9 +22,11 @@ public class IndexController {
     @Autowired
     private WebConfig webConfig;
 
+    @CheckApi
     @GET("/statistics")
-    public void index(HttpResponse response) {
+    public void index(HttpRequest request,HttpResponse response) {
         Map<String, Object> data = new HashMap<>(5);
+        data.put("token", request.query("token"));
         data.put("host", webConfig.getHost());
         data.put("statisticsSize", HpServerHandler.CURRENT_STATUS.size());
         data.put("statisticsData",HpServerHandler.CURRENT_STATUS);
@@ -52,6 +56,14 @@ public class IndexController {
         data.put("flowSend",flowSend);
         data.put("flowPackNum",flowPackNum);
         response.sendTemplate("/index.ftl", data);
+    }
+
+
+    @CheckApi
+    @GET("/offline")
+    public void offline(HttpRequest request,HttpResponse response) {
+        HpServerHandler.offline(request.query("username"));
+        index(request, response);
     }
 
 

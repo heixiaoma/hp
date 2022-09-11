@@ -19,7 +19,7 @@ public interface UserService {
      * @param password
      * @return
      */
-    UserVo login(String username, String password);
+    UserVo login(String username, String password,String address);
 
     /**
      * 获取用户对象

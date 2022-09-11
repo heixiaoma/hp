@@ -14,24 +14,4 @@
     <script src="/admin/js/mdui.min.js"></script>
     <title>内网穿透</title>
 </head>
-<body class="mdui-drawer-body-left mdui-appbar-with-toolbar  mdui-theme-primary-indigo mdui-theme-accent-pink mdui-theme-layout-auto">
-<header class="mdui-appbar mdui-appbar-fixed">
-    <div class="mdui-toolbar mdui-color-theme">
-        <span class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white"
-              mdui-drawer="{target: '#main-drawer', swipe: true}"><i class="mdui-icon material-icons">menu</i></span>
-        <a href="/admin/proxy" class="mdui-typo-headline mdui-hidden-xs">内网穿透</a>
-        <div class="mdui-toolbar-spacer"></div>
-    </div>
-</header>
-<!--菜單-->
-<div class="mdui-drawer" id="main-drawer">
-    <div class="mdui-list" mdui-collapse="{accordion: true}" style="margin-bottom: 76px;">
-        <div class="mdui-collapse-item mdui-collapse-item-open">
-            <a class="mdui-collapse-item-header mdui-list-item mdui-ripple" href="/statistics">
-                <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">near_me</i>
-                <div class="mdui-list-item-content">系统监控</div>
-            </a>
-        </div>
-
-    </div>
-</div>
+<body class="mdui-appbar-with-toolbar mdui-theme-primary-indigo mdui-theme-accent-pink mdui-theme-layout-auto">

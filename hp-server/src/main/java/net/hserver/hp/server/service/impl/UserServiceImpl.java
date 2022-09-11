@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserVo login(String username, String password) {
+    public UserVo login(String username, String password,String address) {
         UserEntity user = getUser(username);
         if (user == null) {
             return null;
@@ -61,6 +61,7 @@ public class UserServiceImpl implements UserService {
                 ports.add(portEntity.getPort());
             }
             userVo.setPorts(ports);
+            updateLogin(username,address);
             return userVo;
         }
         return null;

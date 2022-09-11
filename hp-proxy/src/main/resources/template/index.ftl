@@ -19,6 +19,7 @@
                         <th>来源IP</th>
                         <th>连接时间</th>
                         <th>端口</th>
+                        <th>操作</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -29,7 +30,8 @@
                                 <td><a href="//${statisticsData[key].username}.${host}" target="_blank">访问${statisticsData[key].username}</a></td>
                                 <td>${statisticsData[key].ip}</td>
                                 <td>${statisticsData[key].date}</td>
-                                <td>${key}</td>
+                                <td>${key}</td>offline
+                                <td><a href="/offline?username=${statisticsData[key].username}&token=${token}" >强制下线</a></td>
                             </tr>
                         </#list>
                     </#if>

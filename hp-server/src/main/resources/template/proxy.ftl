@@ -20,13 +20,14 @@
                         <td>${app.ip}</td>
                         <td>${app.port}</td>
                         <td>${app.num}</td>
-                        <td><a target="_blank" href="http://${app.ip}/statistics">访问</a></td>
+                        <td><a target="_blank" href="http://${app.ip}/statistics?token=${token}">访问</a></td>
                     </tr>
                 </#list>
             </#if>
             </tbody>
         </table>
     </div>
+
 </div>
 </body>
 </html>
