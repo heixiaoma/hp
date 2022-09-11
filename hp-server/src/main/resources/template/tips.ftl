@@ -6,7 +6,7 @@
             <div class="mdui-textfield">
                 <label class="mdui-textfield-label">公告内容</label>
                 <label>
-                    <input class="mdui-textfield-input" name="tips" placeholder="公告内容" type="text" value=" ${tips}"/>
+                    <input class="mdui-textfield-input" name="tips" placeholder="公告内容" type="text" value="${tips}"/>
                 </label>
             </div>
         </div>

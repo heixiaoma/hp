@@ -12,17 +12,17 @@ import java.util.HashMap;
 public class RegController {
 
     @GET("/admin/reg")
-    public void tips(HttpResponse response) {
-        HashMap<String, Object> tips = new HashMap<>();
-        tips.put("tips", ConstConfig.TIME);
-        response.sendTemplate("/reg.ftl", tips);
+    public void reg(HttpResponse response) {
+        HashMap<String, Object> reg = new HashMap<>();
+        reg.put("time", ConstConfig.TIME);
+        response.sendTemplate("/reg.ftl", reg);
     }
 
     @POST("/admin/setTime")
-    public void setTips(Integer tips, HttpResponse response) {
-        if (tips != null) {
-            ConstConfig.TIME = tips;
+    public void setTime(Integer time, HttpResponse response) {
+        if (time != null) {
+            ConstConfig.TIME = time;
         }
-        tips(response);
+        reg(response);
     }
 }
