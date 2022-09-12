@@ -10,7 +10,7 @@
                     href="https://gitee.com/HServer/hp/releases" class="mdui-btn mdui-ripple">其他端下载</a>
         </div>
         <div class="more-meta mdui-typo">
-            <span><a href="https://gitee.com/zdhxiong/mdui" rel="nofollow" target="_blank">码云</a></span>
+            <span><a href="https://gitee.com/zdhxiong/mdui" rel="nofollow" target="_blank">开源地址</a></span>
             <span><a href="https://jq.qq.com/?_wv=1027&k=jWfkkSda" rel="nofollow"
                      target="_blank">QQ群：432217351</a></span>
         </div>
