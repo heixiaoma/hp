@@ -54,10 +54,6 @@ java -jar hp-client.jar -server_addr 127.0.0.1 -server_port 9090 -username jishu
 启动成功后可以通过 server_addr:remote_port 访问被代理的应用，如果被代理的应用是 HTTP 应用，可以通过 http://xxx.xxx.xxx.xxx:10000 在外网访问。 如果账号没有分配10000
 端口给他，那么服务器会随机一个端口
 
-### hp-windows 模块是一个可视化的客服端，可以在支持java的电脑上运行
-<img src="https://gitee.com/HServer/hp/raw/master/doc/img.png" width="500" />
-<img src="https://gitee.com/HServer/hp/raw/master/doc/img1.png" width="500" />
-
 ### 安卓客服端
 <img src="https://gitee.com/HServer/hp/raw/master/doc/a.jpg" width="500" />
 <img src="https://gitee.com/HServer/hp/raw/master/doc/b.jpg" width="500" />
