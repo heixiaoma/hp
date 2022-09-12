@@ -30,7 +30,7 @@
                                 <td><a href="//${statisticsData[key].username}.${host}" target="_blank">访问${statisticsData[key].username}</a></td>
                                 <td>${statisticsData[key].ip}</td>
                                 <td>${statisticsData[key].date}</td>
-                                <td>${key}</td>offline
+                                <td>${key}</td>
                                 <td><a href="/offline?username=${statisticsData[key].username}&token=${token}" >强制下线</a></td>
                             </tr>
                         </#list>

@@ -12,4 +12,10 @@ public class FlowTask {
     public void reg() {
         HttpService.reg();
     }
+
+
+    @Task(name = "stat", time = "5000")
+    public void stat() {
+        GlobalStat.clear();
+    }
 }

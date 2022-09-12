@@ -2,6 +2,7 @@ package net.hserver.hp.client.handler;
 
 
 import com.google.protobuf.ByteString;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.group.ChannelGroup;
@@ -21,9 +22,11 @@ import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 
+
 /**
  * @author hxm
  */
+@ChannelHandler.Sharable
 public class HpClientHandler extends HpCommonHandler {
 
     private int port;

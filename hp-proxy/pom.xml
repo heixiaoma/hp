@@ -5,7 +5,7 @@
     <parent>
         <artifactId>hp</artifactId>
         <groupId>net.hserver.hp</groupId>
-        <version>4.0</version>
+        <version>5.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -19,7 +19,7 @@
         <dependency>
             <groupId>net.hserver.hp</groupId>
             <artifactId>hp-common</artifactId>
-            <version>4.0</version>
+            <version>5.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
