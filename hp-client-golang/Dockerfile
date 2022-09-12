@@ -7,6 +7,8 @@ RUN chmod -R 777 /hp-client-golang-amd64
 ARG username=''
 ARG password=''
 ARG remote_port=0
+ARG server_port=0
+ARG server_ip=''
 ARG ip=''
 ARG port=0
 ENV GO111MODULE=on \
@@ -17,9 +19,11 @@ ENV GO111MODULE=on \
     username=${username} \
     password=${password} \
     remote_port=${remote_port} \
+    server_ip=${server_ip} \
+    server_port=${server_port} \
     ip=${ip} \
     port=${port}
 
-CMD ./hp-client-golang-amd64 -username ${username} -password ${password} -remote_port ${remote_port} -ip ${ip} -port ${port}
+CMD ./hp-client-golang-amd64  -server_ip ${server_ip}  -server_port ${server_port} -username ${username} -password ${password} -remote_port ${remote_port} -ip ${ip} -port ${port}
 
 #docker build -t hp-client .

@@ -146,7 +146,7 @@
     <p>HP内网穿透</p>
     <div class="buttons-con">
         <div class="action-link-wrap">
-            <a href="http://ksweb.club/" target="_blank" class="link-button">返回首页</a>
+            <a href="${adminAddress}" target="_blank" class="link-button">返回首页</a>
         </div>
     </div>
 </div>
