@@ -10,28 +10,6 @@
 
 <img src="https://gitee.com/HServer/hp/raw/master/doc/img_2.png" width="500" />
 
-### 服务端启动
-
-在带有公网 IP 的服务器上执行 Java 命令:
-
-```
-java -jar hp-server.jar
-```
-
-默认服务端端口号是9090
-
-如果自己需要修改配置，可以和jar同目录建立一个配置文件 app.properties 内容如下
-
-```properties
-#提示域名，没有域名写IP也可以
-host=ksweb.club
-#后台密码
-password=123456
-#关闭Epoll hserver默认开启得 要关闭 epoll下有问题
-epoll=false
-# 所有得链接使用得线程池配置
-web.businessPool=100
-```
 
 ### 客户端启动
 
