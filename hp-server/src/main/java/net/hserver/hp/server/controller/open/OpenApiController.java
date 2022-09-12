@@ -1,4 +1,4 @@
-package net.hserver.hp.server.controller;
+package net.hserver.hp.server.controller.open;
 
 import cn.hserver.core.ioc.annotation.Autowired;
 import cn.hserver.core.server.util.JsonResult;
@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -65,7 +64,6 @@ public class OpenApiController {
 
     @POST("/user/reg")
     public JsonResult reg(String username, String password) {
-
         int time = ConstConfig.TIME;
         if (time == -1) {
             return JsonResult.error("注册功能已经关闭。如有疑问联系管理员");

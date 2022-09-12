@@ -6,6 +6,8 @@ import cn.hserver.plugin.web.interfaces.HttpRequest;
 import net.hserver.hp.server.config.WebConfig;
 import cn.hserver.core.ioc.annotation.Autowired;
 import cn.hserver.core.ioc.annotation.Bean;
+import net.hserver.hp.server.domian.entity.UserEntity;
+import net.hserver.hp.server.service.UserService;
 
 /**
  * @author hxm
@@ -15,6 +17,9 @@ public class AuthFilter implements FilterAdapter {
 
     @Autowired
     private WebConfig webConfig;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public void doFilter(Webkit webkit) throws Exception {
@@ -27,6 +32,30 @@ public class AuthFilter implements FilterAdapter {
                     webkit.httpResponse.sendTemplate("/admin/login.ftl");
                 }
             }
+        } else if (request.getUri().contains("index")) {
+            String auth = request.getHeader("cookie");
+            try {
+                if (auth != null) {
+                    String[] split = auth.split(";");
+                    for (String s : split) {
+                        boolean contains = s.contains("authUser=");
+                        if (contains) {
+                            String s1 = s.replaceAll("authUser=", "");
+                            String[] split1 = s1.split("\\|");
+                            String user = split1[0];
+                            String pwd = split1[1];
+                            UserEntity user1 = userService.getUser(user);
+                            if (user1 != null && user1.getPassword().equals(pwd)) {
+                                webkit.httpRequest.getHeaders().put("username", user);
+                                return;
+                            }
+                        }
+                    }
+
+                }
+            } catch (Exception ignored) {
+            }
+            webkit.httpResponse.sendTemplate("/index/default.ftl");
         }
     }
 }

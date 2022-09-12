@@ -1,4 +1,5 @@
-<#include "./header.ftl">
+<#include "./header_index.ftl">
+
 <#--监控页面-->
 <div style="padding: 1rem">
     <div class="mdui-table-fluid">
@@ -13,7 +14,6 @@
                 <th>连接数</th>
                 <th>数据包数</th>
                 <th>时间</th>
-                <th>操作</th>
             </tr>
             </thead>
             <tbody>
@@ -28,12 +28,6 @@
                         <td>${statistics.connectNum}</td>
                         <td>${statistics.packNum}</td>
                         <td>${statistics.createTime}</td>
-                        <td>
-                            <a class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-orange-accent mdui-ripple"
-                               href="/admin/log/remove?page=${page}&id=${statistics.id}">
-                                删除
-                            </a>
-                        </td>
                     </tr>
                 </#list>
             </#if>
@@ -55,7 +49,7 @@
         jump: true, //是否支持跳转
         callback: function (page) { // 回调函数
             if (pageConst != page) {
-                location.href = "/admin/log?page=" + page;
+                location.href = "/index/log?page=" + page;
             }
             console.log(page)
         }

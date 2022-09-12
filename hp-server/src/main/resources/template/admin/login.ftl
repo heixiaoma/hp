@@ -26,7 +26,6 @@
 </form>
 
 <script>
-
     function login() {
         let elementById = document.getElementById("login-password");
         let value = elementById.value;
@@ -35,7 +34,6 @@
             location.href = "/admin/proxy";
         }
     }
-
 </script>
 
 </body>

@@ -26,47 +26,90 @@
 <!--菜單-->
 <div class="mdui-dialog mc-account mc-login" id="login_dialog" style="height: auto">
     <div>
-        <button mdui-dialog-close="{target: '#login_dialog'}" class="mdui-btn mdui-btn-icon close"><i
+        <button id="closeLogin" mdui-dialog-close="{target: '#login_dialog'}" class="mdui-btn mdui-btn-icon close"><i
                     class="mdui-icon material-icons">close</i></button>
         <div class="mdui-dialog-title">登录</div>
     </div>
     <form>
         <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom mdui-textfield-invalid-html5">
-            <label class="mdui-textfield-label">账号</label><input class="mdui-textfield-input" name="name"
+            <label class="mdui-textfield-label">账号</label><input id="username" class="mdui-textfield-input" name="name"
                                                                  type="text" required="">
             <div class="mdui-textfield-error">账号不能为空</div>
         </div>
         <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom"><label
-                    class="mdui-textfield-label">密码</label><input class="mdui-textfield-input" name="password"
+                    class="mdui-textfield-label">密码</label><input id="password" class="mdui-textfield-input"
+                                                                  name="password"
                                                                   type="password" required="">
             <div class="mdui-textfield-error">密码不能为空</div>
         </div>
         <div class="actions mdui-clearfix">
-            <button type="submit" class="mdui-btn mdui-btn-raised mdui-color-theme action-btn">登录</button>
+            <button type="button" id="login_btn" class="mdui-btn mdui-btn-raised mdui-color-theme action-btn">登录
+            </button>
         </div>
     </form>
 </div>
 
 <div class="mc-account mc-login mdui-dialog" id="register_dialog" style="height: auto">
     <div>
-        <button mdui-dialog-close="{target: '#register_dialog'}" class="mdui-btn mdui-btn-icon close"><i
+        <button id="closeReg" mdui-dialog-close="{target: '#register_dialog'}" class="mdui-btn mdui-btn-icon close"><i
                     class="mdui-icon material-icons">close</i></button>
         <div class="mdui-dialog-title">创建新账号</div>
     </div>
     <form class="">
         <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom"><label
-                    class="mdui-textfield-label">用户名(也是你的二级域名名字)</label><input class="mdui-textfield-input"
+                    class="mdui-textfield-label">用户名(也是你的二级域名名字)</label><input id="reg_username" class="mdui-textfield-input"
                                                                                name="username"
                                                                                type="text" required="">
             <div class="mdui-textfield-error">用户名不能为空</div>
         </div>
         <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom"><label
-                    class="mdui-textfield-label">密码</label><input class="mdui-textfield-input" name="password"
+                    class="mdui-textfield-label">密码</label><input id="reg_password" class="mdui-textfield-input" name="password"
                                                                   type="password" required="">
             <div class="mdui-textfield-error">密码不能为空</div>
         </div>
         <div class="actions mdui-clearfix">
-            <button type="submit" class="mdui-btn mdui-btn-raised mdui-color-theme action-btn">注册</button>
+            <button id="reg_btn" type="button" class="mdui-btn mdui-btn-raised mdui-color-theme action-btn">注册并登录</button>
         </div>
     </form>
 </div>
+
+
+<script>
+    $(function () {
+        $("#login_btn").click(function () {
+            let val = $("#username").val();
+            let val1 = $("#password").val();
+            if (val && val1) {
+                $.post("/user/login", {username: val, password: val1}, function (result) {
+                    if (result.code === 200) {
+                        document.cookie = "authUser="+val+"|"+val1
+                        location.href = "/index/index";
+                    } else {
+                        $("#closeLogin").click()
+                        mdui.alert(result.msg);
+                    }
+                });
+            }
+        })
+
+
+        $("#reg_btn").click(function () {
+            let val = $("#reg_username").val();
+            let val1 = $("#reg_password").val();
+            if (val && val1) {
+                $.post("/user/reg", {username: val, password: val1}, function (result) {
+                    if (result.code === 200) {
+                        document.cookie = "authUser="+val+"|"+val1
+                        location.href = "/index/index";
+                    } else {
+                        $("#closeReg").click()
+                        mdui.alert(result.msg);
+                    }
+                });
+            }
+        })
+
+    })
+
+
+</script>

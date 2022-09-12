@@ -1,4 +1,4 @@
-package net.hserver.hp.server.controller;
+package net.hserver.hp.server.controller.admin;
 
 import cn.hserver.core.server.util.JsonResult;
 import cn.hserver.plugin.web.annotation.Controller;
