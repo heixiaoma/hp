@@ -8,21 +8,45 @@
     <title>HP穿透</title>
 </head>
 <body>
+
+<style>
+    .lja {
+        display: flex;
+        justify-content: right;
+    }
+    .lja div{
+        padding-left: 10px;
+    }
+
+    .lja a{
+        padding: 20px;
+        font-size:150%;
+        text-align:center;
+        background-color:#fff;
+        text-decoration: none;
+    }
+</style>
+
 <canvas id="canvas"></canvas>
 <div class="mb">
     <div class="icon"></div>
     <h1 class="title">HP 穿透</h1>
-    <div class="lj">
-        <a href="#前言" style="width:25%;">前言</a>
-        <a href="#申明" style="width:25%;">申明</a>
-        <a href="#加入交流群" style="width:25%;border:0;">交流群</a>
-        <a href="./teach/teach.html" style="width:24.6%;">KSWEB检查</a>
+    <div class="lja">
+        <div><a href="#前言" style="width:25%;">前言</a></div>
+        <div><a href="#申明" style="width:25%;">申明</a>
+        </div>
+        <div><a href="#加入交流群" style="width:25%;border:0;">交流群</a>
+        </div>
+        <div><a href="./teach/teach.html" style="width:24.6%;">KSWEB检查</a>
+        </div>
     </div>
     <hr/>
     <h2 id="前言">前言</h2>
     <p>我们采用的是数据转发实现 稳定性可靠性是有保证的即便是极端的环境只要能上网就能实现穿透。我们支持TCP级别的所有协议，针对HTTP协议做了大量的优化工作，
-        可以实现 http/https ws/wss 协议。同时还免费赠送一个二级域名，不仅如此，我们还支持 自定义域名，支持本地配置https证书，同时我们传输协议使用proto协议，如果你是一个程序员开发者，可以关注或者参与或者码云提交PR，
-        我们提供了 java 和 golang 的客服端的实现 有了这样级别的语言支持，目前我们在主流平台上都可以进行穿透，比如 电脑 手机 openwrt nas docker 等设备，未来期望实现硬件级别的设备，只需家里给一个小设备供电就能实现 穿透功能.</p>
+        可以实现 http/https ws/wss 协议。同时还免费赠送一个二级域名，不仅如此，我们还支持
+        自定义域名，支持本地配置https证书，同时我们传输协议使用proto协议，如果你是一个程序员开发者，可以关注或者参与或者码云提交PR，
+        我们提供了 java 和 golang 的客服端的实现 有了这样级别的语言支持，目前我们在主流平台上都可以进行穿透，比如 电脑 手机 openwrt nas docker
+        等设备，未来期望实现硬件级别的设备，只需家里给一个小设备供电就能实现 穿透功能.</p>
     <hr/>
     <h2 id="申明">申明</h2>
     <p>本项目是一个公益项目，请各路大神不用恶意攻击，滥用资源，免费开源的项目真的不多</p>

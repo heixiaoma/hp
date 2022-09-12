@@ -30,7 +30,7 @@ public class LogController {
         data.put("totalRow", list.getTotalRow());
         data.put("list", list.getList());
         data.put("totalPage", list.getTotalPage());
-        response.sendTemplate("/log.ftl", data);
+        response.sendTemplate("/admin/log.ftl", data);
     }
 
 

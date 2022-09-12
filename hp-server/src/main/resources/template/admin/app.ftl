@@ -1,4 +1,4 @@
-<#include "/header.ftl">
+<#include "./header.ftl">
 <#--监控页面-->
 <div style="padding: 1rem">
 

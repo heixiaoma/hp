@@ -15,7 +15,7 @@ public class RegController {
     public void reg(HttpResponse response) {
         HashMap<String, Object> reg = new HashMap<>();
         reg.put("time", ConstConfig.TIME);
-        response.sendTemplate("/reg.ftl", reg);
+        response.sendTemplate("/admin/reg.ftl", reg);
     }
 
     @POST("/admin/setTime")

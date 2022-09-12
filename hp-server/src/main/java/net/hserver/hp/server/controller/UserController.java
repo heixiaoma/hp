@@ -40,7 +40,7 @@ public class UserController {
         data.put("list", list.getList());
         data.put("totalPage", list.getTotalPage());
         data.put("username", username);
-        response.sendTemplate("/user.ftl", data);
+        response.sendTemplate("/admin/user.ftl", data);
     }
 
     @POST("/admin/user/edit")

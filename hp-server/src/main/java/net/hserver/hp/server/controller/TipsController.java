@@ -15,7 +15,7 @@ public class TipsController {
     public void tips(HttpResponse response) {
         HashMap<String, Object> tips = new HashMap<>();
         tips.put("tips", ConstConfig.TIPS);
-        response.sendTemplate("/tips.ftl", tips);
+        response.sendTemplate("/admin/tips.ftl", tips);
     }
 
     @POST("/admin/setTips")

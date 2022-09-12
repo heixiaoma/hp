@@ -1,5 +1,4 @@
-<#include "/header.ftl">
-<script type="text/javascript" src="/admin/js/echarts.min.js"></script>
+<#include "./header.ftl">
 <#--监控页面-->
 <div style="padding: 1rem">
     <div class="mdui-table-fluid">

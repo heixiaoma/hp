@@ -42,7 +42,7 @@ public class AppController {
         data.put("totalRow", list.getTotalRow());
         data.put("list", list.getList());
         data.put("totalPage", list.getTotalPage());
-        response.sendTemplate("/app.ftl", data);
+        response.sendTemplate("/admin/app.ftl", data);
     }
 
     @POST("/admin/app/add")

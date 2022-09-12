@@ -24,7 +24,7 @@ public class AuthFilter implements FilterAdapter {
             String s = webConfig.getPassword();
             if (s != null && s.trim().length() > 0) {
                 if (auth == null || !auth.contains("auth=" + s)) {
-                    webkit.httpResponse.sendTemplate("/login.ftl");
+                    webkit.httpResponse.sendTemplate("/admin/login.ftl");
                 }
             }
         }
