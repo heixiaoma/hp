@@ -19,19 +19,54 @@
 <header class="mdui-appbar mdui-appbar-fixed">
     <div class="mdui-toolbar mdui-color-theme">
         <div class="mdui-toolbar-spacer"></div>
-        <div id="login" class=" mdui-btn mdui-btn-dense">登录</div>
-        <div class="register mdui-btn mdui-btn-dense">注册</div>
+        <div mdui-dialog="{target: '#login_dialog'}" class=" mdui-btn mdui-btn-dense">登录</div>
+        <div mdui-dialog="{target: '#register_dialog'}" class="register mdui-btn mdui-btn-dense">注册</div>
     </div>
 </header>
 <!--菜單-->
-<div class="mdui-dialog" id="login_dialog">
-   <div>aaa</div>
+<div class="mdui-dialog mc-account mc-login" id="login_dialog" style="height: auto">
+    <div>
+        <button mdui-dialog-close="{target: '#login_dialog'}" class="mdui-btn mdui-btn-icon close"><i
+                    class="mdui-icon material-icons">close</i></button>
+        <div class="mdui-dialog-title">登录</div>
+    </div>
+    <form>
+        <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom mdui-textfield-invalid-html5">
+            <label class="mdui-textfield-label">账号</label><input class="mdui-textfield-input" name="name"
+                                                                 type="text" required="">
+            <div class="mdui-textfield-error">账号不能为空</div>
+        </div>
+        <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom"><label
+                    class="mdui-textfield-label">密码</label><input class="mdui-textfield-input" name="password"
+                                                                  type="password" required="">
+            <div class="mdui-textfield-error">密码不能为空</div>
+        </div>
+        <div class="actions mdui-clearfix">
+            <button type="submit" class="mdui-btn mdui-btn-raised mdui-color-theme action-btn">登录</button>
+        </div>
+    </form>
 </div>
 
-<script>
-    var tab = new mdui.Tab('#login');
-    document.getElementById('login_dialog').addEventListener('open.mdui.dialog', function () {
-        console.log("----------")
-        tab.handleUpdate();
-    });
-</script>
+<div class="mc-account mc-login mdui-dialog" id="register_dialog" style="height: auto">
+    <div>
+        <button mdui-dialog-close="{target: '#register_dialog'}" class="mdui-btn mdui-btn-icon close"><i
+                    class="mdui-icon material-icons">close</i></button>
+        <div class="mdui-dialog-title">创建新账号</div>
+    </div>
+    <form class="">
+        <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom"><label
+                    class="mdui-textfield-label">用户名(也是你的二级域名名字)</label><input class="mdui-textfield-input"
+                                                                               name="username"
+                                                                               type="text" required="">
+            <div class="mdui-textfield-error">用户名不能为空</div>
+        </div>
+        <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom"><label
+                    class="mdui-textfield-label">密码</label><input class="mdui-textfield-input" name="password"
+                                                                  type="password" required="">
+            <div class="mdui-textfield-error">密码不能为空</div>
+        </div>
+        <div class="actions mdui-clearfix">
+            <button type="submit" class="mdui-btn mdui-btn-raised mdui-color-theme action-btn">注册</button>
+        </div>
+    </form>
+</div>
