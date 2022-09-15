@@ -20,7 +20,7 @@ func NewConnection() *Connection {
 func (connection *Connection) Connect(host string, port int, redType bool, handler TcpHandler, call func(mgs string)) net.Conn {
 	conn, err := net.Dial("tcp", host+":"+strconv.Itoa(port))
 	if err != nil {
-		call("不能能连到服务器：" + host + ":" + strconv.Itoa(port))
+		call("不能能连到服务器：" + host + ":" + strconv.Itoa(port) + " 原因：" + err.Error())
 		return nil
 	}
 	handler.ChannelActive(conn)
