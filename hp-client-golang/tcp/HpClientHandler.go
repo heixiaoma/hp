@@ -68,7 +68,7 @@ func (h *HpClientHandler) connected(message *hpMessage.HpMessage) {
 	NewConnection().Connect(h.ProxyAddress, h.ProxyPort, false, &LocalProxyHandler{
 		HpClientHandler: h,
 		RemoteChannelId: message.MetaData.ChannelId,
-	})
+	}, h.CallMsg)
 }
 func (h *HpClientHandler) Add(channelId string, conn net.Conn) {
 	ConnGroup.Store(channelId, conn)

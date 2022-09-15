@@ -30,7 +30,7 @@ func (hpClient *HpClient) Connect(serverAddress string, serverPort int, username
 		CallMsg:      hpClient.CallMsg,
 	}
 	hpClient.handler = handler
-	hpClient.conn = connection.Connect(serverAddress, serverPort, true, handler)
+	hpClient.conn = connection.Connect(serverAddress, serverPort, true, handler, hpClient.CallMsg)
 }
 
 func (hpClient *HpClient) GetStatus() bool {

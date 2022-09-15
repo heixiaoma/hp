@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"hp-client-golang/Protol"
 	"io"
-	"log"
 	"time"
 
 	"net"
@@ -18,10 +17,10 @@ func NewConnection() *Connection {
 	return &Connection{}
 }
 
-func (connection *Connection) Connect(host string, port int, redType bool, handler TcpHandler) net.Conn {
+func (connection *Connection) Connect(host string, port int, redType bool, handler TcpHandler, call func(mgs string)) net.Conn {
 	conn, err := net.Dial("tcp", host+":"+strconv.Itoa(port))
 	if err != nil {
-		log.Printf("不能能连到服务器：%s:%d", host, port)
+		call("不能能连到服务器：" + host + ":" + strconv.Itoa(port))
 		return nil
 	}
 	handler.ChannelActive(conn)

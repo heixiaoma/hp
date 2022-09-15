@@ -3,7 +3,6 @@ package tcp
 import (
 	"hp-client-golang/HpMessage"
 	"hp-client-golang/Protol"
-	"log"
 	"net"
 )
 
@@ -16,7 +15,6 @@ type LocalProxyHandler struct {
 // ChannelActive 连接激活时，发送注册信息给云端
 func (l *LocalProxyHandler) ChannelActive(conn net.Conn) {
 	l.Active = true
-	log.Printf("成功连接到本地服务")
 	l.HpClientHandler.Add(l.RemoteChannelId, conn)
 }
 
