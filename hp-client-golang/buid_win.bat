@@ -1,1 +1,1 @@
-go build
+go build -o hp-client-golang.exe main.go
