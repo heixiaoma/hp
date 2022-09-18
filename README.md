@@ -49,7 +49,7 @@ java -jar hp-client.jar -server_addr 127.0.0.1 -server_port 9090 -username jishu
 
 ```shell
 docker pull registry.cn-shenzhen.aliyuncs.com/hserver/hp:v4
-docker run -P -d -p 5000:5000 -e -server_ip=ksweb.club -e server_port=9091 -e username=heixiaoma -e password=123456 -e remote_port=5000 -e ip=127.0.0.1 -e port=5000 hp:v4
+docker run -P -d -p 5000:5000 -e server_ip=ksweb.club -e server_port=9091 -e username=heixiaoma -e password=123456 -e remote_port=5000 -e ip=127.0.0.1 -e port=5000 registry.cn-shenzhen.aliyuncs.com/hserver/hp:v4
 ```
 
 
