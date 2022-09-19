@@ -80,6 +80,9 @@ public class HttpService {
 
     public static void reg() {
         WebConfig bean = IocUtil.getBean(WebConfig.class);
+        if (bean.getNotReg()!=null&&bean.getNotReg()){
+            return;
+        }
         String adminAddress = bean.getAdminAddress();
         try {
             RequestBody body = new FormBody.Builder()

@@ -12,6 +12,9 @@ public class WebConfig {
     @Value("host")
     private String host;
 
+    @Value("reg")
+    private Boolean notReg;
+
     @Value("name")
     private String name;
 
@@ -33,6 +36,14 @@ public class WebConfig {
 
     public String getHost() {
         return host;
+    }
+
+    public Boolean getNotReg() {
+        return notReg;
+    }
+
+    public void setNotReg(Boolean notReg) {
+        this.notReg = notReg;
     }
 
     public void setHost(String host) {
