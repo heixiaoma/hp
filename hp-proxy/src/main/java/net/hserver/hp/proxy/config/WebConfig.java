@@ -12,7 +12,7 @@ public class WebConfig {
     @Value("host")
     private String host;
 
-    @Value("reg")
+    @Value("notReg")
     private Boolean notReg;
 
     @Value("name")
