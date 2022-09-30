@@ -30,6 +30,15 @@ CREATE TABLE "sys_user" (
   PRIMARY KEY ("id")
 );
 
+DROP TABLE IF EXISTS "sys_pay";
+CREATE TABLE "sys_pay" (
+                            "id" text NOT NULL,
+                            "username" TEXT,
+                            "price" TEXT,
+                            "create_time" TEXT,
+                            PRIMARY KEY ("id")
+);
+
 -- ----------------------------
 -- Table structure for sys_port
 -- ----------------------------
