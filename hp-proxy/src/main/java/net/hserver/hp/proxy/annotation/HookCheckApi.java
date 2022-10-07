@@ -17,7 +17,7 @@ public class HookCheckApi implements HookAdapter {
     @Override
     public void before(Class aClass, Method method, Object[] objects) throws Throwable {
         //如果是不注册到注册中心的直接不检查api，自己可以看，不校验权限
-        if (IocUtil.getBean(WebConfig.class).getNotReg()) {
+        if (IocUtil.getBean(WebConfig.class).getNotReg()!=null&&IocUtil.getBean(WebConfig.class).getNotReg()) {
             return;
         }
         HttpRequest httpRequest = HServerContextHolder.getWebKit().httpRequest;
