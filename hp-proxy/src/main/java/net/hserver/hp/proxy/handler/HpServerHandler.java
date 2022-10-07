@@ -130,7 +130,7 @@ public class HpServerHandler extends HpCommonHandler {
                 this.port = tempPort;
                 register = true;
                 CURRENT_STATUS.put(String.valueOf(tempPort), new ConnectInfo(login.getUsername(), ctx.channel()));
-                String host = IocUtil.getBean(WebConfig.class).getHost();
+                String host = IocUtil.getBean(WebConfig.class).getUserHost();
                 metaDataBuild.setReason("连接成功，外网TCP地址是:" + host + ":" + tempPort + ",外网HTTP地址是：http://" + login.getUsername() + "." + host + " " + (login.getTips().trim().length() > 0 ? "公告提示：" + login.getTips() : ""));
                 System.out.println("注册成功，外网地址是:  " + host + ":" + tempPort);
                 System.out.println("用户名：" + username + " 来源IP：" + ctx.channel().remoteAddress());
