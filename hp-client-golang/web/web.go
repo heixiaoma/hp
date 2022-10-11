@@ -121,6 +121,10 @@ func StartWeb(webPort int, api string) {
 		domain := context.PostForm("domain")
 		remote_port := context.PostForm("remote_port")
 		password := context.PostForm("password")
+		if len(ip)==0||len(port)==0 ||len(domain) == 0 || len(server_info) == 0 {
+			context.Redirect(http.StatusMovedPermanently, "/static/center.html")
+			return
+		}
 		split := strings.Split(server_info, ":")
 		ato1, _ := strconv.Atoi(split[1])
 		ato2, _ := strconv.Atoi(remote_port)

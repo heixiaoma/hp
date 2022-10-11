@@ -17,11 +17,11 @@
 </head>
 <body class="mdui-appbar-with-toolbar  mdui-theme-primary-indigo mdui-theme-accent-pink mdui-theme-layout-auto">
 <header class="mdui-appbar mdui-appbar-fixed">
-    <div class="mdui-toolbar mdui-color-theme">
-        <div class="mdui-toolbar-spacer"></div>
-        <div mdui-dialog="{target: '#login_dialog'}" class=" mdui-btn mdui-btn-dense">登录</div>
-        <div mdui-dialog="{target: '#register_dialog'}" class="register mdui-btn mdui-btn-dense">注册</div>
-    </div>
+<#--    <div class="mdui-toolbar mdui-color-theme">-->
+<#--        <div class="mdui-toolbar-spacer"></div>-->
+<#--        <div mdui-dialog="{target: '#login_dialog'}" class=" mdui-btn mdui-btn-dense">登录</div>-->
+<#--        <div mdui-dialog="{target: '#register_dialog'}" class="register mdui-btn mdui-btn-dense">注册</div>-->
+<#--    </div>-->
 </header>
 <!--菜單-->
 <div class="mdui-dialog mc-account mc-login" id="login_dialog" style="height: auto">
