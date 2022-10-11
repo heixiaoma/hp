@@ -182,7 +182,7 @@ public class UserServiceImpl implements UserService {
         instance.setTime(new Date());
         instance.add(Calendar.MONTH,-1);
         userDao.getSQLManager().executeUpdate(
-                new SQLReady("delete from sys_user where login_time < "+instance.getTimeInMillis())
+                new SQLReady("delete from sys_user where (level is null or level = 0) and login_time < "+instance.getTimeInMillis())
         );
     }
 }
