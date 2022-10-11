@@ -108,8 +108,8 @@
                 $.post("/user/reg", {username: val, password: val1}, function (result) {
                     result = JSON.parse(result)
                     if (result.code === 200) {
-                        localStorage.setItem("userInfo", JSON.stringify(result.data))
-                        location.href = "./center.html";
+                        alert(result.msg)
+                        location.reload()
                     } else {
                         $("#closeReg").click()
                         mdui.alert(result.msg);
