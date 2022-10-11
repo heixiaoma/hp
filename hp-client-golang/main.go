@@ -1,7 +1,11 @@
 package main
 
+import (
+	"hp-client-golang/web"
+)
+
 func main() {
-	StartWeb(0)
+	web.StartWeb(0, "http://ksweb.club:9090")
 
 	//
 	//// 定义几个变量，用于接收命令行的参数值
