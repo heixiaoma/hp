@@ -121,7 +121,7 @@ func StartWeb(webPort int, api string) {
 		domain := context.PostForm("domain")
 		remote_port := context.PostForm("remote_port")
 		password := context.PostForm("password")
-		if len(ip)==0||len(port)==0 ||len(domain) == 0 || len(server_info) == 0 {
+		if len(ip) == 0 || len(port) == 0 || len(domain) == 0 || len(server_info) == 0 {
 			context.Redirect(http.StatusMovedPermanently, "/static/center.html")
 			return
 		}
@@ -163,7 +163,7 @@ func StartWeb(webPort int, api string) {
 		load, ok := ConnGroup.Load(domain)
 		if ok {
 			client := load.(*tcp.HpClient)
-			client.Close()
+			client.Kill()
 			ConnGroup.Delete(domain)
 		}
 		context.Redirect(http.StatusMovedPermanently, "/static/center.html")

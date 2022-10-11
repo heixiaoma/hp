@@ -36,7 +36,6 @@ func (hpClient *HpClient) Connect(serverAddress string, serverPort int, username
 	hpClient.serverAddress = serverAddress
 	hpClient.serverPort = serverPort
 	hpClient.handler = handler
-	hpClient.isKill = false
 	hpClient.conn = connection.Connect(serverAddress, serverPort, true, handler, hpClient.CallMsg)
 }
 
@@ -60,9 +59,13 @@ func (hpClient *HpClient) GetServer() string {
 	return hpClient.serverAddress + ":" + strconv.Itoa(hpClient.serverPort)
 }
 
+func (hpClient *HpClient) Kill() {
+	hpClient.isKill = true
+	hpClient.Close()
+}
+
 func (hpClient *HpClient) Close() {
 	if hpClient.conn != nil {
-		hpClient.isKill = true
 		hpClient.conn.Close()
 	}
 }
