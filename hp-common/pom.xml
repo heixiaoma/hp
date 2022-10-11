@@ -5,7 +5,7 @@
     <parent>
         <artifactId>hp</artifactId>
         <groupId>net.hserver.hp</groupId>
-        <version>5.0</version>
+        <version>6.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>hp-common</artifactId>
