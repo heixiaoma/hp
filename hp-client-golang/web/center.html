@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" href="./common/css/mdui.min.css"/>
+    <link rel="stylesheet" href="./common/css/paging.css"/>
+    <script src="./common/js/jquery.min.js"></script>
+    <script src="./common/js/paging.js"></script>
+    <script src="./common/js/mdui.min.js"></script>
+    <title>内网穿透</title>
+</head>
+<body class="mdui-drawer-body-left mdui-appbar-with-toolbar  mdui-theme-primary-indigo mdui-theme-accent-pink mdui-theme-layout-auto">
+<header class="mdui-appbar mdui-appbar-fixed">
+    <div class="mdui-toolbar mdui-color-theme">
+        <span class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white"
+              mdui-drawer="{target: '#main-drawer', swipe: true}"><i class="mdui-icon material-icons">menu</i></span>
+        <a href="./center.html" class="mdui-typo-headline mdui-hidden-xs">内网穿透</a>
+        <div class="mdui-toolbar-spacer"></div>
+        <div class=" mdui-btn mdui-btn-dense"><span>用户：<span id="username">***</span> 级别：<span
+                id="level">***</span> </span></div>
+        <div id="login_out" class=" mdui-btn mdui-btn-dense">退出</div>
+    </div>
+</header>
+<div class="mdui-drawer" id="main-drawer">
+    <div class="mdui-list" mdui-collapse="{accordion: true}" style="margin-bottom: 76px;">
+        <div class="mdui-collapse-item mdui-collapse-item-open">
+            <a class="mdui-collapse-item-header mdui-list-item mdui-ripple" href="./center.html">
+                <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">near_me</i>
+                <div class="mdui-list-item-content">穿透服务</div>
+            </a>
+            <a class="mdui-collapse-item mdui-collapse-item-open" href="./port.html">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <i class="mdui-list-item-icon mdui-icon  material-icons mdui-text-color-purple">layers</i>
+                    <div class="mdui-list-item-content">端口管理</div>
+                </div>
+            </a>
+            <a class="mdui-collapse-item mdui-collapse-item-open" href="./domain.html">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-green">layers</i>
+                    <div class="mdui-list-item-content">域名管理</div>
+                </div>
+            </a>
+            <a class="mdui-collapse-item mdui-collapse-item-open" href="./log.html">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">layers</i>
+                    <div class="mdui-list-item-content">穿透日志</div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        var userInfo = localStorage.getItem("userInfo")
+        if (!userInfo) {
+            location.href = "./login.html";
+        } else {
+            userInfo = JSON.parse(userInfo)
+            $("#username").text(userInfo.username)
+            $("#level").text(userInfo.level)
+        }
+        $("#login_out").click(function () {
+            localStorage.removeItem("userInfo")
+            location.href = "./login.html"
+        })
+    })
+</script>
+
+<div style="padding: 1rem">
+
+    <div style="padding: .6rem">
+        <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-purple-accent mdui-ripple"
+                onclick="new mdui.Dialog('#addUser').open()">
+            添加
+        </button>
+    </div>
+
+    <div class="mdui-table-fluid">
+        <table class="mdui-table">
+            <thead>
+            <tr>
+                <th>域名</th>
+                <th>内网服务</th>
+                <th>穿透服务</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody id="tabData">
+
+            </tbody>
+        </table>
+    </div>
+    <div style="margin-top: 10px">
+        <h3 class="chapter-title mdui-text-color-theme">穿透日志</h3>
+        <ul class="mdui-list" id="log">
+
+        </ul>
+    </div>
+    <div class="mdui-dialog" id="addUser">
+        <form method="post" action="/server/proxy">
+            <div class="mdui-dialog-content">
+                <input class="mdui-textfield-input" id="password" name="password" placeholder="password" type="hidden"/>
+                <div class="mdui-textfield">
+                    <label class="mdui-textfield-label">内网IP</label>
+                    <input class="mdui-textfield-input" name="ip" placeholder="内网IP" type="text"/>
+                </div>
+                <div class="mdui-textfield">
+                    <label class="mdui-textfield-label">内网端口</label>
+                    <input class="mdui-textfield-input" name="port" placeholder="内网端口" type="text"/>
+                </div>
+                <div class="mdui-textfield" id="server_data">
+                    <label class="mdui-textfield-label">穿透服务选择</label>
+                </div>
+                <div class="mdui-textfield" id="domains">
+                </div>
+                <div class="mdui-textfield" id="ports">
+                </div>
+            </div>
+            <div class="mdui-dialog-actions">
+                <div class="mdui-btn mdui-ripple" mdui-dialog-cancel>取消</div>
+                <button type="submit" class="mdui-btn mdui-ripple">确定</button>
+            </div>
+        </form>
+    </div>
+
+
+</div>
+
+
+<script>
+    var userInfo = localStorage.getItem("userInfo")
+    if (userInfo) {
+        userInfo = JSON.parse(userInfo)
+        console.log(userInfo)
+
+        $("#password").val(userInfo.password)
+
+        var domainHtml = "      <label class=\"mdui-textfield-label\">穿透域名</label>\n" +
+            "                    "
+
+        for (let a of userInfo.domains) {
+            domainHtml += "<label class=\"mdui-radio\">\n" +
+                "                        <input type=\"radio\" value='" + a + "' name=\"domain\"/>\n" +
+                "                        <i class=\"mdui-radio-icon\"></i>\n" +
+                "                        " + a + "\n" +
+                "                    </label>"
+        }
+        $("#domains").html(
+            domainHtml
+        )
+
+        var portsHtml = "<label class=\"mdui-textfield-label\">外网端口号</label>     <label class=\"mdui-radio\">\n" +
+            "                        <input type=\"radio\" value='0' name=\"remote_port\"/>\n" +
+            "                        <i class=\"mdui-radio-icon\"></i>\n" +
+            "                        随机端口\n" +
+            "                    </label>"
+        for (let a of userInfo.ports) {
+            portsHtml += "<label class=\"mdui-radio\">\n" +
+                "                        <input type=\"radio\" value='" + a + "' name=\"remote_port\"/>\n" +
+                "                        <i class=\"mdui-radio-icon\"></i>\n" +
+                "                        " + a + "\n" +
+                "                    </label>"
+        }
+        $("#ports").html(
+            portsHtml
+        )
+
+        var serverData = []
+
+        $.get("/load/data", function (result) {
+            result = JSON.parse(result)
+            if (result.code === 200) {
+                serverData.push(...result.data)
+            }
+
+            var serverDataHtml = "             <label class=\"mdui-textfield-label\">穿透服务选择</label>\n"
+
+            for (let a of serverData) {
+                serverDataHtml += "<label class=\"mdui-radio\">\n" +
+                    "                        <input type=\"radio\" value='" + a.ip + ":" + a.port + "' name=\"server_info\"/>\n" +
+                    "                        <i class=\"mdui-radio-icon\"></i>\n" +
+                    "                        " + a.name + "在线数：" + a.num + "\n" +
+                    "                    </label>"
+            }
+            $("#server_data").html(
+                serverDataHtml
+            )
+
+        });
+
+
+        var tabData = ""
+        $.get("/server/info", function (result) {
+            for (let a of result) {
+                tabData += "  <tr>\n" +
+                    "                <td>" + a.Domain + "</td>\n" +
+                    "                <td>" + a.ProxyServer + "</td>\n" +
+                    "                <td>" + a.Server + "</td>\n" +
+                    "                <td>" + a.Status + "</td>\n" +
+                    "                <td>\n" +
+                    "                    <a class=\"mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-orange-accent mdui-ripple\"\n" +
+                    "                       href=\"/server/stop?domain=" + a.Domain + "\">\n" +
+                    "                        停止\n" +
+                    "                    </a>\n" +
+                    "                </td>\n" +
+                    "            </tr>"
+            }
+            $("#tabData").html(
+                tabData
+            )
+        });
+
+        var i = 0
+        setInterval(function () {
+            $.get("/server/log", function (result) {
+                //{Domain: 'aaa', Msg: '非法用户，登录失败，有疑问请联系管理员'}
+                if (result) {
+                    $("#log").prepend("          <li class=\"mdui-list-item  mdui-ripple\">\n" +
+                        "                <div class=\"mdui-list-item-content\">\n" +
+                        "                    <div class=\"mdui-list-item-title\">" + result.Domain + "</div>\n" +
+                        "                    <div class=\"mdui-list-item-text mdui-list-item-one-line\">\n" +
+                        "                        " + result.Msg + "\n" +
+                        "                    </div>\n" +
+                        "                </div>\n" +
+                        "            </li>")
+
+                    if ($(".mdui-list-item").length > 50) {
+                        $("#log").html("")
+                    }
+                }
+            });
+
+        }, 1000)
+
+
+    }
+
+</script>
+
+</body>
+</html>

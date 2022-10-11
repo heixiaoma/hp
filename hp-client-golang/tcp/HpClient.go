@@ -2,12 +2,16 @@ package tcp
 
 import (
 	"net"
+	"strconv"
 )
 
 type HpClient struct {
-	CallMsg func(message string)
-	conn    net.Conn
-	handler *HpClientHandler
+	CallMsg       func(message string)
+	conn          net.Conn
+	serverAddress string
+	serverPort    int
+	isKill        bool
+	handler       *HpClientHandler
 }
 
 func NewHpClient(callMsg func(message string)) *HpClient {
@@ -29,7 +33,10 @@ func (hpClient *HpClient) Connect(serverAddress string, serverPort int, username
 		ProxyPort:    proxyPort,
 		CallMsg:      hpClient.CallMsg,
 	}
+	hpClient.serverAddress = serverAddress
+	hpClient.serverPort = serverPort
 	hpClient.handler = handler
+	hpClient.isKill = false
 	hpClient.conn = connection.Connect(serverAddress, serverPort, true, handler, hpClient.CallMsg)
 }
 
@@ -41,8 +48,21 @@ func (hpClient *HpClient) GetStatus() bool {
 	}
 }
 
+func (hpClient *HpClient) IsKill() bool {
+	return hpClient.isKill
+}
+
+func (hpClient *HpClient) GetProxyServer() string {
+	return hpClient.handler.ProxyAddress + ":" + strconv.Itoa(hpClient.handler.ProxyPort)
+}
+
+func (hpClient *HpClient) GetServer() string {
+	return hpClient.serverAddress + ":" + strconv.Itoa(hpClient.serverPort)
+}
+
 func (hpClient *HpClient) Close() {
 	if hpClient.conn != nil {
+		hpClient.isKill = true
 		hpClient.conn.Close()
 	}
 }

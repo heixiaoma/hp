@@ -75,6 +75,7 @@ public class UserServiceImpl implements UserService {
             for (DomainEntity domainEntity : domain) {
                 domains.add(domainEntity.getDomain());
             }
+            userVo.setLevel(user.getLevel());
             userVo.setDomains(domains);
             userVo.setPorts(ports);
             updateLogin(username, address);

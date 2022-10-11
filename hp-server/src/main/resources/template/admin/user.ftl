@@ -7,7 +7,6 @@
                 onclick="new mdui.Dialog('#addUser').open()">
             添加
         </button>
-
         <div style="display: flex">
             <div class="mdui-textfield" style="width: 100px">
                 <label class="mdui-textfield-label">用戶名</label>
@@ -20,7 +19,6 @@
                 </button>
             </div>
         </div>
-
     </div>
 
     <div class="mdui-table-fluid">
@@ -79,7 +77,7 @@
                                     </div>
                                 </div>
                                 <div class="mdui-dialog-actions">
-                                    <button class="mdui-btn mdui-ripple" mdui-dialog-cancel>取消</button>
+                                    <div class="mdui-btn mdui-ripple" mdui-dialog-cancel>取消</div>
                                     <button type="submit" class="mdui-btn mdui-ripple">确定</button>
                                 </div>
                             </form>
