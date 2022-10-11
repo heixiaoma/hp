@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" href="./common/css/mdui.min.css"/>
+    <link rel="stylesheet" href="./common/css/paging.css"/>
+    <script src="./common/js/jquery.min.js"></script>
+    <script src="./common/js/paging.js"></script>
+    <script src="./common/js/mdui.min.js"></script>
+    <title>内网穿透</title>
+</head>
+<body class="mdui-drawer-body-left mdui-appbar-with-toolbar  mdui-theme-primary-indigo mdui-theme-accent-pink mdui-theme-layout-auto">
+<header class="mdui-appbar mdui-appbar-fixed">
+    <div class="mdui-toolbar mdui-color-theme">
+        <span class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white"
+              mdui-drawer="{target: '#main-drawer', swipe: true}"><i class="mdui-icon material-icons">menu</i></span>
+        <a href="./center.html" class="mdui-typo-headline mdui-hidden-xs">内网穿透</a>
+        <div class="mdui-toolbar-spacer"></div>
+        <div class=" mdui-btn mdui-btn-dense"><span>用户：<span id="username">***</span> 级别：<span
+                id="level">***</span> </span></div>
+        <div id="login_out" class=" mdui-btn mdui-btn-dense">退出</div>
+    </div>
+</header>
+<div class="mdui-drawer" id="main-drawer">
+    <div class="mdui-list" mdui-collapse="{accordion: true}" style="margin-bottom: 76px;">
+        <div class="mdui-collapse-item mdui-collapse-item-open">
+            <a class="mdui-collapse-item-header mdui-list-item mdui-ripple" href="./center.html">
+                <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">near_me</i>
+                <div class="mdui-list-item-content">穿透服务</div>
+            </a>
+            <a class="mdui-collapse-item mdui-collapse-item-open" href="./port.html">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <i class="mdui-list-item-icon mdui-icon  material-icons mdui-text-color-purple">layers</i>
+                    <div class="mdui-list-item-content">端口管理</div>
+                </div>
+            </a>
+            <a class="mdui-collapse-item mdui-collapse-item-open" href="./domain.html">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-green">layers</i>
+                    <div class="mdui-list-item-content">域名管理</div>
+                </div>
+            </a>
+            <a class="mdui-collapse-item mdui-collapse-item-open" href="./log.html">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">layers</i>
+                    <div class="mdui-list-item-content">穿透日志</div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        var userInfo = localStorage.getItem("userInfo")
+        if (!userInfo) {
+            location.href = "./login.html";
+        } else {
+            userInfo = JSON.parse(userInfo)
+            $("#username").text(userInfo.username)
+            $("#level").text(userInfo.level)
+        }
+        $("#login_out").click(function () {
+            localStorage.removeItem("userInfo")
+            location.href = "./login.html"
+        })
+    })
+</script>
+
+<div style="padding: 1rem">
+
+    <div style="padding: .6rem">
+        <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-purple-accent mdui-ripple"
+                onclick="new mdui.Dialog('#addUser').open()">
+            添加域名
+        </button>
+    </div>
+
+    <div class="mdui-table-fluid">
+        <table class="mdui-table">
+            <thead>
+            <tr>
+                <th>二级名</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody id="tabData">
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mdui-dialog" id="addUser">
+        <form>
+            <div class="mdui-dialog-content">
+                <input class="mdui-textfield-input" id="userInfo" name="userId" placeholder="username" type="hidden"/>
+                <div class="mdui-textfield">
+                    <label class="mdui-textfield-label">二级域名</label>
+                    <input class="mdui-textfield-input " id="domain" name="domain" placeholder="二级域名" type="text"/>
+                </div>
+            </div>
+            <div class="mdui-dialog-actions">
+                <div class="mdui-btn mdui-ripple" mdui-dialog-cancel>取消</div>
+                <button id="add_btn" class="mdui-btn mdui-ripple">确定</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    var userInfo = localStorage.getItem("userInfo")
+    if (userInfo) {
+        userInfo = JSON.parse(userInfo)
+        console.log(userInfo)
+        $("#userInfo").val(userInfo.id)
+        var tabData = ""
+        $.get("/server/domainList?userId="+userInfo.id, function (result) {
+            result=JSON.parse(result)
+            for (let a of result.data) {
+                tabData += "  <tr>\n" +
+                    "                <td>" + a.domain + "</td>\n" +
+                    "                <td>\n" +
+                    "                    <a class=\"mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-orange-accent mdui-ripple\"\n" +
+                    "                       href=\"/server/domainRemove?userId=" + userInfo.id + "&domain="+a.domain+"\">\n" +
+                    "                        删除\n" +
+                    "                    </a>\n" +
+                    "                </td>\n" +
+                    "            </tr>"
+            }
+            $("#tabData").html(
+                tabData
+            )
+        });
+    }
+
+    $("#add_btn").click(function () {
+        let val = $("#userInfo").val();
+        let val1 = $("#domain").val();
+        if (val && val1) {
+            $.post("/server/domainAdd", {userId: val, domain: val1}, function (result) {
+                result=JSON.parse(result)
+                if (result.code === 200) {
+                    location.reload()
+                } else {
+                    alert(result.msg)
+                }
+            });
+        }
+    })
+
+</script>
+
+</body>
+</html>

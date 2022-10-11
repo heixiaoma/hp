@@ -27,7 +27,7 @@
 <div class="mdui-dialog mc-account mc-login" id="login_dialog" style="height: auto">
     <div>
         <button id="closeLogin" mdui-dialog-close="{target: '#login_dialog'}" class="mdui-btn mdui-btn-icon close"><i
-                    class="mdui-icon material-icons">close</i></button>
+                class="mdui-icon material-icons">close</i></button>
         <div class="mdui-dialog-title">登录</div>
     </div>
     <form>
@@ -37,9 +37,9 @@
             <div class="mdui-textfield-error">账号不能为空</div>
         </div>
         <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom"><label
-                    class="mdui-textfield-label">密码</label><input id="password" class="mdui-textfield-input"
-                                                                  name="password"
-                                                                  type="password" required="">
+                class="mdui-textfield-label">密码</label><input id="password" class="mdui-textfield-input"
+                                                              name="password"
+                                                              type="password" required="">
             <div class="mdui-textfield-error">密码不能为空</div>
         </div>
         <div class="actions mdui-clearfix">
@@ -52,23 +52,26 @@
 <div class="mc-account mc-login mdui-dialog" id="register_dialog" style="height: auto">
     <div>
         <button id="closeReg" mdui-dialog-close="{target: '#register_dialog'}" class="mdui-btn mdui-btn-icon close"><i
-                    class="mdui-icon material-icons">close</i></button>
+                class="mdui-icon material-icons">close</i></button>
         <div class="mdui-dialog-title">创建新账号</div>
     </div>
     <form class="">
         <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom"><label
-                    class="mdui-textfield-label">用户名(也是你的二级域名名字)</label><input id="reg_username" class="mdui-textfield-input"
-                                                                               name="username"
-                                                                               type="text" required="">
+                class="mdui-textfield-label">用户名(也是你的二级域名名字)</label><input id="reg_username"
+                                                                           class="mdui-textfield-input"
+                                                                           name="username"
+                                                                           type="text" required="">
             <div class="mdui-textfield-error">用户名不能为空</div>
         </div>
         <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom"><label
-                    class="mdui-textfield-label">密码</label><input id="reg_password" class="mdui-textfield-input" name="password"
-                                                                  type="password" required="">
+                class="mdui-textfield-label">密码</label><input id="reg_password" class="mdui-textfield-input"
+                                                              name="password"
+                                                              type="password" required="">
             <div class="mdui-textfield-error">密码不能为空</div>
         </div>
         <div class="actions mdui-clearfix">
-            <button id="reg_btn" type="button" class="mdui-btn mdui-btn-raised mdui-color-theme action-btn">注册并登录</button>
+            <button id="reg_btn" type="button" class="mdui-btn mdui-btn-raised mdui-color-theme action-btn">注册并登录
+            </button>
         </div>
     </form>
 </div>
@@ -77,7 +80,7 @@
 <script>
     $(function () {
         var userInfo = localStorage.getItem("userInfo")
-        if (userInfo){
+        if (userInfo) {
             location.href = "./center.html";
         }
         $("#login_btn").click(function () {
@@ -85,9 +88,9 @@
             let val1 = $("#password").val();
             if (val && val1) {
                 $.post("/user/login", {username: val, password: val1}, function (result) {
-                    result=JSON.parse(result)
+                    result = JSON.parse(result)
                     if (result.code === 200) {
-                        localStorage.setItem("userInfo",JSON.stringify(result.data))
+                        localStorage.setItem("userInfo", JSON.stringify(result.data))
                         location.href = "./center.html";
                     } else {
                         $("#closeLogin").click()
@@ -103,9 +106,9 @@
             let val1 = $("#reg_password").val();
             if (val && val1) {
                 $.post("/user/reg", {username: val, password: val1}, function (result) {
-                    result=JSON.parse(result)
+                    result = JSON.parse(result)
                     if (result.code === 200) {
-                        localStorage.setItem("userInfo",JSON.stringify(result.data))
+                        localStorage.setItem("userInfo", JSON.stringify(result.data))
                         location.href = "./center.html";
                     } else {
                         $("#closeReg").click()
@@ -121,11 +124,8 @@
 </script>
 
 
-
-
-
 <style>
-    .mdui-col span{
+    .mdui-col span {
         display: inline-block;
         padding: 0.25em 0.4em;
         font-size: 75%;
@@ -135,22 +135,23 @@
         white-space: nowrap;
         vertical-align: baseline;
         border-radius: 0.25rem;
-        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
     }
-    .pay{
+
+    .pay {
         margin-top: 10px;
         padding: 10px;
-        box-shadow: 20px 0px 10px 0px rgba(0,0,0,0.5);
+        box-shadow: 20px 0px 10px 0px rgba(0, 0, 0, 0.5);
         text-align: center;
     }
 </style>
 <div id="page-index" class="mdui-container">
     <div class="banner"><h1><strong>H</strong><strong>P</strong>内网穿透
-        </h1>
+    </h1>
         <div class="meta">我们支持TCP级别的所有协议，针对HTTP协议做了大量的优化工作， 可以实现 http/https ws/wss 协议。</div>
         <div class="actions"><a href="https://gitee.com/HServer/hp-android-client/releases" class="mdui-btn mdui-ripple"
                                 target="_blank">APK下载</a><a
-                    href="https://gitee.com/HServer/hp/releases" class="mdui-btn mdui-ripple">其他端下载</a>
+                href="https://gitee.com/HServer/hp/releases" class="mdui-btn mdui-ripple">其他端下载</a>
         </div>
         <div class="mdui-typo" style="margin-top: 50px">
             <span><a href="https://gitee.com/HServer/hp" rel="nofollow" target="_blank">开源地址</a></span>
@@ -231,7 +232,42 @@
         </div>
     </div>
 
+    <div class="feature case">
+        <h2>最新捐赠者</h2>
+        <div class="mdui-clearfix">
+            <div class="meta">
+                <div class="mdui-row-xs-4" id="pay">
 
+                </div>
+            </div>
+        </div>
+
+        <div class="meta">
+            <div style="text-align: center">
+                <img height="300" src="./img/pay.jpg"/>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 </body>
+
+<script>
+    $.get("/server/pay", function (result) {
+        result = JSON.parse(result)
+        var tabData = ""
+        for (let a of result.data) {
+            tabData += "   <div class=\"mdui-col pay\">\n" +
+                "                        <div>" + a.username + "</div>\n" +
+                "                        <div>\n" +
+                "                            <span>￥" + a.price + "</span>\n" +
+                "                        </div>\n" +
+                "                    </div>"
+        }
+        $("#pay").html(
+            tabData
+        )
+    });
+</script>
+
 </html>

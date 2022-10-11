@@ -31,17 +31,17 @@ public class HttpService {
             .build();
 
 
-    public static UserVo login(String username, String password, String address) {
+    public static UserVo login(String domain, String password, String address) {
         WebConfig bean = IocUtil.getBean(WebConfig.class);
         String adminAddress = bean.getAdminAddress();
         try {
             RequestBody body = new FormBody.Builder()
-                    .add("username", username)
+                    .add("domain", domain)
                     .add("password", password)
                     .add("address", address)
                     .build();
             okhttp3.Request request = new okhttp3.Request.Builder()
-                    .url(adminAddress + "/user/login")
+                    .url(adminAddress + "/user/domainLogin")
                     .post(body)
                     .build();
             String string = okHttpClient.newCall(request).execute().body().string();

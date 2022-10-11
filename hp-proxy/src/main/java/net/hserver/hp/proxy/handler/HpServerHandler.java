@@ -91,7 +91,7 @@ public class HpServerHandler extends HpCommonHandler {
      */
     private void processRegister(HpMessageData.HpMessage hpMessage) {
         String password = hpMessage.getMetaData().getPassword();
-        String username = hpMessage.getMetaData().getUsername();
+        String domain = hpMessage.getMetaData().getUsername();
         int tempPort = 0;
         Object port = hpMessage.getMetaData().getPort();
         if (port != null) {
@@ -99,7 +99,7 @@ public class HpServerHandler extends HpCommonHandler {
         }
         WebConfig webConfig = IocUtil.getBean(WebConfig.class);
 
-        UserVo login = HttpService.login(username, password, ctx.channel().remoteAddress().toString());
+        UserVo login = HttpService.login(domain, password, ctx.channel().remoteAddress().toString());
         /**
          * 查询这个用户是否是合法的，不是合法的直接干掉
          */
@@ -109,13 +109,13 @@ public class HpServerHandler extends HpCommonHandler {
             metaDataBuild.setReason("非法用户，登录失败，有疑问请联系管理员");
         } else if (login.getType() != null && login.getType() == -1) {
             metaDataBuild.setSuccess(false);
-            metaDataBuild.setReason("账号被封，请穿透正能量，有意义的程序哦。用户名：" + username + " 来源IP：" + ctx.channel().remoteAddress());
+            metaDataBuild.setReason("账号被封，请穿透正能量，有意义的程序哦。用户名：" + domain + " 来源IP：" + ctx.channel().remoteAddress());
         } else if (webConfig.getLevel() != null && webConfig.getLevel() != 0 && login.getLevel() < webConfig.getLevel()) {
             metaDataBuild.setSuccess(false);
-            metaDataBuild.setReason("当前穿透服务限定用户级别： " + webConfig.getLevel() + "、请升级后享受该服务。用户名：" + username + " 来源IP：" + ctx.channel().remoteAddress());
+            metaDataBuild.setReason("当前穿透服务限定用户级别： " + webConfig.getLevel() + "、请升级后享受该服务。用户名：" + domain + " 来源IP：" + ctx.channel().remoteAddress());
         } else {
             try {
-                if (!login.getPorts().contains(tempPort) || tempPort < 0) {
+                if (!login.getPorts().contains(tempPort) || tempPort <= 0) {
                     tempPort = NetUtil.getAvailablePort();
                 }
                 HpServerHandler thisHandler = this;
@@ -136,9 +136,9 @@ public class HpServerHandler extends HpCommonHandler {
                 register = true;
                 CURRENT_STATUS.put(String.valueOf(tempPort), new ConnectInfo(login.getUsername(), ctx.channel()));
                 String host = IocUtil.getBean(WebConfig.class).getUserHost();
-                metaDataBuild.setReason("连接成功，外网TCP地址是:" + host + ":" + tempPort + ",外网HTTP地址是：http://" + login.getUsername() + "." + host + " " + (login.getTips().trim().length() > 0 ? "公告提示：" + login.getTips() : ""));
+                metaDataBuild.setReason("连接成功，外网TCP地址是:" + host + ":" + tempPort + ",外网HTTP地址是：http://" + domain + "." + host + " " + (login.getTips().trim().length() > 0 ? "公告提示：" + login.getTips() : ""));
                 System.out.println("注册成功，外网地址是:  " + host + ":" + tempPort);
-                System.out.println("用户名：" + username + " 来源IP：" + ctx.channel().remoteAddress());
+                System.out.println("用户名：" + domain + " 来源IP：" + ctx.channel().remoteAddress());
             } catch (Exception e) {
                 metaDataBuild.setSuccess(false);
                 metaDataBuild.setReason(e.getMessage());

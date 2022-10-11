@@ -54,6 +54,40 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserVo domainLogin(String domain, String password, String address) {
+        List<DomainEntity> select1 = domainDao.createLambdaQuery().andEq(DomainEntity::getDomain, domain).select();
+        if (select1 == null||select1.isEmpty()) {
+            return null;
+        }
+        DomainEntity domainEntity1 = select1.get(0);
+        String userId = domainEntity1.getUserId();
+        UserEntity user = userDao.single(userId);
+        if (user.getPassword().equals(password)) {
+            List<PortEntity> select = getPort(user.getId());
+            List<DomainEntity> domainEntityList = getDomain(user.getId());
+            UserVo userVo = new UserVo();
+            userVo.setId(user.getId());
+            userVo.setUsername(user.getUsername());
+            userVo.setPassword(user.getPassword());
+            userVo.setType(user.getType());
+            List<Integer> ports = new ArrayList<>();
+            for (PortEntity portEntity : select) {
+                ports.add(portEntity.getPort());
+            }
+            List<String> domains = new ArrayList<>();
+            for (DomainEntity domainEntity : domainEntityList) {
+                domains.add(domainEntity.getDomain());
+            }
+            userVo.setLevel(user.getLevel());
+            userVo.setDomains(domains);
+            userVo.setPorts(ports);
+            updateLogin(user.getUsername(), address);
+            return userVo;
+        }
+        return null;
+    }
+
+    @Override
     public UserVo login(String username, String password, String address) {
         UserEntity user = getUser(username);
         if (user == null) {

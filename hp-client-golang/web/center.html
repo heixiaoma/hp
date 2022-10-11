@@ -79,6 +79,9 @@
                 onclick="new mdui.Dialog('#addUser').open()">
             添加
         </button>
+        <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-purple-accent mdui-ripple" id="refUser">
+            刷新配置信息
+        </button>
     </div>
 
     <div class="mdui-table-fluid">
@@ -138,7 +141,20 @@
     var userInfo = localStorage.getItem("userInfo")
     if (userInfo) {
         userInfo = JSON.parse(userInfo)
-        console.log(userInfo)
+
+
+        $("#refUser").click(function () {
+            $.post("/user/login", {username: userInfo.username, password: userInfo.password}, function (result) {
+                result = JSON.parse(result)
+                if (result.code === 200) {
+                    localStorage.setItem("userInfo", JSON.stringify(result.data))
+                    location.href = "./center.html";
+                } else {
+                    $("#closeLogin").click()
+                    mdui.alert(result.msg);
+                }
+            });
+        })
 
         $("#password").val(userInfo.password)
 
@@ -217,7 +233,6 @@
             )
         });
 
-        var i = 0
         setInterval(function () {
             $.get("/server/log", function (result) {
                 //{Domain: 'aaa', Msg: '非法用户，登录失败，有疑问请联系管理员'}
@@ -225,7 +240,7 @@
                     $("#log").prepend("          <li class=\"mdui-list-item  mdui-ripple\">\n" +
                         "                <div class=\"mdui-list-item-content\">\n" +
                         "                    <div class=\"mdui-list-item-title\">" + result.Domain + "</div>\n" +
-                        "                    <div class=\"mdui-list-item-text mdui-list-item-one-line\">\n" +
+                        "                    <div class=\"mdui-list-item-text\">\n" +
                         "                        " + result.Msg + "\n" +
                         "                    </div>\n" +
                         "                </div>\n" +
@@ -238,10 +253,7 @@
             });
 
         }, 1000)
-
-
     }
-
 </script>
 
 </body>

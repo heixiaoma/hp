@@ -18,6 +18,8 @@ public class UserVo {
 
     private Integer level;
 
+    private List<String> domains;
+
     private List<Integer> ports;
 
     private String createTime;
@@ -107,6 +109,14 @@ public class UserVo {
 
     public void setLoginIp(String loginIp) {
         this.loginIp = loginIp;
+    }
+
+    public List<String> getDomains() {
+        return domains;
+    }
+
+    public void setDomains(List<String> domains) {
+        this.domains = domains;
     }
 
     @Override

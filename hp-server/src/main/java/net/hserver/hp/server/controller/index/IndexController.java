@@ -20,7 +20,6 @@ public class IndexController {
     public void defaults(HttpResponse response) {
         Map<String, Object> data = new HashMap<>();
         data.put("payer",payService.getTop50());
-        System.out.println(payService.getTop50());
         response.sendTemplate("/index/default.ftl",data);
     }
 

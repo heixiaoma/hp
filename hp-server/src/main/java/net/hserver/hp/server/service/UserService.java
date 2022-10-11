@@ -20,6 +20,7 @@ public interface UserService {
      * @param password
      * @return
      */
+    UserVo domainLogin(String domain, String password, String address);
     UserVo login(String username, String password, String address);
 
     /**

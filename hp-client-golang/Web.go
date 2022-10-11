@@ -18,8 +18,8 @@ import (
 //go:embed web/*
 var fs embed.FS
 
-//var API="http://127.0.0.1:9090"
-var API = "http://ksweb.club:9090"
+var API="http://127.0.0.1:9090"
+//var API = "http://ksweb.club:9090"
 
 var MessageGroup = list.New()
 
@@ -95,7 +95,7 @@ func Proxy(server_ip string, server_port int, username string, password string, 
 	return true
 }
 
-func StartWeb(port int) {
+func StartWeb(webPort int) {
 	e := gin.Default()
 	e.StaticFS("/static", http.FS(fs))
 	e.POST("/user/login", func(context *gin.Context) {
@@ -164,11 +164,64 @@ func StartWeb(port int) {
 		}
 		context.Redirect(http.StatusMovedPermanently, "/static/web/center.html")
 	})
-	e.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "/static/web/login.html")
+
+	e.POST("/server/portAdd", func(context *gin.Context) {
+		userId := context.PostForm("userId")
+		port := context.PostForm("port")
+		post := Post("/server/portAdd", url.Values{"userId": {userId}, "port": {port}})
+		context.String(http.StatusOK, post)
 	})
-	if port <= 0 {
-		port = 10240
+	e.GET("/server/portList", func(context *gin.Context) {
+		userId := context.Query("userId")
+		post := Get("/server/portList?userId="+userId)
+		context.String(http.StatusOK, post)
+	})
+	e.GET("/server/portRemove", func(context *gin.Context) {
+		userId := context.Query("userId")
+		port := context.Query("port")
+		Post("/server/portRemove", url.Values{"userId": {userId}, "port": {port}})
+		context.Redirect(http.StatusMovedPermanently, "/static/web/port.html")
+
+	})
+
+	e.POST("/server/domainAdd", func(context *gin.Context) {
+		userId := context.PostForm("userId")
+		domain := context.PostForm("domain")
+		post := Post("/server/domainAdd", url.Values{"userId": {userId}, "domain": {domain}})
+		context.String(http.StatusOK, post)
+	})
+
+	e.GET("/server/domainList", func(context *gin.Context) {
+		userId := context.Query("userId")
+		post := Get("/server/domainList?userId="+userId)
+		context.String(http.StatusOK, post)
+	})
+	e.GET("/server/domainRemove", func(context *gin.Context) {
+		userId := context.Query("userId")
+		domain := context.Query("domain")
+		Post("/server/domainRemove", url.Values{"userId": {userId}, "domain": {domain}})
+		context.Redirect(http.StatusMovedPermanently, "/static/web/domain.html")
+
+	})
+
+	e.GET("/server/pay", func(context *gin.Context) {
+		post := Get("/server/pay")
+		context.String(http.StatusOK, post)
+	})
+
+
+	e.GET("/server/logList", func(context *gin.Context) {
+		username := context.Query("username")
+		page := context.Query("page")
+		post := Get("/statistics/getMyInfo?page="+page+"&username="+username)
+		context.String(http.StatusOK, post)
+	})
+
+	e.GET("/", func(context *gin.Context) {
+		context.Redirect(http.StatusMovedPermanently, "/static/web/login.html")
+	})
+	if webPort <= 0 {
+		webPort = 10240
 	}
-	e.Run(":" + strconv.Itoa(port))
+	e.Run(":" + strconv.Itoa(webPort))
 }
