@@ -97,7 +97,9 @@ public class HpServerHandler extends HpCommonHandler {
         if (port != null) {
             tempPort = (int) port;
         }
-        UserVo login = HttpService.login(username, password,ctx.channel().remoteAddress().toString());
+        WebConfig webConfig = IocUtil.getBean(WebConfig.class);
+
+        UserVo login = HttpService.login(username, password, ctx.channel().remoteAddress().toString());
         /**
          * 查询这个用户是否是合法的，不是合法的直接干掉
          */
@@ -108,6 +110,9 @@ public class HpServerHandler extends HpCommonHandler {
         } else if (login.getType() != null && login.getType() == -1) {
             metaDataBuild.setSuccess(false);
             metaDataBuild.setReason("账号被封，请穿透正能量，有意义的程序哦。用户名：" + username + " 来源IP：" + ctx.channel().remoteAddress());
+        } else if (webConfig.getLevel() != null && webConfig.getLevel() != 0 && login.getLevel() < webConfig.getLevel()) {
+            metaDataBuild.setSuccess(false);
+            metaDataBuild.setReason("当前穿透服务限定用户级别： " + webConfig.getLevel() + "、请升级后享受该服务。用户名：" + username + " 来源IP：" + ctx.channel().remoteAddress());
         } else {
             try {
                 if (!login.getPorts().contains(tempPort) || tempPort < 0) {

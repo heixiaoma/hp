@@ -23,9 +23,18 @@ public class ProxyServerEntity {
     private String name;
     private String ip;
     private String port;
+    private int level;
     private int num;
     private ConnectInfo connectInfo;
     private GlobalStat.Stat stat;
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
 
     public GlobalStat.Stat getStat() {
         return stat;

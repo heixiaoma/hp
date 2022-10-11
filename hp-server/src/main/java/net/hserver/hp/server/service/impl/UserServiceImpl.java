@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void editUser(String username, String password, String ports, Integer type) {
+    public void editUser(String username, String password, String ports, Integer type,Integer level) {
         UserEntity user = getUser(username);
         if (user != null) {
             if (type != null) {
@@ -103,6 +103,9 @@ public class UserServiceImpl implements UserService {
                 if (type == -1) {
                     //强制下线操作
                 }
+            }
+            if (level!=null){
+                user.setLevel(level);
             }
             user.setPassword(password);
             userDao.updateById(user);
@@ -128,7 +131,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean addUser(String username, String password, String ports) {
+    public boolean addUser(String username, String password, String ports,Integer level) {
         UserEntity user = getUser(username);
         if (user != null) {
             return false;
@@ -139,6 +142,11 @@ public class UserServiceImpl implements UserService {
         user.setType(2);
         user.setId(UUID.randomUUID().toString());
         user.setUsername(username.trim());
+        if (level==null) {
+            user.setLevel(0);
+        }else {
+            user.setLevel(level);
+        }
         userDao.insert(user);
         if (ports != null) {
             String[] split = ports.split(",");

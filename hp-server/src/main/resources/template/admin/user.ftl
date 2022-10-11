@@ -30,6 +30,7 @@
                 <th>用户名</th>
                 <th>密码</th>
                 <th>开通端口</th>
+                <th>用户级别</th>
                 <th>最近登录IP</th>
                 <th>最近登录时间</th>
                 <th>创建时间</th>
@@ -65,6 +66,11 @@
                                         <input class="mdui-textfield-input" name="ports" type="text"
                                                value="<#list userVo.ports as port>${port?c},</#list>"/>
                                     </div>
+                                    <div class="mdui-textfield">
+                                        <label class="mdui-textfield-label">用户级别</label>
+                                        <input class="mdui-textfield-input" name="level" type="text"
+                                               value="${userVo.level?c}"/>
+                                    </div>
                                 </div>
                                 <div class="mdui-dialog-actions">
                                     <button class="mdui-btn mdui-ripple" mdui-dialog-cancel>取消</button>
@@ -80,6 +86,7 @@
                                 ${port?c} &nbsp;
                             </#list>
                         </td>
+                        <td>${userVo.level?c}</td>
                         <td>${userVo.loginIp}</td>
                         <td>${userVo.loginTime}</td>
                         <td>${userVo.createTime}</td>
@@ -121,6 +128,9 @@
                 </div>
                 <div class="mdui-textfield">
                     <input class="mdui-textfield-input" name="ports" placeholder="端口号 逗号分隔" type="text"/>
+                </div>
+                <div class="mdui-textfield">
+                    <input class="mdui-textfield-input" name="level" placeholder="用户级别" type="text"/>
                 </div>
             </div>
             <div class="mdui-dialog-actions">

@@ -19,9 +19,18 @@ public class UserEntity {
      * 1 系统用户 2 普通用户 -1 被封用户
      */
     private Integer type;
-
+    //级别到时一些优惠或者限定服务器可以选择
+    private Integer level;
     private String createTime;
     private String loginTime;
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
 
     public String getLoginTime() {
         return loginTime;

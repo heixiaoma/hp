@@ -53,7 +53,7 @@ public interface UserService {
      * @param password
      * @param ports
      */
-    void editUser(String username, String password, String ports,Integer type);
+    void editUser(String username, String password, String ports,Integer type,Integer level);
 
     /**
      * 更新登录时间
@@ -68,7 +68,7 @@ public interface UserService {
      * @param password
      * @param ports
      */
-    boolean addUser(String username, String password, String ports);
+    boolean addUser(String username, String password, String ports,Integer level);
 
     /**
      * 删除用户

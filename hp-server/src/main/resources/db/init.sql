@@ -24,6 +24,7 @@ CREATE TABLE "sys_user" (
   "username" TEXT,
   "password" TEXT,
   "type" Integer,
+  "level" Integer,
   "login_ip" TEXT,
   "login_time" TEXT,
   "create_time" TEXT,

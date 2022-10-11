@@ -16,6 +16,8 @@ public class UserVo {
     //-1 封号
     private Integer type;
 
+    private Integer level;
+
     private List<Integer> ports;
 
     private String createTime;
@@ -26,6 +28,13 @@ public class UserVo {
 
     private String tips;
 
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
 
     public String getTips() {
         return tips;

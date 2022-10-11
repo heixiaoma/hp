@@ -44,17 +44,17 @@ public class UserController {
     }
 
     @POST("/admin/user/edit")
-    public void edit(Integer page, HttpResponse response, String username, String password, String ports, Integer type) {
+    public void edit(Integer page, HttpResponse response, String username, String password, String ports, Integer type,Integer level) {
         if (username != null) {
-            userService.editUser(username, password, ports, type);
+            userService.editUser(username, password, ports, type,level);
         }
         index(page, response, null);
     }
 
     @POST("/admin/user/add")
-    public void add(Integer page, HttpResponse response, String username, String password, String ports) {
+    public void add(Integer page, HttpResponse response, String username, String password, String ports,Integer level) {
         if (username != null) {
-            userService.addUser(username, password, ports);
+            userService.addUser(username, password, ports,level);
         }
         index(page, response, null);
     }

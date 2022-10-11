@@ -31,7 +31,7 @@ public class HttpService {
             .build();
 
 
-    public static UserVo login(String username, String password,String address) {
+    public static UserVo login(String username, String password, String address) {
         WebConfig bean = IocUtil.getBean(WebConfig.class);
         String adminAddress = bean.getAdminAddress();
         try {
@@ -80,7 +80,7 @@ public class HttpService {
 
     public static void reg() {
         WebConfig bean = IocUtil.getBean(WebConfig.class);
-        if (bean.getNotReg()!=null&&bean.getNotReg()){
+        if (bean.getNotReg() != null && bean.getNotReg()) {
             return;
         }
         String adminAddress = bean.getAdminAddress();
@@ -88,6 +88,7 @@ public class HttpService {
             RequestBody body = new FormBody.Builder()
                     .add("name", bean.getName())
                     .add("ip", bean.getHost())
+                    .add("level", String.valueOf(bean.getLevel()))
                     .add("port", PropUtil.getInstance().get("port"))
                     .add("num", String.valueOf(HpServerHandler.CURRENT_STATUS.size()))
                     .build();

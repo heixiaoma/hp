@@ -18,11 +18,22 @@ public class WebConfig {
     @Value("notReg")
     private Boolean notReg;
 
+    @Value("level")
+    private Integer level;
+
     @Value("name")
     private String name;
 
     public String getName() {
         return name;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
     }
 
     public void setName(String name) {
