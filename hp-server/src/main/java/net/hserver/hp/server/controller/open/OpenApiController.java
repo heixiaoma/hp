@@ -82,7 +82,7 @@ public class OpenApiController {
             if (!UserCheckUtil.checkUsername(username)) {
                 return JsonResult.error("注册只能小写字母和数字");
             }
-            if (userService.addUser(username.trim(), password.trim(), null,0)) {
+            if (userService.addUser(username.trim(), password.trim(), null, null, 0)) {
                 return JsonResult.ok("注册成功");
             } else {
                 return JsonResult.error("用户名已经存在请换一个");

@@ -52,6 +52,15 @@ CREATE TABLE "sys_port" (
   PRIMARY KEY ("id")
 );
 
+DROP TABLE IF EXISTS "sys_domain";
+CREATE TABLE "sys_domain" (
+    "id" text NOT NULL,
+    "user_id" text NOT NULL,
+    "domain" TEXT,
+    "create_time" TEXT,
+    PRIMARY KEY ("id")
+);
+
 DROP TABLE IF EXISTS "sys_app";
 CREATE TABLE "sys_app" (
   "id" text NOT NULL,

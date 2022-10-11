@@ -1,7 +1,9 @@
 package net.hserver.hp.server.service.impl;
 
+import net.hserver.hp.server.dao.DomainDao;
 import net.hserver.hp.server.dao.PortDao;
 import net.hserver.hp.server.dao.UserDao;
+import net.hserver.hp.server.domian.entity.DomainEntity;
 import net.hserver.hp.server.domian.entity.PortEntity;
 import net.hserver.hp.server.domian.entity.UserEntity;
 import net.hserver.hp.server.domian.vo.UserVo;
@@ -26,12 +28,20 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private PortDao portDao;
+    @Autowired
+    private DomainDao domainDao;
 
 
     @Override
     public List<PortEntity> getPort(String userId) {
         return portDao.createLambdaQuery().andEq(PortEntity::getUserId, userId).select();
     }
+
+    @Override
+    public List<DomainEntity> getDomain(String userId) {
+        return domainDao.createLambdaQuery().andEq(DomainEntity::getUserId, userId).select();
+    }
+
 
     @Override
     public UserEntity getUser(String username) {
@@ -44,13 +54,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserVo login(String username, String password,String address) {
+    public UserVo login(String username, String password, String address) {
         UserEntity user = getUser(username);
         if (user == null) {
             return null;
         }
         if (user.getPassword().equals(password)) {
             List<PortEntity> select = getPort(user.getId());
+            List<DomainEntity> domain = getDomain(user.getId());
             UserVo userVo = new UserVo();
             userVo.setId(user.getId());
             userVo.setUsername(username);
@@ -60,42 +71,53 @@ public class UserServiceImpl implements UserService {
             for (PortEntity portEntity : select) {
                 ports.add(portEntity.getPort());
             }
+            List<String> domains = new ArrayList<>();
+            for (DomainEntity domainEntity : domain) {
+                domains.add(domainEntity.getDomain());
+            }
+            userVo.setDomains(domains);
             userVo.setPorts(ports);
-            updateLogin(username,address);
+            updateLogin(username, address);
             return userVo;
         }
         return null;
     }
 
     @Override
-    public PageResult<UserVo> list(Integer page, Integer pageSize,String username) {
+    public PageResult<UserVo> list(Integer page, Integer pageSize, String username) {
         LambdaQuery<UserEntity> lambdaQuery = userDao.createLambdaQuery();
-        if (username!=null&&username.trim().length()>0){
-            lambdaQuery.andLike(UserEntity::getUsername,"%"+username+"%");
+        if (username != null && username.trim().length() > 0) {
+            lambdaQuery.andLike(UserEntity::getUsername, "%" + username + "%");
         }
         PageResult<UserVo> page1 = lambdaQuery.orderBy("create_time desc").page(page, pageSize, UserVo.class);
         List<UserVo> list = page1.getList();
         for (UserVo userVo : list) {
-            userVo.setLoginIp(userVo.getLoginIp()==null?"":userVo.getLoginIp());
+            userVo.setLoginIp(userVo.getLoginIp() == null ? "" : userVo.getLoginIp());
             userVo.setCreateTime(DateUtil.stampToDate(userVo.getCreateTime()));
             userVo.setLoginTime(DateUtil.stampToDate(userVo.getLoginTime()));
             List<PortEntity> select = getPort(userVo.getId());
+            List<DomainEntity> domain = getDomain(userVo.getId());
             List<Integer> ports = new ArrayList<>();
             for (PortEntity portEntity : select) {
                 ports.add(portEntity.getPort());
             }
+            List<String> domains = new ArrayList<>();
+            for (DomainEntity domainEntity : domain) {
+                domains.add(domainEntity.getDomain());
+            }
+            userVo.setDomains(domains);
             userVo.setPorts(ports);
         }
         return page1;
     }
 
     @Override
-    public void updateLogin(String username,String ip) {
-        userDao.updateLogin(String.valueOf(System.currentTimeMillis()),ip, username);
+    public void updateLogin(String username, String ip) {
+        userDao.updateLogin(String.valueOf(System.currentTimeMillis()), ip, username);
     }
 
     @Override
-    public void editUser(String username, String password, String ports, Integer type,Integer level) {
+    public void editUser(String username, String password, String ports, Integer type, Integer level) {
         UserEntity user = getUser(username);
         if (user != null) {
             if (type != null) {
@@ -104,7 +126,7 @@ public class UserServiceImpl implements UserService {
                     //强制下线操作
                 }
             }
-            if (level!=null){
+            if (level != null) {
                 user.setLevel(level);
             }
             user.setPassword(password);
@@ -131,7 +153,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean addUser(String username, String password, String ports,Integer level) {
+    public boolean addUser(String username, String password, String ports, String domains, Integer level) {
         UserEntity user = getUser(username);
         if (user != null) {
             return false;
@@ -142,9 +164,9 @@ public class UserServiceImpl implements UserService {
         user.setType(2);
         user.setId(UUID.randomUUID().toString());
         user.setUsername(username.trim());
-        if (level==null) {
+        if (level == null) {
             user.setLevel(0);
-        }else {
+        } else {
             user.setLevel(level);
         }
         userDao.insert(user);
@@ -152,11 +174,26 @@ public class UserServiceImpl implements UserService {
             String[] split = ports.split(",");
             if (split.length > 0) {
                 for (String s : split) {
-                    PortEntity portEntity = new PortEntity();
-                    portEntity.setId(UUID.randomUUID().toString());
-                    portEntity.setUserId(user.getId());
-                    portEntity.setPort(Integer.parseInt(s));
-                    portDao.insert(portEntity);
+                    if (s.trim().length()>0) {
+                        PortEntity portEntity = new PortEntity();
+                        portEntity.setId(UUID.randomUUID().toString());
+                        portEntity.setUserId(user.getId());
+                        portEntity.setPort(Integer.parseInt(s));
+                        portDao.insert(portEntity);
+                    }
+                }
+            }
+        }
+
+        if (domains != null) {
+            String[] split = domains.split(",");
+            if (split.length > 0) {
+                for (String s : split) {
+                    DomainEntity domainEntity = new DomainEntity();
+                    domainEntity.setId(UUID.randomUUID().toString());
+                    domainEntity.setUserId(user.getId());
+                    domainEntity.setDomain(s.trim());
+                    domainDao.insert(domainEntity);
                 }
             }
         }
@@ -180,9 +217,9 @@ public class UserServiceImpl implements UserService {
     public void removeExp() {
         Calendar instance = Calendar.getInstance();
         instance.setTime(new Date());
-        instance.add(Calendar.MONTH,-1);
+        instance.add(Calendar.MONTH, -1);
         userDao.getSQLManager().executeUpdate(
-                new SQLReady("delete from sys_user where (level is null or level = 0) and login_time < "+instance.getTimeInMillis())
+                new SQLReady("delete from sys_user where (level is null or level = 0) and login_time < " + instance.getTimeInMillis())
         );
     }
 }

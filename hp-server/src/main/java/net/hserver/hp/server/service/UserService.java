@@ -1,5 +1,6 @@
 package net.hserver.hp.server.service;
 
+import net.hserver.hp.server.domian.entity.DomainEntity;
 import net.hserver.hp.server.domian.entity.PortEntity;
 import net.hserver.hp.server.domian.entity.UserEntity;
 import net.hserver.hp.server.domian.vo.UserVo;
@@ -19,7 +20,7 @@ public interface UserService {
      * @param password
      * @return
      */
-    UserVo login(String username, String password,String address);
+    UserVo login(String username, String password, String address);
 
     /**
      * 获取用户对象
@@ -37,6 +38,8 @@ public interface UserService {
      */
     List<PortEntity> getPort(String userId);
 
+    List<DomainEntity> getDomain(String userId);
+
     /**
      * 列表
      *
@@ -44,7 +47,7 @@ public interface UserService {
      * @param pageSize
      * @return
      */
-    PageResult<UserVo> list(Integer page, Integer pageSize,String username);
+    PageResult<UserVo> list(Integer page, Integer pageSize, String username);
 
     /**
      * 编辑用户
@@ -53,13 +56,14 @@ public interface UserService {
      * @param password
      * @param ports
      */
-    void editUser(String username, String password, String ports,Integer type,Integer level);
+    void editUser(String username, String password, String ports, Integer type, Integer level);
 
     /**
      * 更新登录时间
+     *
      * @param username
      */
-    void updateLogin(String username,String ip);
+    void updateLogin(String username, String ip);
 
     /**
      * 添加用户
@@ -68,7 +72,7 @@ public interface UserService {
      * @param password
      * @param ports
      */
-    boolean addUser(String username, String password, String ports,Integer level);
+    boolean addUser(String username, String password, String ports, String domains,Integer level);
 
     /**
      * 删除用户

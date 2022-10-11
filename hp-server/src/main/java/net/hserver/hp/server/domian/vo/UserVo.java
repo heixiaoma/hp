@@ -18,6 +18,8 @@ public class UserVo {
 
     private Integer level;
 
+    private List<String> domains;
+
     private List<Integer> ports;
 
     private String createTime;
@@ -30,6 +32,14 @@ public class UserVo {
 
     public Integer getLevel() {
         return level;
+    }
+
+    public List<String> getDomains() {
+        return domains;
+    }
+
+    public void setDomains(List<String> domains) {
+        this.domains = domains;
     }
 
     public void setLevel(Integer level) {

@@ -52,9 +52,9 @@ public class UserController {
     }
 
     @POST("/admin/user/add")
-    public void add(Integer page, HttpResponse response, String username, String password, String ports,Integer level) {
+    public void add(Integer page, HttpResponse response, String username, String password, String ports,String domains,Integer level) {
         if (username != null) {
-            userService.addUser(username, password, ports,level);
+            userService.addUser(username, password, ports,domains,level);
         }
         index(page, response, null);
     }
