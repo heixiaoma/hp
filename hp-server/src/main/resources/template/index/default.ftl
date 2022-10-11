@@ -115,9 +115,9 @@
         <h2>通过 Docker 安装</h2>
         <div class="mdui-typo"><pre class="hljs php"><code class="lang-bash"><span
                             class="hljs-comment"># 通过 docker pull 拉取镜像</span>
-docker pull registry.cn-shenzhen.aliyuncs.com/hserver/hp:v4
+docker pull registry.cn-shenzhen.aliyuncs.com/hserver/hp:v7
 <span class="hljs-comment"># 通过 docker run 运行容器</span>
-docker run -P -d -p 5000:5000 -e server_ip=ksweb.club -e server_port=9091 -e username=heixiaoma -e password=123456 -e remote_port=5000 -e ip=127.0.0.1 -e port=5000 registry.cn-shenzhen.aliyuncs.com/hserver/hp:v4
+docker run -P -d -p 10240:10240  registry.cn-shenzhen.aliyuncs.com/hserver/hp:v7
 </code></pre>
         </div>
     </div>
@@ -129,28 +129,7 @@ docker run -P -d -p 5000:5000 -e server_ip=ksweb.club -e server_port=9091 -e use
         <h2>从 命令行 运行</h2>
         <div class="mdui-typo"><pre class="hljs php"><code class="lang-bash"><span
                             class="hljs-comment"># 通过参数运行</span>
-./hp-client-golang-amd64 -server_ip ksweb.club -server_port 9091 -username xx -password 123 -remote_port 5000 -ip 127.0.0.1 -port 5000
-
-<span class="hljs-comment"># 通过config.ini运行</span>
 ./hp-client-golang-amd64
-<span class="hljs-comment"># 同目下创建config.ini文件</span>
-[hp]
-#HP账号
-username='heixiaoma'
-#HP密码
-password='123456'
-#外部端口如果没有，服务会随机分配
-remote_port=8080
-#穿透服务的IP
-server_ip='ksweb.club'
-#穿透服务的端口
-server_port=9091
-
-[proxy]
-#本地代理的IP
-ip='192.168.123.85'
-#本地代理的端口
-port=8080
 </code></pre>
         </div>
     </div>
