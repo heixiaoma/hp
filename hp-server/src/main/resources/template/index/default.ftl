@@ -129,7 +129,7 @@ docker run -P -d -p 10240:10240  registry.cn-shenzhen.aliyuncs.com/hserver/hp:v7
         <h2>从 命令行 运行</h2>
         <div class="mdui-typo"><pre class="hljs php"><code class="lang-bash"><span
                             class="hljs-comment"># 通过参数运行</span>
-                    chmod -R 777 ./hp-client-golang-amd64
+chmod -R 777 ./hp-client-golang-amd64
 ./hp-client-golang-amd64
 </code></pre>
         </div>
