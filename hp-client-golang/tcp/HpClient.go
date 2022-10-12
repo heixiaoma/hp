@@ -68,4 +68,7 @@ func (hpClient *HpClient) Close() {
 	if hpClient.conn != nil {
 		hpClient.conn.Close()
 	}
+	if hpClient.handler != nil {
+		hpClient.handler.CloseAll()
+	}
 }

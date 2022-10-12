@@ -83,7 +83,17 @@ func (h *HpClientHandler) Close(channelId string) {
 			ConnGroup.Delete(channelId)
 		}
 	}
+}
 
+func (h *HpClientHandler) CloseAll() {
+	ConnGroup.Range(func(key, value interface{}) bool {
+		conn := value.(net.Conn)
+		if conn != nil {
+			conn.Close()
+			ConnGroup.Delete(key)
+		}
+		return true
+	})
 }
 
 func (h *HpClientHandler) writeData(message *hpMessage.HpMessage) {

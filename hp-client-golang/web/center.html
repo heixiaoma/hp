@@ -142,6 +142,12 @@
     if (userInfo) {
         userInfo = JSON.parse(userInfo)
 
+        function stop(domain) {
+            $.get("/server/stop?domain=" + domain, function (result) {
+                alert(result.Msg)
+                location.reload()
+            });
+        }
 
         $("#refUser").click(function () {
             $.post("/user/login", {username: userInfo.username, password: userInfo.password}, function (result) {
@@ -221,10 +227,9 @@
                     "                <td>" + a.Server + "</td>\n" +
                     "                <td>" + a.Status + "</td>\n" +
                     "                <td>\n" +
-                    "                    <a class=\"mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-orange-accent mdui-ripple\"\n" +
-                    "                       href=\"/server/stop?domain=" + a.Domain + "\">\n" +
+                    "                    <button onclick='stop(\"" + a.Domain + "\")' class=\"mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-orange-accent mdui-ripple\">\n" +
                     "                        停止\n" +
-                    "                    </a>\n" +
+                    "                    </button>\n" +
                     "                </td>\n" +
                     "            </tr>"
             }

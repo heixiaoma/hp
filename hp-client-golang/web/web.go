@@ -5,6 +5,7 @@ import (
 	"embed"
 	"github.com/gin-gonic/gin"
 	"hp-client-golang/tcp"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -34,6 +35,11 @@ type ServerInfo struct {
 type Log struct {
 	Domain string
 	Msg    string
+}
+
+type Res struct {
+	Code int
+	Msg  string
 }
 
 func Post(uri string, data url.Values) string {
@@ -74,16 +80,16 @@ func Proxy(server_ip string, server_port int, username string, password string, 
 				MessageGroup.Remove(front)
 			}
 		}
-		log.Println("添加数据 大小：", MessageGroup.Len())
 		MessageGroup.PushFront(Log{Domain: username, Msg: message})
 	})
 	hpClient.Connect(server_ip, server_port, username, password, remote_port, ip, port)
 	go func() {
 		for {
+			if hpClient.IsKill() {
+				ConnGroup.Delete(username)
+				return
+			}
 			if !hpClient.GetStatus() {
-				if hpClient.IsKill() {
-					return
-				}
 				hpClient.Connect(server_ip, server_port, username, password, remote_port, ip, port)
 				MessageGroup.PushFront(Log{Domain: username, Msg: "正在重连"})
 			}
@@ -96,6 +102,8 @@ func Proxy(server_ip string, server_port int, username string, password string, 
 
 func StartWeb(webPort int, api string) {
 	API = api
+	gin.SetMode(gin.ReleaseMode)
+	gin.DefaultWriter = io.Discard
 	e := gin.Default()
 	e.StaticFS("/static", http.FS(fs))
 	e.POST("/user/login", func(context *gin.Context) {
@@ -165,8 +173,16 @@ func StartWeb(webPort int, api string) {
 			client := load.(*tcp.HpClient)
 			client.Kill()
 			ConnGroup.Delete(domain)
+			context.JSON(http.StatusOK, &Res{
+				Code: 200,
+				Msg:  "成功",
+			})
+		} else {
+			context.JSON(http.StatusOK, &Res{
+				Code: 200,
+				Msg:  "失败",
+			})
 		}
-		context.Redirect(http.StatusMovedPermanently, "/static/center.html")
 	})
 
 	e.POST("/server/portAdd", func(context *gin.Context) {
