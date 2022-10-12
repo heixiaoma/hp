@@ -114,10 +114,10 @@
         </svg>
         <h2>通过 Docker 安装</h2>
         <div class="mdui-typo"><pre class="hljs php"><code class="lang-bash"><span
-                            class="hljs-comment"># 通过 docker pull 拉取镜像</span>
-docker pull registry.cn-shenzhen.aliyuncs.com/hserver/hp:v7
-<span class="hljs-comment"># 通过 docker run 运行容器</span>
+                            class="hljs-comment"># 通过 docker run 运行容器</span>
 docker run -P -d -p 10240:10240  registry.cn-shenzhen.aliyuncs.com/hserver/hp:v7
+<span class="hljs-comment"># 通过 docker run 运行容器 ARM</span>
+docker run -P -d -p 10240:10240  registry.cn-shenzhen.aliyuncs.com/hserver/hp:v7-arm64
 </code></pre>
         </div>
     </div>
@@ -129,6 +129,7 @@ docker run -P -d -p 10240:10240  registry.cn-shenzhen.aliyuncs.com/hserver/hp:v7
         <h2>从 命令行 运行</h2>
         <div class="mdui-typo"><pre class="hljs php"><code class="lang-bash"><span
                             class="hljs-comment"># 通过参数运行</span>
+                    chmod -R 777 ./hp-client-golang-amd64
 ./hp-client-golang-amd64
 </code></pre>
         </div>

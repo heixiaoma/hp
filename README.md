@@ -28,6 +28,7 @@
 
 ```shell
 docker run -P -d -p 10240:10240  registry.cn-shenzhen.aliyuncs.com/hserver/hp:v7
+docker run -P -d -p 10240:10240  registry.cn-shenzhen.aliyuncs.com/hserver/hp:v7-arm64
 ```
 
 
@@ -35,6 +36,7 @@ docker run -P -d -p 10240:10240  registry.cn-shenzhen.aliyuncs.com/hserver/hp:v7
 # 二进制文件运行
 运行方式
 ```shell
+chmod -R 777 ./hp-client-golang-amd64
 ./hp-client-golang-amd64
 然后访问 127.0.0.1:10240配置穿透
 ```
