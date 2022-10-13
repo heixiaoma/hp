@@ -160,7 +160,7 @@ public class OpenApiController {
             return JsonResult.error("10000-60000以内为开放端口。请重新申请");
         }
         List<PortEntity> ports = portDao.createLambdaQuery().andEq(PortEntity::getUserId, userId).select();
-        if (ports.size() > 3) {
+        if (ports.size() > 1) {
             return JsonResult.error("端口过多，暂时不能过多申请");
         }
         List<PortEntity> select = portDao.createLambdaQuery().andEq(PortEntity::getPort, port).select();
@@ -205,7 +205,7 @@ public class OpenApiController {
             return JsonResult.error("域名只能小写字母和数字");
         }
         List<DomainEntity> ports = domainDao.createLambdaQuery().andEq(DomainEntity::getUserId, userId).select();
-        if (ports.size() > 3) {
+        if (ports.size() > 1) {
             return JsonResult.error("域名过多，暂时不能过多申请");
         }
         List<DomainEntity> select = domainDao.createLambdaQuery().andEq(DomainEntity::getDomain, domain).select();
