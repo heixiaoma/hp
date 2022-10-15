@@ -231,8 +231,8 @@ func StartWeb(webPort int, api string) {
 	e.GET("/server/portRemove", func(context *gin.Context) {
 		userId := context.Query("userId")
 		port := context.Query("port")
-		Post("/server/portRemove", url.Values{"userId": {userId}, "port": {port}})
-		context.Redirect(http.StatusMovedPermanently, "/static/port.html")
+		post:=Post("/server/portRemove", url.Values{"userId": {userId}, "port": {port}})
+		context.String(http.StatusOK, post)
 
 	})
 
@@ -251,9 +251,8 @@ func StartWeb(webPort int, api string) {
 	e.GET("/server/domainRemove", func(context *gin.Context) {
 		userId := context.Query("userId")
 		domain := context.Query("domain")
-		Post("/server/domainRemove", url.Values{"userId": {userId}, "domain": {domain}})
-		context.Redirect(http.StatusMovedPermanently, "/static/domain.html")
-
+		post:=Post("/server/domainRemove", url.Values{"userId": {userId}, "domain": {domain}})
+		context.String(http.StatusOK, post)
 	})
 
 	e.GET("/server/pay", func(context *gin.Context) {

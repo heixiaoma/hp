@@ -118,6 +118,15 @@
     if (userInfo) {
         userInfo = JSON.parse(userInfo)
         console.log(userInfo)
+
+        function stop(url) {
+            $.get(url, function (result) {
+                result=JSON.parse(result)
+                alert(result.msg)
+                location.reload()
+            });
+        }
+
         $("#userInfo").val(userInfo.id)
         var tabData = ""
         $.get("/server/portList?userId="+userInfo.id, function (result) {
@@ -126,10 +135,10 @@
                 tabData += "  <tr>\n" +
                     "                <td>" + a.port + "</td>\n" +
                     "                <td>\n" +
-                    "                    <a class=\"mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-orange-accent mdui-ripple\"\n" +
-                    "                       href=\"/server/portRemove?userId=" + userInfo.id + "&port="+a.port+"\">\n" +
+                    "                    <button class=\"mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-orange-accent mdui-ripple\"\n" +
+                    "                       onclick='stop(\"/server/portRemove?userId=" + userInfo.id + "&port="+a.port+"\")'>\n" +
                     "                        删除\n" +
-                    "                    </a>\n" +
+                    "                    </button>\n" +
                     "                </td>\n" +
                     "            </tr>"
             }
@@ -138,6 +147,9 @@
             )
         });
     }
+
+
+
 
     $("#add_btn").click(function () {
         let val = $("#userInfo").val();

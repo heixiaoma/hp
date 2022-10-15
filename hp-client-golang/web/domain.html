@@ -117,6 +117,13 @@
     var userInfo = localStorage.getItem("userInfo")
     if (userInfo) {
         userInfo = JSON.parse(userInfo)
+        function stop(url) {
+            $.get(url, function (result) {
+                result=JSON.parse(result)
+                alert(result.msg)
+                location.reload()
+            });
+        }
         console.log(userInfo)
         $("#userInfo").val(userInfo.id)
         var tabData = ""
@@ -126,10 +133,10 @@
                 tabData += "  <tr>\n" +
                     "                <td>" + a.domain + "</td>\n" +
                     "                <td>\n" +
-                    "                    <a class=\"mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-orange-accent mdui-ripple\"\n" +
-                    "                       href=\"/server/domainRemove?userId=" + userInfo.id + "&domain="+a.domain+"\">\n" +
+                    "                    <button class=\"mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-orange-accent mdui-ripple\"\n" +
+                    "                       onclick='stop(\"/server/domainRemove?userId=" + userInfo.id + "&domain="+a.domain+"\")'>\n" +
                     "                        删除\n" +
-                    "                    </a>\n" +
+                    "                    </button>\n" +
                     "                </td>\n" +
                     "            </tr>"
             }
