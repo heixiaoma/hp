@@ -91,7 +91,7 @@ public class OpenApiController {
             //todo  检查特殊符号
             username = username.trim();
             if (username.length() <= 5) {
-                return JsonResult.error("注册的长度太短");
+                return JsonResult.error("注册的长度太短，大于等于6位");
             }
             if (!UserCheckUtil.checkUsername(username)) {
                 return JsonResult.error("注册只能小写字母和数字");
@@ -199,7 +199,7 @@ public class OpenApiController {
     public JsonResult domainAdd(String userId, String domain) {
         domain = domain.trim();
         if (domain.length() <= 5) {
-            return JsonResult.error("域名的长度太短");
+            return JsonResult.error("域名的长度太短，大于等于6位");
         }
         if (!UserCheckUtil.checkUsername(domain)) {
             return JsonResult.error("域名只能小写字母和数字");

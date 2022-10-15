@@ -106,7 +106,7 @@
             </div>
             <div class="mdui-dialog-actions">
                 <div class="mdui-btn mdui-ripple" mdui-dialog-cancel>取消</div>
-                <button id="add_btn" class="mdui-btn mdui-ripple">确定</button>
+                <div id="add_btn" class="mdui-btn mdui-ripple">确定</div>
             </div>
         </form>
     </div>
@@ -146,6 +146,7 @@
             $.post("/server/portAdd", {userId: val, port: val1}, function (result) {
                 result=JSON.parse(result)
                 if (result.code === 200) {
+                    alert(result.msg)
                     location.reload()
                 } else {
                     alert(result.msg)

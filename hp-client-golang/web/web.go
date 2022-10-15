@@ -129,16 +129,47 @@ func StartWeb(webPort int, api string) {
 		domain := context.PostForm("domain")
 		remote_port := context.PostForm("remote_port")
 		password := context.PostForm("password")
-		if len(ip) == 0 || len(port) == 0 || len(domain) == 0 || len(server_info) == 0 {
-			context.Redirect(http.StatusMovedPermanently, "/static/center.html")
+
+		if len(domain) == 0 {
+			context.JSON(http.StatusOK, &Res{
+				Code: -1,
+				Msg:  "域名不能为空，如果还没有添加，请菜单里添加域名，然后刷新配置后重试",
+			})
+			return
+		}
+
+		if len(server_info) == 0 {
+			context.JSON(http.StatusOK, &Res{
+				Code: -1,
+				Msg:  "未选择穿透的服务器，请选择后重试",
+			})
+			return
+		}
+
+		if len(ip) == 0 || len(port) == 0 {
+			context.JSON(http.StatusOK, &Res{
+				Code: -1,
+				Msg:  "要穿透的内网服务，未正确填写信息，请认真填写",
+			})
 			return
 		}
 		split := strings.Split(server_info, ":")
 		ato1, _ := strconv.Atoi(split[1])
 		ato2, _ := strconv.Atoi(remote_port)
 		ato3, _ := strconv.Atoi(port)
-		Proxy(split[0], ato1, domain, password, ato2, ip, ato3)
-		context.Redirect(http.StatusMovedPermanently, "/static/center.html")
+		re := Proxy(split[0], ato1, domain, password, ato2, ip, ato3)
+		if re {
+			context.JSON(http.StatusOK, &Res{
+				Code: 200,
+				Msg:  "添加成功",
+			})
+		} else {
+			context.JSON(http.StatusOK, &Res{
+				Code: -1,
+				Msg:  "添加失败！检查域名是否已经被使用。",
+			})
+		}
+
 	})
 
 	e.GET("/server/log", func(context *gin.Context) {
@@ -189,6 +220,7 @@ func StartWeb(webPort int, api string) {
 		userId := context.PostForm("userId")
 		port := context.PostForm("port")
 		post := Post("/server/portAdd", url.Values{"userId": {userId}, "port": {port}})
+		println(post)
 		context.String(http.StatusOK, post)
 	})
 	e.GET("/server/portList", func(context *gin.Context) {

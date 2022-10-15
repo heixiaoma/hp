@@ -107,7 +107,7 @@
         </ul>
     </div>
     <div class="mdui-dialog" id="addUser" style="overflow: scroll">
-        <form method="post" action="/server/proxy">
+        <form id="handle-form">
             <div class="mdui-dialog-content">
                 <input class="mdui-textfield-input" id="password" name="password" placeholder="password" type="hidden"/>
                 <div class="mdui-textfield">
@@ -128,7 +128,7 @@
             </div>
             <div class="mdui-dialog-actions">
                 <div class="mdui-btn mdui-ripple" mdui-dialog-cancel>取消</div>
-                <button type="submit" class="mdui-btn mdui-ripple">确定</button>
+                <div id="add_btn" class="mdui-btn mdui-ripple">确定</div>
             </div>
         </form>
     </div>
@@ -138,6 +138,21 @@
 
 
 <script>
+
+
+    $("#add_btn").click(function () {
+        let serialize = $("#handle-form").serialize();
+        console.log(serialize)
+        $.post("/server/proxy", serialize, function (result) {
+            if (result.Code === 200) {
+                location.reload()
+            } else {
+                alert(result.Msg)
+            }
+        });
+    })
+
+
     var userInfo = localStorage.getItem("userInfo")
     if (userInfo) {
         userInfo = JSON.parse(userInfo)
