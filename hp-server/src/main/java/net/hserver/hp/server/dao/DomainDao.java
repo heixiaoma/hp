@@ -11,4 +11,9 @@ import org.beetl.sql.mapper.BaseMapper;
 @BeetlSQL
 public interface DomainDao extends BaseMapper<DomainEntity> {
 
+
+    default int deleteByUserId(String userId){
+        return this.createLambdaQuery().andEq(DomainEntity::getUserId,userId).delete();
+    }
+
 }

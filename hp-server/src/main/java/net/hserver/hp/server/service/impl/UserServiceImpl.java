@@ -152,7 +152,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void editUser(String username, String password, String ports, Integer type, Integer level) {
+    public void editUser(String username, String password, String ports, Integer type, Integer level,String domains) {
         UserEntity user = getUser(username);
         if (user != null) {
             if (type != null) {
@@ -182,6 +182,20 @@ public class UserServiceImpl implements UserService {
                     portEntity.setUserId(user.getId());
                     portEntity.setPort(Integer.parseInt(s));
                     portDao.insert(portEntity);
+                }
+            }
+        }
+
+        if (domains != null) {
+            String[] split = domains.split(",");
+            if (split.length > 0) {
+                domainDao.deleteByUserId(user.getId());
+                for (String s : split) {
+                    DomainEntity domainEntity = new DomainEntity();
+                    domainEntity.setId(UUID.randomUUID().toString());
+                    domainEntity.setUserId(user.getId());
+                    domainEntity.setDomain(s.trim());
+                    domainDao.insert(domainEntity);
                 }
             }
         }

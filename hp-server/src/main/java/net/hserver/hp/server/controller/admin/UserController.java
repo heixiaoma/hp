@@ -44,9 +44,9 @@ public class UserController {
     }
 
     @POST("/admin/user/edit")
-    public void edit(Integer page, HttpResponse response, String username, String password, String ports, Integer type,Integer level) {
+    public void edit(Integer page, HttpResponse response, String username, String password, String ports, Integer type,Integer level,String domains) {
         if (username != null) {
-            userService.editUser(username, password, ports, type,level);
+            userService.editUser(username, password, ports, type,level,domains);
         }
         index(page, response, null);
     }

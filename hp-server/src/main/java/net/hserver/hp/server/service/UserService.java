@@ -57,7 +57,7 @@ public interface UserService {
      * @param password
      * @param ports
      */
-    void editUser(String username, String password, String ports, Integer type, Integer level);
+    void editUser(String username, String password, String ports, Integer type, Integer level,String domains);
 
     /**
      * 更新登录时间
