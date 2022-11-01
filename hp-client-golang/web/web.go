@@ -1,12 +1,11 @@
 package web
 
 import (
-	"container/list"
 	"embed"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"hp-client-golang/tcp"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -21,9 +20,9 @@ var fs embed.FS
 
 var API = "http://ksweb.club:9090"
 
-var MessageGroup = list.New()
-
 var ConnGroup = sync.Map{}
+
+var ConnWsGroup = sync.Map{}
 
 type ServerInfo struct {
 	Domain      string
@@ -48,7 +47,7 @@ func Post(uri string, data url.Values) string {
 		// handle error
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "nil"
 	}
@@ -60,7 +59,7 @@ func Get(uri string) string {
 		// handle error
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "nil"
 	}
@@ -74,13 +73,7 @@ func Proxy(server_ip string, server_port int, username string, password string, 
 	}
 	hpClient := tcp.NewHpClient(func(message string) {
 		log.Printf(message)
-		if MessageGroup.Len() > 100 {
-			front := MessageGroup.Front()
-			if front != nil {
-				MessageGroup.Remove(front)
-			}
-		}
-		MessageGroup.PushFront(Log{Domain: username, Msg: message})
+		wsSend(Log{Domain: username, Msg: message})
 	})
 	hpClient.Connect(server_ip, server_port, username, password, remote_port, ip, port)
 	go func() {
@@ -91,7 +84,7 @@ func Proxy(server_ip string, server_port int, username string, password string, 
 			}
 			if !hpClient.GetStatus() {
 				hpClient.Connect(server_ip, server_port, username, password, remote_port, ip, port)
-				MessageGroup.PushFront(Log{Domain: username, Msg: "正在重连"})
+				wsSend(Log{Domain: username, Msg: "正在重连"})
 			}
 			time.Sleep(time.Duration(5) * time.Second)
 		}
@@ -172,17 +165,6 @@ func StartWeb(webPort int, api string) {
 
 	})
 
-	e.GET("/server/log", func(context *gin.Context) {
-		front := MessageGroup.Front()
-		if front != nil {
-			value := front.Value
-			MessageGroup.Remove(front)
-			context.JSON(http.StatusOK, value.(Log))
-		} else {
-			context.JSON(http.StatusOK, nil)
-		}
-	})
-
 	e.GET("/server/info", func(context *gin.Context) {
 		ret := make([]*ServerInfo, 0)
 		ConnGroup.Range(func(key, value interface{}) bool {
@@ -231,7 +213,7 @@ func StartWeb(webPort int, api string) {
 	e.GET("/server/portRemove", func(context *gin.Context) {
 		userId := context.Query("userId")
 		port := context.Query("port")
-		post:=Post("/server/portRemove", url.Values{"userId": {userId}, "port": {port}})
+		post := Post("/server/portRemove", url.Values{"userId": {userId}, "port": {port}})
 		context.String(http.StatusOK, post)
 
 	})
@@ -251,7 +233,7 @@ func StartWeb(webPort int, api string) {
 	e.GET("/server/domainRemove", func(context *gin.Context) {
 		userId := context.Query("userId")
 		domain := context.Query("domain")
-		post:=Post("/server/domainRemove", url.Values{"userId": {userId}, "domain": {domain}})
+		post := Post("/server/domainRemove", url.Values{"userId": {userId}, "domain": {domain}})
 		context.String(http.StatusOK, post)
 	})
 
@@ -270,8 +252,55 @@ func StartWeb(webPort int, api string) {
 	e.GET("/", func(context *gin.Context) {
 		context.Redirect(http.StatusMovedPermanently, "/static/login.html")
 	})
+
+	e.GET("/ws", ws)
 	if webPort <= 0 {
 		webPort = 10240
 	}
 	e.Run(":" + strconv.Itoa(webPort))
+}
+
+var upGrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
+func wsSend(log Log) {
+	ConnWsGroup.Range(func(key, value interface{}) bool {
+		WS := key.(*websocket.Conn)
+		err := WS.WriteJSON(log)
+		if err != nil {
+			return false
+		}
+		return true
+	})
+}
+
+func ws(c *gin.Context) {
+	//升级get请求为webSocket协议
+	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		return
+	}
+	ConnWsGroup.Store(ws, nil)
+	defer func() {
+		ConnWsGroup.Delete(ws)
+		ws.Close()
+	}()
+	for {
+		//读取ws中的数据
+		mt, message, err := ws.ReadMessage()
+		if err != nil {
+			break
+		}
+		if string(message) == "ping" {
+			message = []byte("pong")
+		}
+		//写入ws数据
+		err = ws.WriteMessage(mt, message)
+		if err != nil {
+			break
+		}
+	}
 }

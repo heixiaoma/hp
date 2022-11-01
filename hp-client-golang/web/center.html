@@ -127,7 +127,7 @@
                 </div>
             </div>
             <div class="mdui-dialog-actions">
-                <div class="mdui-btn mdui-ripple" mdui-dialog-cancel>取消</div>
+                <div id="closeFrom" class="mdui-btn mdui-ripple" mdui-dialog-cancel>取消</div>
                 <div id="add_btn" class="mdui-btn mdui-ripple">确定</div>
             </div>
         </form>
@@ -145,7 +145,9 @@
         console.log(serialize)
         $.post("/server/proxy", serialize, function (result) {
             if (result.Code === 200) {
-                location.reload()
+                alert(result.Msg)
+                $("#closeFrom").click();
+                refTabData()
             } else {
                 alert(result.Msg)
             }
@@ -157,10 +159,36 @@
     if (userInfo) {
         userInfo = JSON.parse(userInfo)
 
+
+        /**
+         * 刷新table数据
+         */
+        function refTabData() {
+            var tabData = ""
+            $.get("/server/info", function (result) {
+                for (let a of result) {
+                    tabData += "  <tr>\n" +
+                        "                <td>" + a.Domain + "</td>\n" +
+                        "                <td>" + a.ProxyServer + "</td>\n" +
+                        "                <td>" + a.Server + "</td>\n" +
+                        "                <td>" + a.Status + "</td>\n" +
+                        "                <td>\n" +
+                        "                    <button onclick='stop(\"" + a.Domain + "\")' class=\"mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-orange-accent mdui-ripple\">\n" +
+                        "                        停止\n" +
+                        "                    </button>\n" +
+                        "                </td>\n" +
+                        "            </tr>"
+                }
+                $("#tabData").html(
+                    tabData
+                )
+            });
+        }
+
         function stop(domain) {
             $.get("/server/stop?domain=" + domain, function (result) {
                 alert(result.Msg)
-                location.reload()
+                refTabData()
             });
         }
 
@@ -231,48 +259,23 @@
             )
 
         });
-
-
-        var tabData = ""
-        $.get("/server/info", function (result) {
-            for (let a of result) {
-                tabData += "  <tr>\n" +
-                    "                <td>" + a.Domain + "</td>\n" +
-                    "                <td>" + a.ProxyServer + "</td>\n" +
-                    "                <td>" + a.Server + "</td>\n" +
-                    "                <td>" + a.Status + "</td>\n" +
-                    "                <td>\n" +
-                    "                    <button onclick='stop(\"" + a.Domain + "\")' class=\"mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-orange-accent mdui-ripple\">\n" +
-                    "                        停止\n" +
-                    "                    </button>\n" +
-                    "                </td>\n" +
-                    "            </tr>"
+        refTabData()
+        var ws = new WebSocket("ws://"+window.location.host+"/ws");
+        ws.onmessage = function (evt) {
+            var result = JSON.parse(evt.data)
+            $("#log").prepend("          <li class=\"mdui-list-item \">\n" +
+                "                <div class=\"mdui-list-item-content\">\n" +
+                "                    <div class=\"mdui-list-item-title\">" + result.Domain + "</div>\n" +
+                "                    <div class=\"mdui-list-item-text\">\n" +
+                "                        " + result.Msg + "\n" +
+                "                    </div>\n" +
+                "                </div>\n" +
+                "            </li>")
+            if ($(".mdui-list-item").length > 50) {
+                $("#log").html("")
             }
-            $("#tabData").html(
-                tabData
-            )
-        });
 
-        setInterval(function () {
-            $.get("/server/log", function (result) {
-                //{Domain: 'aaa', Msg: '非法用户，登录失败，有疑问请联系管理员'}
-                if (result) {
-                    $("#log").prepend("          <li class=\"mdui-list-item  mdui-ripple\">\n" +
-                        "                <div class=\"mdui-list-item-content\">\n" +
-                        "                    <div class=\"mdui-list-item-title\">" + result.Domain + "</div>\n" +
-                        "                    <div class=\"mdui-list-item-text\">\n" +
-                        "                        " + result.Msg + "\n" +
-                        "                    </div>\n" +
-                        "                </div>\n" +
-                        "            </li>")
-
-                    if ($(".mdui-list-item").length > 50) {
-                        $("#log").html("")
-                    }
-                }
-            });
-
-        }, 1000)
+        };
     }
 </script>
 
