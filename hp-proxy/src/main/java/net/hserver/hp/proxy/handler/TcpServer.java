@@ -1,5 +1,6 @@
 package net.hserver.hp.proxy.handler;
 
+import cn.hserver.core.server.util.NamedThreadFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -38,9 +39,8 @@ public class TcpServer {
             statistics.setPort(port);
             statistics.setUsername(username);
         }
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
-
+        EventLoopGroup bossGroup = new NioEventLoopGroup(new NamedThreadFactory("boss-"+username));
+        EventLoopGroup workerGroup = new NioEventLoopGroup(new NamedThreadFactory("worker-"+username));
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
