@@ -39,8 +39,8 @@ public class TcpServer {
             statistics.setPort(port);
             statistics.setUsername(username);
         }
-        EventLoopGroup bossGroup = new NioEventLoopGroup(new NamedThreadFactory("boss-"+username));
-        EventLoopGroup workerGroup = new NioEventLoopGroup(new NamedThreadFactory("worker-"+username));
+        EventLoopGroup bossGroup = new NioEventLoopGroup(2,new NamedThreadFactory("boss-"+username));
+        EventLoopGroup workerGroup = new NioEventLoopGroup(2,new NamedThreadFactory("worker-"+username));
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
