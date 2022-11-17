@@ -1,6 +1,9 @@
 package net.hserver.hp.proxy.handler;
 
+import cn.hserver.core.server.context.ConstConfig;
 import cn.hserver.core.server.util.NamedThreadFactory;
+import cn.hserver.core.server.util.PropUtil;
+import cn.hserver.plugin.web.context.WebConstConfig;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -32,29 +35,23 @@ public class TcpServer {
 
     private final AtomicLong receive = new AtomicLong();
 
+    private final static EventLoopGroup bossGroup = new NioEventLoopGroup(new NamedThreadFactory("boss-TcpServer"));
+    private final static EventLoopGroup workerGroup = new NioEventLoopGroup(50,new NamedThreadFactory("worker-TcpServer"));
 
-    public synchronized void bind(int port, ChannelInitializer channelInitializer, String username) throws InterruptedException {
+    public synchronized void bind(int port, ChannelInitializer<?> channelInitializer, String username) throws InterruptedException {
         if (username!=null) {
             statistics = new Statistics();
             statistics.setPort(port);
             statistics.setUsername(username);
         }
-        EventLoopGroup bossGroup = new NioEventLoopGroup(2,new NamedThreadFactory("boss-"+username));
-        EventLoopGroup workerGroup = new NioEventLoopGroup(2,new NamedThreadFactory("worker-"+username));
-        try {
+       try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .childHandler(channelInitializer)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
             channel = b.bind(port).sync().channel();
-            channel.closeFuture().addListener((ChannelFutureListener) future -> {
-                workerGroup.shutdownGracefully();
-                bossGroup.shutdownGracefully();
-            });
         } catch (Exception e) {
-            workerGroup.shutdownGracefully();
-            bossGroup.shutdownGracefully();
             throw e;
         }
     }
