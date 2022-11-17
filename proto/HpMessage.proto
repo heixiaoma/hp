@@ -23,9 +23,10 @@ message HpMessage{
     int32 port=1;
     string username=2;
     string password=3;
-    string channelId=4;
-    bool success=5;
-    string reason=6;
+    string domain=4;
+    string channelId=5;
+    bool success=6;
+    string reason=7;
   }
 
   //消息类型
