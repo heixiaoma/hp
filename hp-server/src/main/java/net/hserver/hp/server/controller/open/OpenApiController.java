@@ -108,7 +108,7 @@ public class OpenApiController {
 
     @POST("/user/domainLogin")
     public JsonResult domainLogin(HttpRequest request, String username, String password,String domain, String address){
-        if (domain != null && password != null) {
+        if (domain != null && password != null&&username!=null) {
             if (address == null) {
                 address = request.getIpAddress();
             }

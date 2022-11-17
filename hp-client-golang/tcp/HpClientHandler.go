@@ -31,6 +31,7 @@ func (h *HpClientHandler) ChannelActive(conn net.Conn) {
 			Port:     int32(h.Port),
 			Username: h.Username,
 			Password: h.Password,
+			Domain:   h.Domain,
 		},
 	}
 	conn.Write(protol.Encode(message))

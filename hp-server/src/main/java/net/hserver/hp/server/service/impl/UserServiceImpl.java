@@ -1,5 +1,6 @@
 package net.hserver.hp.server.service.impl;
 
+import cn.hserver.HServerApplication;
 import net.hserver.hp.server.dao.DomainDao;
 import net.hserver.hp.server.dao.PortDao;
 import net.hserver.hp.server.dao.UserDao;
@@ -14,6 +15,8 @@ import org.beetl.sql.core.page.PageResult;
 import cn.hserver.core.ioc.annotation.Autowired;
 import cn.hserver.core.ioc.annotation.Bean;
 import org.beetl.sql.core.query.LambdaQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -22,6 +25,7 @@ import java.util.*;
  */
 @Bean
 public class UserServiceImpl implements UserService {
+    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
     private UserDao userDao;
@@ -55,6 +59,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserVo domainLogin(String username, String password,String domain, String address) {
+
+        log.info("登录信息：{}，{}，{}，{}",username,password,domain,address);
+
         UserEntity user = getUser(username);
         if (user == null) {
             //登录失败

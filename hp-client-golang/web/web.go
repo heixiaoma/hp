@@ -1,11 +1,11 @@
 package web
 
 import (
+	"embed"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"hp-client-golang/tcp"
 	"io"
-	"io/fs"
 	"log"
 	"net/http"
 	"net/url"
@@ -15,6 +15,8 @@ import (
 	"time"
 )
 
+//go:embed *
+var staticFs embed.FS
 var API = "http://ksweb.club:9090"
 
 // 创建一个以域名为主得map
@@ -92,13 +94,12 @@ func Proxy(server_ip string, server_port int, username string, password string, 
 	return true
 }
 
-func StartWeb(webPort int, api string, staticFs fs.FS) {
+func StartWeb(webPort int, api string) {
 	API = api
 	gin.SetMode(gin.ReleaseMode)
 	gin.DefaultWriter = io.Discard
 	e := gin.Default()
-	subStatic, _ := fs.Sub(staticFs, "static")
-	e.StaticFS("/static", http.FS(subStatic))
+	e.StaticFS("/static", http.FS(staticFs))
 	e.POST("/user/login", func(context *gin.Context) {
 		username := context.PostForm("username")
 		password := context.PostForm("password")
@@ -151,7 +152,7 @@ func StartWeb(webPort int, api string, staticFs fs.FS) {
 		ato1, _ := strconv.Atoi(split[1])
 		ato2, _ := strconv.Atoi(remote_port)
 		ato3, _ := strconv.Atoi(port)
-		re := Proxy(split[0], ato1, username, domain, password, ato2, ip, ato3)
+		re := Proxy(split[0], ato1, username, password, domain, ato2, ip, ato3)
 		if re {
 			context.JSON(http.StatusOK, &Res{
 				Code: 200,

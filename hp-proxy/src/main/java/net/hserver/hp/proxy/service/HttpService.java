@@ -32,13 +32,14 @@ public class HttpService {
 
 
     public static UserVo login(String username, String password, String domain,String address) {
+        log.info("登录信息：{}，{}，{}，{}",username,password,domain,address);
         WebConfig bean = IocUtil.getBean(WebConfig.class);
         String adminAddress = bean.getAdminAddress();
         try {
             RequestBody body = new FormBody.Builder()
                     .add("username", username)
-                    .add("domain", domain)
                     .add("password", password)
+                    .add("domain", domain)
                     .add("address", address)
                     .build();
             okhttp3.Request request = new okhttp3.Request.Builder()
