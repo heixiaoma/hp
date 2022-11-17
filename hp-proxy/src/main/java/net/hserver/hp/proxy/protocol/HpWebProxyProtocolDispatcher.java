@@ -49,9 +49,9 @@ public class HpWebProxyProtocolDispatcher extends DispatchHttp {
                     }
                     final Integer[] userPort = {-1};
                     String[] split = host.split("\\.");
-                    String username = split[0];
+                    String domain = split[0];
                     HpServerHandler.CURRENT_STATUS.forEach((k, v) -> {
-                        if (v.getUsername().equals(username)) {
+                        if (v.getDomain().equals(domain)) {
                             userPort[0] = Integer.parseInt(k);
                         }
                     });

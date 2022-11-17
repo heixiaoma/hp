@@ -107,12 +107,12 @@ public class OpenApiController {
 
 
     @POST("/user/domainLogin")
-    public JsonResult domainLogin(HttpRequest request, String domain, String password, String address){
+    public JsonResult domainLogin(HttpRequest request, String username, String password,String domain, String address){
         if (domain != null && password != null) {
             if (address == null) {
                 address = request.getIpAddress();
             }
-            UserVo login = userService.domainLogin(domain, password, address);
+            UserVo login = userService.domainLogin(username, password,domain, address);
             if (login != null) {
                 login.setTips(ConstConfig.TIPS);
                 return JsonResult.ok("登录成功.").put("data", login);

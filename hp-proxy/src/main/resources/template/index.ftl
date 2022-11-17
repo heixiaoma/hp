@@ -15,6 +15,7 @@
                     <thead>
                     <tr>
                         <th>用户名</th>
+                        <th>域名</th>
                         <th>前往穿透</th>
                         <th>来源IP</th>
                         <th>连接时间</th>
@@ -27,11 +28,12 @@
                         <#list statisticsData?keys as key>
                             <tr>
                                 <td>${statisticsData[key].username}</td>
-                                <td><a href="//${statisticsData[key].username}.${host}" target="_blank">访问${statisticsData[key].username}</a></td>
+                                <td>${statisticsData[key].domain}</td>
+                                <td><a href="//${statisticsData[key].domain}.${host}" target="_blank">访问${statisticsData[key].domain}</a></td>
                                 <td>${statisticsData[key].ip}</td>
                                 <td>${statisticsData[key].date}</td>
                                 <td>${key}</td>
-                                <td><a href="/offline?username=${statisticsData[key].username}&token=${token}" >强制下线</a></td>
+                                <td><a href="/offline?domain=${statisticsData[key].domain}&token=${token}" >强制下线</a></td>
                             </tr>
                         </#list>
                     </#if>

@@ -8,7 +8,9 @@ import java.util.Date;
 
 public class ConnectInfo {
 
-    private String username;
+    private String  username;
+
+    private String domain;
 
     private Channel channel;
 
@@ -16,8 +18,9 @@ public class ConnectInfo {
 
     private String date;
 
-    public ConnectInfo(String username, Channel channel) {
+    public ConnectInfo(String username,String domain, Channel channel) {
         this.username = username;
+        this.domain = domain;
         this.channel = channel;
         this.ip = channel.remoteAddress().toString();
         this.date= DateUtil.dateToStamp(new Date());
@@ -32,6 +35,14 @@ public class ConnectInfo {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
     public Channel getChannel() {

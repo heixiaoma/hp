@@ -54,14 +54,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserVo domainLogin(String domain, String password, String address) {
-        List<DomainEntity> select1 = domainDao.createLambdaQuery().andEq(DomainEntity::getDomain, domain).select();
-        if (select1 == null||select1.isEmpty()) {
+    public UserVo domainLogin(String username, String password,String domain, String address) {
+        UserEntity user = getUser(username);
+        if (user == null) {
+            //登录失败
             return null;
         }
-        DomainEntity domainEntity1 = select1.get(0);
-        String userId = domainEntity1.getUserId();
-        UserEntity user = userDao.single(userId);
+        List<DomainEntity> select1 = domainDao.createLambdaQuery().andEq(DomainEntity::getDomain, domain).andEq(DomainEntity::getUserId,user.getId()).select();
+        if (select1 == null||select1.isEmpty()) {
+            //没有该域名登录失败
+            return null;
+        }
         if (user.getPassword().equals(password)) {
             List<PortEntity> select = getPort(user.getId());
             List<DomainEntity> domainEntityList = getDomain(user.getId());

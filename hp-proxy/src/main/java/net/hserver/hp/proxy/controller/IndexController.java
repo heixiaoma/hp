@@ -69,11 +69,9 @@ public class IndexController {
     @CheckApi
     @GET("/offline")
     public void offline(HttpRequest request, HttpResponse response) {
-        HpServerHandler.offline(request.query("username"));
+        HpServerHandler.offline(request.query("domain"));
         index(request, response);
     }
-
-
 
 // 下面是版本过度做的调整
 

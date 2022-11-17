@@ -135,7 +135,12 @@ chmod -R 777 ./hp-client-golang-amd64
         </div>
     </div>
     <div class="feature case">
-        <h2>最新捐赠者</h2>
+        <h2>最新捐赠者(打赏请备注账号)</h2>
+        <div class="meta">
+            <div style="text-align: center">
+                <img height="300" src="/img/pay.jpg"/>
+            </div>
+        </div>
         <div class="mdui-clearfix">
             <div class="meta">
                 <div class="mdui-row-xs-4">
@@ -149,12 +154,6 @@ chmod -R 777 ./hp-client-golang-amd64
                             </div>
                         </#list>
                     </#if>
-                </div>
-            </div>
-
-            <div class="meta">
-                <div style="text-align: center">
-                    <img height="300" src="/img/pay.jpg"/>
                 </div>
             </div>
         </div>
