@@ -1,11 +1,11 @@
 package web
 
 import (
-	"embed"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"hp-client-golang/tcp"
 	"io"
+	"io/fs"
 	"log"
 	"net/http"
 	"net/url"
@@ -15,13 +15,12 @@ import (
 	"time"
 )
 
-//go:embed *
-var fs embed.FS
-
 var API = "http://ksweb.club:9090"
 
+// 创建一个以域名为主得map
 var ConnGroup = sync.Map{}
 
+// 创建一个ws得链接map
 var ConnWsGroup = sync.Map{}
 
 type ServerInfo struct {
@@ -66,39 +65,40 @@ func Get(uri string) string {
 	return string(body)
 }
 
-func Proxy(server_ip string, server_port int, username string, password string, remote_port int, ip string, port int) bool {
-	_, ok := ConnGroup.Load(username)
+func Proxy(server_ip string, server_port int, username string, password string, domain string, remote_port int, ip string, port int) bool {
+	_, ok := ConnGroup.Load(domain)
 	if ok {
 		return false
 	}
 	hpClient := tcp.NewHpClient(func(message string) {
 		log.Printf(message)
-		wsSend(Log{Domain: username, Msg: message})
+		wsSend(Log{Domain: domain, Msg: message})
 	})
-	hpClient.Connect(server_ip, server_port, username, password, remote_port, ip, port)
+	hpClient.Connect(server_ip, server_port, username, password, domain, remote_port, ip, port)
 	go func() {
 		for {
 			if hpClient.IsKill() {
-				ConnGroup.Delete(username)
+				ConnGroup.Delete(domain)
 				return
 			}
 			if !hpClient.GetStatus() {
-				hpClient.Connect(server_ip, server_port, username, password, remote_port, ip, port)
-				wsSend(Log{Domain: username, Msg: "正在重连"})
+				hpClient.Connect(server_ip, server_port, username, password, domain, remote_port, ip, port)
+				wsSend(Log{Domain: domain, Msg: "正在重连"})
 			}
 			time.Sleep(time.Duration(5) * time.Second)
 		}
 	}()
-	ConnGroup.Store(username, hpClient)
+	ConnGroup.Store(domain, hpClient)
 	return true
 }
 
-func StartWeb(webPort int, api string) {
+func StartWeb(webPort int, api string, staticFs fs.FS) {
 	API = api
 	gin.SetMode(gin.ReleaseMode)
 	gin.DefaultWriter = io.Discard
 	e := gin.Default()
-	e.StaticFS("/static", http.FS(fs))
+	subStatic, _ := fs.Sub(staticFs, "static")
+	e.StaticFS("/static", http.FS(subStatic))
 	e.POST("/user/login", func(context *gin.Context) {
 		username := context.PostForm("username")
 		password := context.PostForm("password")
@@ -119,6 +119,7 @@ func StartWeb(webPort int, api string) {
 		ip := context.PostForm("ip")
 		port := context.PostForm("port")
 		server_info := context.PostForm("server_info")
+		username := context.PostForm("username")
 		domain := context.PostForm("domain")
 		remote_port := context.PostForm("remote_port")
 		password := context.PostForm("password")
@@ -150,7 +151,7 @@ func StartWeb(webPort int, api string) {
 		ato1, _ := strconv.Atoi(split[1])
 		ato2, _ := strconv.Atoi(remote_port)
 		ato3, _ := strconv.Atoi(port)
-		re := Proxy(split[0], ato1, domain, password, ato2, ip, ato3)
+		re := Proxy(split[0], ato1, username, domain, password, ato2, ip, ato3)
 		if re {
 			context.JSON(http.StatusOK, &Res{
 				Code: 200,

@@ -11,6 +11,7 @@ type HpClientHandler struct {
 	Port         int
 	Password     string
 	Username     string
+	Domain       string
 	ProxyAddress string
 	ProxyPort    int
 	CallMsg      func(message string)
@@ -24,9 +25,9 @@ var ConnGroup = sync.Map{}
 func (h *HpClientHandler) ChannelActive(conn net.Conn) {
 	h.Conn = conn
 	h.Active = true
-	message := &hpMessage.HpMessage{
-		Type: hpMessage.HpMessage_REGISTER,
-		MetaData: &hpMessage.HpMessage_MetaData{
+	message := &HpMessage.HpMessage{
+		Type: HpMessage.HpMessage_REGISTER,
+		MetaData: &HpMessage.HpMessage_MetaData{
 			Port:     int32(h.Port),
 			Username: h.Username,
 			Password: h.Password,
@@ -36,23 +37,23 @@ func (h *HpClientHandler) ChannelActive(conn net.Conn) {
 }
 
 func (h *HpClientHandler) ChannelRead(conn net.Conn, data interface{}) {
-	message := data.(*hpMessage.HpMessage)
+	message := data.(*HpMessage.HpMessage)
 	switch message.Type {
-	case hpMessage.HpMessage_REGISTER_RESULT:
+	case HpMessage.HpMessage_REGISTER_RESULT:
 		h.CallMsg(message.MetaData.Reason)
 		break
-	case hpMessage.HpMessage_CONNECTED:
+	case HpMessage.HpMessage_CONNECTED:
 		h.connected(message)
 		break
-	case hpMessage.HpMessage_DISCONNECTED:
+	case HpMessage.HpMessage_DISCONNECTED:
 		h.Close(message.MetaData.ChannelId)
 		break
-	case hpMessage.HpMessage_DATA:
+	case HpMessage.HpMessage_DATA:
 		h.writeData(message)
 		break
-	case hpMessage.HpMessage_KEEPALIVE:
+	case HpMessage.HpMessage_KEEPALIVE:
 		h.CallMsg("服务器端返回心跳数据")
-		conn.Write(protol.Encode(&hpMessage.HpMessage{Type: hpMessage.HpMessage_KEEPALIVE}))
+		conn.Write(protol.Encode(&HpMessage.HpMessage{Type: HpMessage.HpMessage_KEEPALIVE}))
 		break
 	default:
 		h.CallMsg("未知类型数据：" + message.String())
@@ -64,7 +65,7 @@ func (h *HpClientHandler) ChannelInactive(conn net.Conn) {
 	h.Active = false
 }
 
-func (h *HpClientHandler) connected(message *hpMessage.HpMessage) {
+func (h *HpClientHandler) connected(message *HpMessage.HpMessage) {
 	NewConnection().Connect(h.ProxyAddress, h.ProxyPort, false, &LocalProxyHandler{
 		HpClientHandler: h,
 		RemoteChannelId: message.MetaData.ChannelId,
@@ -96,7 +97,7 @@ func (h *HpClientHandler) CloseAll() {
 	})
 }
 
-func (h *HpClientHandler) writeData(message *hpMessage.HpMessage) {
+func (h *HpClientHandler) writeData(message *HpMessage.HpMessage) {
 	load, ok := ConnGroup.Load(message.MetaData.ChannelId)
 	if ok {
 		conn := load.(net.Conn)

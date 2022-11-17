@@ -20,7 +20,7 @@ func NewHpClient(callMsg func(message string)) *HpClient {
 	}
 }
 
-func (hpClient *HpClient) Connect(serverAddress string, serverPort int, username string, password string, remotePort int, proxyAddress string, proxyPort int) {
+func (hpClient *HpClient) Connect(serverAddress string, serverPort int, username string, password string, domain string, remotePort int, proxyAddress string, proxyPort int) {
 	if hpClient.conn != nil {
 		hpClient.conn.Close()
 	}
@@ -29,6 +29,7 @@ func (hpClient *HpClient) Connect(serverAddress string, serverPort int, username
 		Port:         remotePort,
 		Password:     password,
 		Username:     username,
+		Domain:       domain,
 		ProxyAddress: proxyAddress,
 		ProxyPort:    proxyPort,
 		CallMsg:      hpClient.CallMsg,

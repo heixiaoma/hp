@@ -362,30 +362,42 @@ public final class HpMessageData {
           getPasswordBytes();
 
       /**
-       * <code>string channelId = 4;</code>
+       * <code>string domain = 4;</code>
+       * @return The domain.
+       */
+      String getDomain();
+      /**
+       * <code>string domain = 4;</code>
+       * @return The bytes for domain.
+       */
+      com.google.protobuf.ByteString
+          getDomainBytes();
+
+      /**
+       * <code>string channelId = 5;</code>
        * @return The channelId.
        */
       String getChannelId();
       /**
-       * <code>string channelId = 4;</code>
+       * <code>string channelId = 5;</code>
        * @return The bytes for channelId.
        */
       com.google.protobuf.ByteString
           getChannelIdBytes();
 
       /**
-       * <code>bool success = 5;</code>
+       * <code>bool success = 6;</code>
        * @return The success.
        */
       boolean getSuccess();
 
       /**
-       * <code>string reason = 6;</code>
+       * <code>string reason = 7;</code>
        * @return The reason.
        */
       String getReason();
       /**
-       * <code>string reason = 6;</code>
+       * <code>string reason = 7;</code>
        * @return The bytes for reason.
        */
       com.google.protobuf.ByteString
@@ -406,6 +418,7 @@ public final class HpMessageData {
       private MetaData() {
         username_ = "";
         password_ = "";
+        domain_ = "";
         channelId_ = "";
         reason_ = "";
       }
@@ -460,15 +473,21 @@ public final class HpMessageData {
               case 34: {
                 String s = input.readStringRequireUtf8();
 
+                domain_ = s;
+                break;
+              }
+              case 42: {
+                String s = input.readStringRequireUtf8();
+
                 channelId_ = s;
                 break;
               }
-              case 40: {
+              case 48: {
 
                 success_ = input.readBool();
                 break;
               }
-              case 50: {
+              case 58: {
                 String s = input.readStringRequireUtf8();
 
                 reason_ = s;
@@ -595,10 +614,48 @@ public final class HpMessageData {
         }
       }
 
-      public static final int CHANNELID_FIELD_NUMBER = 4;
+      public static final int DOMAIN_FIELD_NUMBER = 4;
+      private volatile Object domain_;
+      /**
+       * <code>string domain = 4;</code>
+       * @return The domain.
+       */
+      @Override
+      public String getDomain() {
+        Object ref = domain_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          domain_ = s;
+          return s;
+        }
+      }
+      /**
+       * <code>string domain = 4;</code>
+       * @return The bytes for domain.
+       */
+      @Override
+      public com.google.protobuf.ByteString
+          getDomainBytes() {
+        Object ref = domain_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (String) ref);
+          domain_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int CHANNELID_FIELD_NUMBER = 5;
       private volatile Object channelId_;
       /**
-       * <code>string channelId = 4;</code>
+       * <code>string channelId = 5;</code>
        * @return The channelId.
        */
       @Override
@@ -615,7 +672,7 @@ public final class HpMessageData {
         }
       }
       /**
-       * <code>string channelId = 4;</code>
+       * <code>string channelId = 5;</code>
        * @return The bytes for channelId.
        */
       @Override
@@ -633,10 +690,10 @@ public final class HpMessageData {
         }
       }
 
-      public static final int SUCCESS_FIELD_NUMBER = 5;
+      public static final int SUCCESS_FIELD_NUMBER = 6;
       private boolean success_;
       /**
-       * <code>bool success = 5;</code>
+       * <code>bool success = 6;</code>
        * @return The success.
        */
       @Override
@@ -644,10 +701,10 @@ public final class HpMessageData {
         return success_;
       }
 
-      public static final int REASON_FIELD_NUMBER = 6;
+      public static final int REASON_FIELD_NUMBER = 7;
       private volatile Object reason_;
       /**
-       * <code>string reason = 6;</code>
+       * <code>string reason = 7;</code>
        * @return The reason.
        */
       @Override
@@ -664,7 +721,7 @@ public final class HpMessageData {
         }
       }
       /**
-       * <code>string reason = 6;</code>
+       * <code>string reason = 7;</code>
        * @return The bytes for reason.
        */
       @Override
@@ -705,14 +762,17 @@ public final class HpMessageData {
         if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(password_)) {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 3, password_);
         }
+        if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(domain_)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 4, domain_);
+        }
         if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(channelId_)) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 4, channelId_);
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 5, channelId_);
         }
         if (success_ != false) {
-          output.writeBool(5, success_);
+          output.writeBool(6, success_);
         }
         if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(reason_)) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 6, reason_);
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 7, reason_);
         }
         unknownFields.writeTo(output);
       }
@@ -733,15 +793,18 @@ public final class HpMessageData {
         if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(password_)) {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, password_);
         }
+        if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(domain_)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, domain_);
+        }
         if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(channelId_)) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, channelId_);
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, channelId_);
         }
         if (success_ != false) {
           size += com.google.protobuf.CodedOutputStream
-            .computeBoolSize(5, success_);
+            .computeBoolSize(6, success_);
         }
         if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(reason_)) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, reason_);
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(7, reason_);
         }
         size += unknownFields.getSerializedSize();
         memoizedSize = size;
@@ -764,6 +827,8 @@ public final class HpMessageData {
             .equals(other.getUsername())) return false;
         if (!getPassword()
             .equals(other.getPassword())) return false;
+        if (!getDomain()
+            .equals(other.getDomain())) return false;
         if (!getChannelId()
             .equals(other.getChannelId())) return false;
         if (getSuccess()
@@ -787,6 +852,8 @@ public final class HpMessageData {
         hash = (53 * hash) + getUsername().hashCode();
         hash = (37 * hash) + PASSWORD_FIELD_NUMBER;
         hash = (53 * hash) + getPassword().hashCode();
+        hash = (37 * hash) + DOMAIN_FIELD_NUMBER;
+        hash = (53 * hash) + getDomain().hashCode();
         hash = (37 * hash) + CHANNELID_FIELD_NUMBER;
         hash = (53 * hash) + getChannelId().hashCode();
         hash = (37 * hash) + SUCCESS_FIELD_NUMBER;
@@ -933,6 +1000,8 @@ public final class HpMessageData {
 
           password_ = "";
 
+          domain_ = "";
+
           channelId_ = "";
 
           success_ = false;
@@ -968,6 +1037,7 @@ public final class HpMessageData {
           result.port_ = port_;
           result.username_ = username_;
           result.password_ = password_;
+          result.domain_ = domain_;
           result.channelId_ = channelId_;
           result.success_ = success_;
           result.reason_ = reason_;
@@ -1028,6 +1098,10 @@ public final class HpMessageData {
           }
           if (!other.getPassword().isEmpty()) {
             password_ = other.password_;
+            onChanged();
+          }
+          if (!other.getDomain().isEmpty()) {
+            domain_ = other.domain_;
             onChanged();
           }
           if (!other.getChannelId().isEmpty()) {
@@ -1253,9 +1327,85 @@ public final class HpMessageData {
           return this;
         }
 
+        private Object domain_ = "";
+        /**
+         * <code>string domain = 4;</code>
+         * @return The domain.
+         */
+        public String getDomain() {
+          Object ref = domain_;
+          if (!(ref instanceof String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            String s = bs.toStringUtf8();
+            domain_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
+        }
+        /**
+         * <code>string domain = 4;</code>
+         * @return The bytes for domain.
+         */
+        public com.google.protobuf.ByteString
+            getDomainBytes() {
+          Object ref = domain_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (String) ref);
+            domain_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>string domain = 4;</code>
+         * @param value The domain to set.
+         * @return This builder for chaining.
+         */
+        public Builder setDomain(
+            String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  
+          domain_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>string domain = 4;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearDomain() {
+          
+          domain_ = getDefaultInstance().getDomain();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>string domain = 4;</code>
+         * @param value The bytes for domain to set.
+         * @return This builder for chaining.
+         */
+        public Builder setDomainBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+          
+          domain_ = value;
+          onChanged();
+          return this;
+        }
+
         private Object channelId_ = "";
         /**
-         * <code>string channelId = 4;</code>
+         * <code>string channelId = 5;</code>
          * @return The channelId.
          */
         public String getChannelId() {
@@ -1271,7 +1421,7 @@ public final class HpMessageData {
           }
         }
         /**
-         * <code>string channelId = 4;</code>
+         * <code>string channelId = 5;</code>
          * @return The bytes for channelId.
          */
         public com.google.protobuf.ByteString
@@ -1288,7 +1438,7 @@ public final class HpMessageData {
           }
         }
         /**
-         * <code>string channelId = 4;</code>
+         * <code>string channelId = 5;</code>
          * @param value The channelId to set.
          * @return This builder for chaining.
          */
@@ -1303,7 +1453,7 @@ public final class HpMessageData {
           return this;
         }
         /**
-         * <code>string channelId = 4;</code>
+         * <code>string channelId = 5;</code>
          * @return This builder for chaining.
          */
         public Builder clearChannelId() {
@@ -1313,7 +1463,7 @@ public final class HpMessageData {
           return this;
         }
         /**
-         * <code>string channelId = 4;</code>
+         * <code>string channelId = 5;</code>
          * @param value The bytes for channelId to set.
          * @return This builder for chaining.
          */
@@ -1331,7 +1481,7 @@ public final class HpMessageData {
 
         private boolean success_ ;
         /**
-         * <code>bool success = 5;</code>
+         * <code>bool success = 6;</code>
          * @return The success.
          */
         @Override
@@ -1339,7 +1489,7 @@ public final class HpMessageData {
           return success_;
         }
         /**
-         * <code>bool success = 5;</code>
+         * <code>bool success = 6;</code>
          * @param value The success to set.
          * @return This builder for chaining.
          */
@@ -1350,7 +1500,7 @@ public final class HpMessageData {
           return this;
         }
         /**
-         * <code>bool success = 5;</code>
+         * <code>bool success = 6;</code>
          * @return This builder for chaining.
          */
         public Builder clearSuccess() {
@@ -1362,7 +1512,7 @@ public final class HpMessageData {
 
         private Object reason_ = "";
         /**
-         * <code>string reason = 6;</code>
+         * <code>string reason = 7;</code>
          * @return The reason.
          */
         public String getReason() {
@@ -1378,7 +1528,7 @@ public final class HpMessageData {
           }
         }
         /**
-         * <code>string reason = 6;</code>
+         * <code>string reason = 7;</code>
          * @return The bytes for reason.
          */
         public com.google.protobuf.ByteString
@@ -1395,7 +1545,7 @@ public final class HpMessageData {
           }
         }
         /**
-         * <code>string reason = 6;</code>
+         * <code>string reason = 7;</code>
          * @param value The reason to set.
          * @return This builder for chaining.
          */
@@ -1410,7 +1560,7 @@ public final class HpMessageData {
           return this;
         }
         /**
-         * <code>string reason = 6;</code>
+         * <code>string reason = 7;</code>
          * @return This builder for chaining.
          */
         public Builder clearReason() {
@@ -1420,7 +1570,7 @@ public final class HpMessageData {
           return this;
         }
         /**
-         * <code>string reason = 6;</code>
+         * <code>string reason = 7;</code>
          * @param value The bytes for reason to set.
          * @return This builder for chaining.
          */
@@ -2263,17 +2413,18 @@ public final class HpMessageData {
   static {
     String[] descriptorData = {
       "\n\017HpMessage.proto\022\036net.hserver.hp.common" +
-      ".protocol\"\206\003\n\tHpMessage\022E\n\004type\030\001 \001(\01627." +
+      ".protocol\"\227\003\n\tHpMessage\022E\n\004type\030\001 \001(\01627." +
       "net.hserver.hp.common.protocol.HpMessage" +
       ".HpMessageType\022D\n\010metaData\030\002 \001(\01322.net.h" +
       "server.hp.common.protocol.HpMessage.Meta" +
-      "Data\022\014\n\004data\030\003 \001(\014\032p\n\010MetaData\022\014\n\004port\030\001" +
-      " \001(\005\022\020\n\010username\030\002 \001(\t\022\020\n\010password\030\003 \001(\t" +
-      "\022\021\n\tchannelId\030\004 \001(\t\022\017\n\007success\030\005 \001(\010\022\016\n\006" +
-      "reason\030\006 \001(\t\"l\n\rHpMessageType\022\014\n\010REGISTE" +
-      "R\020\000\022\023\n\017REGISTER_RESULT\020\001\022\r\n\tCONNECTED\020\002\022" +
-      "\020\n\014DISCONNECTED\020\003\022\010\n\004DATA\020\004\022\r\n\tKEEPALIVE" +
-      "\020\005B\034B\rHpMessageDataZ\013./HpMessageb\006proto3"
+      "Data\022\014\n\004data\030\003 \001(\014\032\200\001\n\010MetaData\022\014\n\004port\030" +
+      "\001 \001(\005\022\020\n\010username\030\002 \001(\t\022\020\n\010password\030\003 \001(" +
+      "\t\022\016\n\006domain\030\004 \001(\t\022\021\n\tchannelId\030\005 \001(\t\022\017\n\007" +
+      "success\030\006 \001(\010\022\016\n\006reason\030\007 \001(\t\"l\n\rHpMessa" +
+      "geType\022\014\n\010REGISTER\020\000\022\023\n\017REGISTER_RESULT\020" +
+      "\001\022\r\n\tCONNECTED\020\002\022\020\n\014DISCONNECTED\020\003\022\010\n\004DA" +
+      "TA\020\004\022\r\n\tKEEPALIVE\020\005B\034B\rHpMessageDataZ\013./" +
+      "HpMessageb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -2290,7 +2441,7 @@ public final class HpMessageData {
     internal_static_net_hserver_hp_common_protocol_HpMessage_MetaData_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_hserver_hp_common_protocol_HpMessage_MetaData_descriptor,
-        new String[] { "Port", "Username", "Password", "ChannelId", "Success", "Reason", });
+        new String[] { "Port", "Username", "Password", "Domain", "ChannelId", "Success", "Reason", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

@@ -7,11 +7,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <meta name="renderer" content="webkit">
     <meta http-equiv="Cache-Control" content="no-siteapp"/>
-    <link rel="stylesheet" href="./common/css/mdui.min.css"/>
-    <link rel="stylesheet" href="./common/css/paging.css"/>
-    <script src="./common/js/jquery.min.js"></script>
-    <script src="./common/js/paging.js"></script>
-    <script src="./common/js/mdui.min.js"></script>
+    <link rel="stylesheet" href="common/css/mdui.min.css"/>
+    <link rel="stylesheet" href="common/css/paging.css"/>
+    <script src="common/js/jquery.min.js"></script>
+    <script src="common/js/paging.js"></script>
+    <script src="common/js/mdui.min.js"></script>
     <title>内网穿透</title>
 </head>
 <body class="mdui-drawer-body-left mdui-appbar-with-toolbar  mdui-theme-primary-indigo mdui-theme-accent-pink mdui-theme-layout-auto">
@@ -33,19 +33,19 @@
                 <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">near_me</i>
                 <div class="mdui-list-item-content">穿透服务</div>
             </a>
-            <a class="mdui-collapse-item mdui-collapse-item-open" href="./port.html">
+            <a class="mdui-collapse-item mdui-collapse-item-open" href="port.html">
                 <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
                     <i class="mdui-list-item-icon mdui-icon  material-icons mdui-text-color-purple">layers</i>
                     <div class="mdui-list-item-content">端口管理</div>
                 </div>
             </a>
-            <a class="mdui-collapse-item mdui-collapse-item-open" href="./domain.html">
+            <a class="mdui-collapse-item mdui-collapse-item-open" href="domain.html">
                 <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
                     <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-green">layers</i>
                     <div class="mdui-list-item-content">域名管理</div>
                 </div>
             </a>
-            <a class="mdui-collapse-item mdui-collapse-item-open" href="./log.html">
+            <a class="mdui-collapse-item mdui-collapse-item-open" href="log.html">
                 <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
                     <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">layers</i>
                     <div class="mdui-list-item-content">穿透日志</div>
@@ -59,7 +59,7 @@
     $(function () {
         var userInfo = localStorage.getItem("userInfo")
         if (!userInfo) {
-            location.href = "./login.html";
+            location.href = "login.html";
         } else {
             userInfo = JSON.parse(userInfo)
             $("#username").text(userInfo.username)
@@ -67,7 +67,7 @@
         }
         $("#login_out").click(function () {
             localStorage.removeItem("userInfo")
-            location.href = "./login.html"
+            location.href = "login.html"
         })
     })
 </script>
@@ -96,14 +96,12 @@
             </tr>
             </thead>
             <tbody id="tabData">
-
             </tbody>
         </table>
     </div>
     <div style="margin-top: 10px">
         <h3 class="chapter-title mdui-text-color-theme">穿透日志</h3>
         <ul class="mdui-list" id="log">
-
         </ul>
     </div>
     <div class="mdui-dialog" id="addUser" style="overflow: scroll">
@@ -118,9 +116,16 @@
                     <label class="mdui-textfield-label">内网端口</label>
                     <input class="mdui-textfield-input" name="port" placeholder="内网端口" type="text"/>
                 </div>
+
                 <div class="mdui-textfield" id="server_data">
                     <label class="mdui-textfield-label">穿透服务选择</label>
                 </div>
+
+                <div style="display: none;" class="mdui-textfield" id="showServerInfoInPut" >
+                    <label class="mdui-textfield-label">自定义穿透服务</label>
+                    <input class="mdui-textfield-input" id="showServerInfoInPutVal" placeholder="ip+端口" type="text"/>
+                </div>
+
                 <div class="mdui-textfield" id="domains">
                 </div>
                 <div class="mdui-textfield" id="ports">
@@ -133,15 +138,28 @@
         </form>
     </div>
 
+    <div class="mdui-dialog" id="payImg">
+            <div class="mdui-dialog-content">
+                <div style="text-align: center">
+                    <img height="300" src="img/pay.jpg"/>
+                    <div>打赏请备注账号</div>
+                </div>
+            </div>
+            <div class="mdui-dialog-actions">
+                <div class="mdui-btn mdui-ripple" mdui-dialog-cancel>关闭这个傻逼弹窗</div>
+            </div>
+    </div>
 
 </div>
 
-
 <script>
-
-
     $("#add_btn").click(function () {
-        let serialize = $("#handle-form").serialize();
+        let serialize = $("#handle-form").serializeArray();
+        for( let a of serialize){
+            if (a.name=='server_info'&&a.value=='-1'){
+                a.value= $("#showServerInfoInPutVal").val()
+            }
+        }
         console.log(serialize)
         $.post("/server/proxy", serialize, function (result) {
             if (result.Code === 200) {
@@ -154,6 +172,15 @@
         });
     })
 
+
+
+
+    var showPay = localStorage.getItem("showPay")
+    console.log(showPay)
+    if (showPay == 0) {
+        new mdui.Dialog('#payImg').open()
+        localStorage.setItem("showPay", 1)
+    }
 
     var userInfo = localStorage.getItem("userInfo")
     if (userInfo) {
@@ -211,7 +238,7 @@
             "                    "
 
         for (let a of userInfo.domains) {
-            domainHtml += "<label class=\"mdui-radio\">\n" +
+            domainHtml += "<label style='margin-right: 20px' class=\"mdui-radio\">\n" +
                 "                        <input type=\"radio\" value='" + a + "' name=\"domain\"/>\n" +
                 "                        <i class=\"mdui-radio-icon\"></i>\n" +
                 "                        " + a + "\n" +
@@ -221,13 +248,13 @@
             domainHtml
         )
 
-        var portsHtml = "<label class=\"mdui-textfield-label\">外网端口号</label>     <label class=\"mdui-radio\">\n" +
+        var portsHtml = "<label style='margin-right: 20px' class=\"mdui-textfield-label\">外网端口号</label>     <label class=\"mdui-radio\">\n" +
             "                        <input type=\"radio\" value='0' name=\"remote_port\"/>\n" +
             "                        <i class=\"mdui-radio-icon\"></i>\n" +
             "                        随机端口\n" +
             "                    </label>"
         for (let a of userInfo.ports) {
-            portsHtml += "<label class=\"mdui-radio\">\n" +
+            portsHtml += "<label style='margin-right: 20px' class=\"mdui-radio\">\n" +
                 "                        <input type=\"radio\" value='" + a + "' name=\"remote_port\"/>\n" +
                 "                        <i class=\"mdui-radio-icon\"></i>\n" +
                 "                        " + a + "\n" +
@@ -248,19 +275,33 @@
             var serverDataHtml = "             <label class=\"mdui-textfield-label\">穿透服务选择</label>\n"
 
             for (let a of serverData) {
-                serverDataHtml += "<label class=\"mdui-radio\">\n" +
+                serverDataHtml += "<label style='margin-right: 20px' class=\"mdui-radio\">\n" +
                     "                        <input type=\"radio\" value='" + a.ip + ":" + a.port + "' name=\"server_info\"/>\n" +
                     "                        <i class=\"mdui-radio-icon\"></i>\n" +
                     "                        " + a.name + "在线数：" + a.num + "\n" +
                     "                    </label>"
             }
+            serverDataHtml += "<label style='margin-right: 20px' class=\"mdui-radio\">\n" +
+                "                        <input type=\"radio\" value='-1' name=\"server_info\"/>\n" +
+                "                        <i class=\"mdui-radio-icon\"></i>\n" +
+                "                        "  + "自定义服务" + "\n" +
+                "                    </label>"
+
             $("#server_data").html(
                 serverDataHtml
             )
 
+            $("#server_data :radio").on("click",function(){
+                if ($(this).val()==-1){
+                    $("#showServerInfoInPut").show()
+                }else {
+                    $("#showServerInfoInPut").hide()
+                }
+            })
+
         });
         refTabData()
-        var ws = new WebSocket("ws://"+window.location.host+"/ws");
+        var ws = new WebSocket("ws://" + window.location.host + "/ws");
         ws.onmessage = function (evt) {
             var result = JSON.parse(evt.data)
             $("#log").prepend("          <li class=\"mdui-list-item \">\n" +

@@ -7,12 +7,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <meta name="renderer" content="webkit">
     <meta http-equiv="Cache-Control" content="no-siteapp"/>
-    <link rel="stylesheet" href="./common/css/index.css"/>
-    <link rel="stylesheet" href="./common/css/mdui.min.css"/>
-    <link rel="stylesheet" href="./common/css/paging.css"/>
-    <script src="./common/js/jquery.min.js"></script>
-    <script src="./common/js/paging.js"></script>
-    <script src="./common/js/mdui.min.js"></script>
+    <link rel="stylesheet" href="common/css/index.css"/>
+    <link rel="stylesheet" href="common/css/mdui.min.css"/>
+    <link rel="stylesheet" href="common/css/paging.css"/>
+    <script src="common/js/jquery.min.js"></script>
+    <script src="common/js/paging.js"></script>
+    <script src="common/js/mdui.min.js"></script>
     <title>内网穿透</title>
 </head>
 <body class="mdui-appbar-with-toolbar  mdui-theme-primary-indigo mdui-theme-accent-pink mdui-theme-layout-auto">
@@ -81,7 +81,7 @@
     $(function () {
         var userInfo = localStorage.getItem("userInfo")
         if (userInfo) {
-            location.href = "./center.html";
+            location.href = "center.html";
         }
         $("#login_btn").click(function () {
             let val = $("#username").val();
@@ -91,7 +91,10 @@
                     result = JSON.parse(result)
                     if (result.code === 200) {
                         localStorage.setItem("userInfo", JSON.stringify(result.data))
-                        location.href = "./center.html";
+                        if (result.data.level==0){
+                            localStorage.setItem("showPay",0)
+                        }
+                        location.href = "center.html";
                     } else {
                         $("#closeLogin").click()
                         mdui.alert(result.msg);
@@ -231,20 +234,17 @@
                 <span>我们使用HServer做为后台基石，在http协议上做了大量优化操作，通过SNI协议解析或者明文HOST解析。</span></div>
         </div>
     </div>
-
     <div class="feature case">
-        <h2>最新捐赠者</h2>
+        <h2>最新捐赠者(打赏请备注账号)</h2>
+        <div class="meta">
+            <div style="text-align: center">
+                <img height="300" src="img/pay.jpg"/>
+            </div>
+        </div>
         <div class="mdui-clearfix">
             <div class="meta">
                 <div class="mdui-row-xs-4" id="pay">
-
                 </div>
-            </div>
-        </div>
-
-        <div class="meta">
-            <div style="text-align: center">
-                <img height="300" src="./img/pay.jpg"/>
             </div>
         </div>
     </div>

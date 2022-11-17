@@ -9,13 +9,13 @@ import (
 	"io"
 )
 
-func Encode(message *hpMessage.HpMessage) []byte {
+func Encode(message *HpMessage.HpMessage) []byte {
 	d, _ := proto.Marshal(message)
 	i, _ := encode(d)
 	return i
 }
 
-func Decode(reader *bufio.Reader) (*hpMessage.HpMessage, error) {
+func Decode(reader *bufio.Reader) (*HpMessage.HpMessage, error) {
 	d, err := decode(reader)
 	if err != nil {
 		return nil, err
@@ -23,12 +23,12 @@ func Decode(reader *bufio.Reader) (*hpMessage.HpMessage, error) {
 	if d == nil {
 		return nil, err
 	}
-	message := &hpMessage.HpMessage{}
+	message := &HpMessage.HpMessage{}
 	proto.Unmarshal(d, message)
 	return message, nil
 }
 
-//将数据包编码（即加上包头再转为二进制）
+// 将数据包编码（即加上包头再转为二进制）
 func encode(mes []byte) ([]byte, error) {
 	//创建数据包
 	dataPackage := new(bytes.Buffer) //使用字节缓冲区，一步步写入性能更高
@@ -50,7 +50,7 @@ func encode(mes []byte) ([]byte, error) {
 	return dataPackage.Bytes(), nil
 }
 
-//解码数据包
+// 解码数据包
 func decode(reader *bufio.Reader) ([]byte, error) {
 	// 可读小于8 不够格 4+4=头加长度=8字节
 	//读取数据包的开头 int =9999 等4 字节

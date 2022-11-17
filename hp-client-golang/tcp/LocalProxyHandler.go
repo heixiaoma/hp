@@ -20,10 +20,10 @@ func (l *LocalProxyHandler) ChannelActive(conn net.Conn) {
 
 func (l *LocalProxyHandler) ChannelRead(conn net.Conn, data interface{}) {
 	bytes := data.([]byte)
-	message := &hpMessage.HpMessage{
-		Type: hpMessage.HpMessage_DATA,
+	message := &HpMessage.HpMessage{
+		Type: HpMessage.HpMessage_DATA,
 		Data: bytes,
-		MetaData: &hpMessage.HpMessage_MetaData{
+		MetaData: &HpMessage.HpMessage_MetaData{
 			ChannelId: l.RemoteChannelId,
 		},
 	}
