@@ -33,15 +33,17 @@ public class HpClientHandler extends HpCommonHandler {
     private String password;
     private String username;
     private String proxyAddress;
+    private String domain;
     private int proxyPort;
     private CallMsg callMsg;
     private ConcurrentHashMap<String, LocalProxyHandler> channelHandlerMap = new ConcurrentHashMap<>();
     private ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-    public HpClientHandler(int port, String username, String password, String proxyAddress, int proxyPort, CallMsg callMsg) {
+    public HpClientHandler(int port, String username, String password,String domain, String proxyAddress, int proxyPort, CallMsg callMsg) {
         this.port = port;
         this.password = password;
         this.username = username;
+        this.domain = domain;
         this.proxyAddress = proxyAddress;
         this.proxyPort = proxyPort;
         this.callMsg = callMsg;
@@ -56,6 +58,7 @@ public class HpClientHandler extends HpCommonHandler {
         metaDataBuild.setPort(port);
         metaDataBuild.setUsername(username);
         metaDataBuild.setPassword(password);
+        metaDataBuild.setDomain(domain);
         messageBuild.setMetaData(metaDataBuild.build());
         ctx.writeAndFlush(messageBuild.build());
         super.channelActive(ctx);
@@ -144,5 +147,11 @@ public class HpClientHandler extends HpCommonHandler {
             ChannelHandlerContext ctx = handler.getCtx();
             ctx.writeAndFlush(message.getData().toByteArray());
         }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        cause.printStackTrace();
+        super.exceptionCaught(ctx, cause);
     }
 }

@@ -16,6 +16,7 @@ public class HpClientStarter {
         options.addOption("server_port", true, "Hp server port");
         options.addOption("username", true, "Hp server username");
         options.addOption("password", true, "Hp server password");
+        options.addOption("domain", true, "Proxy server domain");
         options.addOption("proxy_addr", true, "Proxy server address");
         options.addOption("proxy_port", true, "Proxy server port");
         options.addOption("remote_port", true, "Proxy server remote port");
@@ -49,6 +50,12 @@ public class HpClientStarter {
                 System.out.println("password cannot be null");
                 return;
             }
+
+            String domain = cmd.getOptionValue("domain");
+            if (domain == null) {
+                System.out.println("domain cannot be null");
+                return;
+            }
             String proxyAddress = cmd.getOptionValue("proxy_addr");
             if (proxyAddress == null) {
                 System.out.println("proxy_addr cannot be null");
@@ -71,7 +78,7 @@ public class HpClientStarter {
                     System.out.println(msg);
                 }
             });
-            client.connect(serverAddress, Integer.parseInt(serverPort), username,password, Integer.parseInt(remotePort), proxyAddress, Integer.parseInt(proxyPort));
+            client.connect(serverAddress, Integer.parseInt(serverPort), username,password,domain, Integer.parseInt(remotePort), proxyAddress, Integer.parseInt(proxyPort));
         }
     }
 }

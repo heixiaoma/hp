@@ -15,7 +15,7 @@ public class TestHpClient {
             }
         });
 
-        client.connect("127.0.0.1", 9091, "nas", "123456", 5000, "192.168.5.214", 5000);
+        client.connect("iaqqq.com", 9091, "heixiaoma", "123456", "private",-1, "192.168.5.214", 5000);
 
 //        new Thread(() -> {
 //            while (true) {

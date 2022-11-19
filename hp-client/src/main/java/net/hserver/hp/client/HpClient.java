@@ -26,7 +26,7 @@ public class HpClient {
         this.callMsg = callMsg;
     }
 
-    public void connect(String serverAddress, int serverPort, String username, String password, int remotePort, String proxyAddress, int proxyPort) throws IOException, InterruptedException {
+    public void connect(String serverAddress, int serverPort, String username, String password,String domain, int remotePort, String proxyAddress, int proxyPort) throws IOException, InterruptedException {
         if (future != null) {
             future.channel().close();
             future = null;
@@ -36,7 +36,7 @@ public class HpClient {
             future = hpConnection.connect(serverAddress, serverPort, new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
-                    HpClientHandler hpClientHandler = new HpClientHandler(remotePort, username, password,
+                    HpClientHandler hpClientHandler = new HpClientHandler(remotePort, username, password,domain,
                             proxyAddress, proxyPort, callMsg);
                     ch.pipeline().addLast(
                             new IdleStateHandler(60, 30, 0),
