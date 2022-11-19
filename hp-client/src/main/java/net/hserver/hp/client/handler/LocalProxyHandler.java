@@ -12,14 +12,23 @@ import net.hserver.hp.common.protocol.HpMessageData;
 /**
  * @author hxm
  */
-public class LocalProxyHandler extends HpAbsHandler  {
+public class LocalProxyHandler extends SimpleChannelInboundHandler<byte[]>  {
 
     private final HpClientHandler proxyHandler;
     private final String remoteChannelId;
+    private ChannelHandlerContext ctx;
 
     public LocalProxyHandler(HpClientHandler hpClientHandler, String remoteChannelId) {
         this.proxyHandler = hpClientHandler;
         this.remoteChannelId = remoteChannelId;
+    }
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        this.ctx = ctx;
+    }
+
+    public ChannelHandlerContext getCtx() {
+        return ctx;
     }
 
     @Override

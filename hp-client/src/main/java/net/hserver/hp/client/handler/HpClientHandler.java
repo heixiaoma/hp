@@ -1,45 +1,42 @@
 package net.hserver.hp.client.handler;
 
 
-import com.google.protobuf.ByteString;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.*;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.bytes.ByteArrayDecoder;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import net.hserver.hp.client.CallMsg;
-import net.hserver.hp.client.net.TcpConnection;
+import net.hserver.hp.client.NamedThreadFactory;
 import net.hserver.hp.common.exception.HpException;
-import net.hserver.hp.common.handler.HpAbsHandler;
-import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessageData;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
-
 
 
 /**
  * @author hxm
  */
 @ChannelHandler.Sharable
-public class HpClientHandler extends HpCommonHandler {
+public class HpClientHandler extends SimpleChannelInboundHandler<HpMessageData.HpMessage> {
 
-    private int port;
-    private String password;
-    private String username;
-    private String proxyAddress;
-    private String domain;
-    private int proxyPort;
-    private CallMsg callMsg;
-    private ConcurrentHashMap<String, LocalProxyHandler> channelHandlerMap = new ConcurrentHashMap<>();
-    private ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    private final int port;
+    private final String password;
+    private final String username;
+    private final String proxyAddress;
+    private final String domain;
+    private final int proxyPort;
+    private final CallMsg callMsg;
+    private ChannelHandlerContext ctx;
+    private final ConcurrentHashMap<String, LocalProxyHandler> channelHandlerMap = new ConcurrentHashMap<>();
+    private final ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-    public HpClientHandler(int port, String username, String password,String domain, String proxyAddress, int proxyPort, CallMsg callMsg) {
+    public HpClientHandler(int port, String username, String password, String domain, String proxyAddress, int proxyPort, CallMsg callMsg) {
         this.port = port;
         this.password = password;
         this.username = username;
@@ -49,8 +46,18 @@ public class HpClientHandler extends HpCommonHandler {
         this.callMsg = callMsg;
     }
 
+    public ChannelHandlerContext getCtx() {
+        return ctx;
+    }
+
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+        ctx.flush();
+    }
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        this.ctx = ctx;
         // register client information
         HpMessageData.HpMessage.Builder messageBuild = HpMessageData.HpMessage.newBuilder();
         messageBuild.setType(HpMessageData.HpMessage.HpMessageType.REGISTER);
@@ -61,8 +68,8 @@ public class HpClientHandler extends HpCommonHandler {
         metaDataBuild.setDomain(domain);
         messageBuild.setMetaData(metaDataBuild.build());
         ctx.writeAndFlush(messageBuild.build());
-        super.channelActive(ctx);
     }
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HpMessageData.HpMessage message) throws Exception {
         if (message.getType() == HpMessageData.HpMessage.HpMessageType.REGISTER_RESULT) {
@@ -74,7 +81,10 @@ public class HpClientHandler extends HpCommonHandler {
         } else if (message.getType() == HpMessageData.HpMessage.HpMessageType.DATA) {
             processData(message);
         } else if (message.getType() == HpMessageData.HpMessage.HpMessageType.KEEPALIVE) {
-            // 心跳包, 不处理
+            HpMessageData.HpMessage.Builder messageBuild = HpMessageData.HpMessage.newBuilder();
+            messageBuild.setType(HpMessageData.HpMessage.HpMessageType.KEEPALIVE);
+            ctx.writeAndFlush(messageBuild.build());
+            System.out.println("发送心跳");
         } else {
             throw new HpException("Unknown type: " + message.getType());
         }
@@ -85,11 +95,12 @@ public class HpClientHandler extends HpCommonHandler {
         channelGroup.close();
         callMsg.message("与HP服务器断开了连接");
     }
+
     /**
      * if Message.getType() == HpMessageType.REGISTER_RESULT
      */
     private void processRegisterResult(HpMessageData.HpMessage message) {
-        if ((Boolean) message.getMetaData().getSuccess()) {
+        if (message.getMetaData().getSuccess()) {
             callMsg.message(message.getMetaData().getReason());
         } else {
             callMsg.message(message.getMetaData().getReason());
@@ -103,15 +114,26 @@ public class HpClientHandler extends HpCommonHandler {
     private void processConnected(final HpMessageData.HpMessage message) throws Exception {
         try {
             LocalProxyHandler localProxyHandler = new LocalProxyHandler(this, message.getMetaData().getChannelId());
-            TcpConnection localConnection = new TcpConnection();
-            localConnection.connect(proxyAddress, proxyPort, new ChannelInitializer<SocketChannel>() {
-                @Override
-                public void initChannel(SocketChannel ch) throws Exception {
-                    ch.pipeline().addLast(new ByteArrayDecoder(), new ByteArrayEncoder(), localProxyHandler);
-                    channelHandlerMap.put(message.getMetaData().getChannelId(), localProxyHandler);
-                    channelGroup.add(ch);
-                }
-            });
+            NioEventLoopGroup workerGroup = new NioEventLoopGroup(new NamedThreadFactory("HP-Local"));
+            try {
+                Bootstrap b = new Bootstrap();
+                b.group(workerGroup);
+                b.channel(NioSocketChannel.class);
+                b.option(ChannelOption.SO_KEEPALIVE, true);
+                b.handler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    public void initChannel(SocketChannel ch) throws Exception {
+                        ch.pipeline().addLast(new ByteArrayDecoder(), new ByteArrayEncoder(), localProxyHandler);
+                        channelHandlerMap.put(message.getMetaData().getChannelId(), localProxyHandler);
+                        channelGroup.add(ch);
+                    }
+                });
+                Channel channel = b.connect(proxyAddress, proxyPort).sync().channel();
+                channel.closeFuture().addListener(future -> workerGroup.shutdownGracefully());
+            } catch (Exception e) {
+                workerGroup.shutdownGracefully();
+                throw e;
+            }
         } catch (Exception e) {
             HpMessageData.HpMessage.Builder messageBuild = HpMessageData.HpMessage.newBuilder();
             messageBuild.setType(HpMessageData.HpMessage.HpMessageType.DISCONNECTED);
@@ -143,7 +165,7 @@ public class HpClientHandler extends HpCommonHandler {
     private void processData(HpMessageData.HpMessage message) {
         String channelId = message.getMetaData().getChannelId();
         LocalProxyHandler handler = channelHandlerMap.get(channelId);
-        if (handler != null&&handler.getCtx()!=null) {
+        if (handler != null && handler.getCtx() != null) {
             ChannelHandlerContext ctx = handler.getCtx();
             ctx.writeAndFlush(message.getData().toByteArray());
         }
