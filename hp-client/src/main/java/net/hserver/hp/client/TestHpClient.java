@@ -1,6 +1,7 @@
 package net.hserver.hp.client;
 
-import java.io.IOException;
+import net.hserver.hp.client.hp.CallMsg;
+import net.hserver.hp.client.hp.HpClient;
 
 /**
  * @author hxm

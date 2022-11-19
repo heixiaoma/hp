@@ -1,4 +1,4 @@
-package net.hserver.hp.client;
+package net.hserver.hp.client.util;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.LongAdder;

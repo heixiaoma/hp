@@ -1,4 +1,4 @@
-package net.hserver.hp.client;
+package net.hserver.hp.client.hp;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -11,6 +11,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import net.hserver.hp.client.handler.HpClientHandler;
+import net.hserver.hp.client.util.NamedThreadFactory;
 import net.hserver.hp.common.codec.HpMessageDecoder;
 import net.hserver.hp.common.codec.HpMessageEncoder;
 

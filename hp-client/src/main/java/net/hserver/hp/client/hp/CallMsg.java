@@ -1,4 +1,4 @@
-package net.hserver.hp.client;
+package net.hserver.hp.client.hp;
 
 /**
  * @author hxm

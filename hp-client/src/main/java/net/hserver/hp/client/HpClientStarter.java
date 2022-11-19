@@ -1,5 +1,7 @@
 package net.hserver.hp.client;
 
+import net.hserver.hp.client.hp.CallMsg;
+import net.hserver.hp.client.hp.HpClient;
 import org.apache.commons.cli.*;
 
 /**

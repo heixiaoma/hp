@@ -11,8 +11,8 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.bytes.ByteArrayDecoder;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import io.netty.util.concurrent.GlobalEventExecutor;
-import net.hserver.hp.client.CallMsg;
-import net.hserver.hp.client.NamedThreadFactory;
+import net.hserver.hp.client.hp.CallMsg;
+import net.hserver.hp.client.util.NamedThreadFactory;
 import net.hserver.hp.common.exception.HpException;
 import net.hserver.hp.common.protocol.HpMessageData;
 
