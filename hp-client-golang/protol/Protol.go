@@ -5,17 +5,17 @@ import (
 	"bytes"
 	"encoding/binary"
 	"github.com/golang/protobuf/proto"
-	"hp-client-golang/HpMessage"
+	"hp-client-golang/hpMessage"
 	"io"
 )
 
-func Encode(message *HpMessage.HpMessage) []byte {
+func Encode(message *hpMessage.HpMessage) []byte {
 	d, _ := proto.Marshal(message)
 	i, _ := encode(d)
 	return i
 }
 
-func Decode(reader *bufio.Reader) (*HpMessage.HpMessage, error) {
+func Decode(reader *bufio.Reader) (*hpMessage.HpMessage, error) {
 	d, err := decode(reader)
 	if err != nil {
 		return nil, err
@@ -23,7 +23,7 @@ func Decode(reader *bufio.Reader) (*HpMessage.HpMessage, error) {
 	if d == nil {
 		return nil, err
 	}
-	message := &HpMessage.HpMessage{}
+	message := &hpMessage.HpMessage{}
 	proto.Unmarshal(d, message)
 	return message, nil
 }

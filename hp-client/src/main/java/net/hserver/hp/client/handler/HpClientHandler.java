@@ -203,15 +203,12 @@ public class HpClientHandler extends SimpleChannelInboundHandler<HpMessageData.H
             if (handler != null && handler.getCtx() != null) {
                 ChannelHandlerContext ctx = handler.getCtx();
                 ctx.writeAndFlush(message.getData().toByteArray());
-                System.out.println("TCP数据来了");
             }
         }
         if (message.getMetaData().getType() == HpMessageData.HpMessage.MessageType.UDP) {
-            System.out.println("来UDP");
             LocalProxyUdpClientHandler handler = UdpChannelHandlerMap.get(channelId);
             if (handler != null && handler.getCtx() != null) {
                 ChannelHandlerContext ctx = handler.getCtx();
-                System.out.println("来数据了"+ctx.channel().localAddress());
                 ctx.writeAndFlush(new DatagramPacket(Unpooled.wrappedBuffer(message.getData().toByteArray()),new InetSocketAddress(proxyAddress,proxyPort)));
             }
         }

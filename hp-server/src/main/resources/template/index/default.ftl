@@ -1,6 +1,6 @@
 <#include "./header.ftl">
 <style>
-    .mdui-col span{
+    .mdui-col span {
         display: inline-block;
         padding: 0.25em 0.4em;
         font-size: 75%;
@@ -10,12 +10,13 @@
         white-space: nowrap;
         vertical-align: baseline;
         border-radius: 0.25rem;
-        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
     }
-    .pay{
+
+    .pay {
         margin-top: 10px;
         padding: 10px;
-        box-shadow: 20px 0px 10px 0px rgba(0,0,0,0.5);
+        box-shadow: 20px 0px 10px 0px rgba(0, 0, 0, 0.5);
         text-align: center;
     }
 </style>
@@ -23,7 +24,7 @@
 <div id="page-index" class="mdui-container">
     <div class="banner"><h1><strong>H</strong><strong>P</strong>内网穿透
         </h1>
-        <div class="meta">我们支持TCP级别的所有协议，针对HTTP协议做了大量的优化工作， 可以实现 http/https ws/wss 协议。</div>
+        <div class="meta">我们支持TCP和UDP协议，针对 http/https ws/wss 协议做了大量的优化工作可以更加灵活的控制。让用户使用更佳舒服简单。</div>
         <div class="actions"><a href="https://gitee.com/HServer/hp-android-client/releases" class="mdui-btn mdui-ripple"
                                 target="_blank">APK下载</a><a
                     href="https://gitee.com/HServer/hp/releases" class="mdui-btn mdui-ripple">其他端下载</a>
@@ -47,7 +48,7 @@
                 本项目是一个公益项目，请各路大神不用恶意攻击，滥用资源，免费开源的项目真的不多
                 使用服务器来进行内网穿透，下载对应的终端的软件包，下载安装免费使用，软件内没有任何的广告，放心使用，对软件有问题也可以加入交流群，进行咨询。
                 软件系统，会自动清理一个月未登录登录的账号，如果出现账号不存在，或者登录失败问题，请进行重新注册使用。
-                本软件可应用于远程办公、远程联调、接口联调、接口回调、公众号调试、本地开发微信、MySQL、TCP端口转发等一系列功能。
+                本软件可应用于远程办公、远程联调、接口联调、接口回调、公众号调试、本地开发微信、MySQL、TCP、UDP端口转发等一系列功能。
                 软件永远免费，但禁止搭建，涉政治、色情、暴力、赌博、诈骗、影视、私、 违反国家法律、给国家造成负面影响等等的网站，出现问题后果自负，本站概不负责。如有发现一律封号处理。
             </div>
         </div>

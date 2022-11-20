@@ -108,7 +108,8 @@
         <form id="handle-form">
             <div class="mdui-dialog-content">
                 <input class="mdui-textfield-input" id="password" name="password" placeholder="password" type="hidden"/>
-                <input class="mdui-textfield-input" id="usernameFrom" name="username" placeholder="username" type="hidden"/>
+                <input class="mdui-textfield-input" id="usernameFrom" name="username" placeholder="username"
+                       type="hidden"/>
                 <div class="mdui-textfield">
                     <label class="mdui-textfield-label">内网IP</label>
                     <input class="mdui-textfield-input" name="ip" placeholder="内网IP" type="text"/>
@@ -118,11 +119,30 @@
                     <input class="mdui-textfield-input" name="port" placeholder="内网端口" type="text"/>
                 </div>
 
+                <div class="mdui-textfield" id="type">
+                    <label class="mdui-textfield-label">穿透类型</label>
+                    <label class="mdui-radio" style="margin-right: 20px">
+                        <input type="radio" value="TCP" name="type" checked/>
+                        <i class="mdui-radio-icon"></i>
+                        TCP
+                    </label>
+                    <label class="mdui-radio" style="margin-right: 20px">
+                        <input type="radio" value="UDP" name="type"/>
+                        <i class="mdui-radio-icon"></i>
+                        UDP
+                    </label>
+                    <label class="mdui-radio" style="margin-right: 20px">
+                        <input type="radio" value="TCP_UDP" name="type"/>
+                        <i class="mdui-radio-icon"></i>
+                        TCP+UDP
+                    </label>
+                </div>
+
                 <div class="mdui-textfield" id="server_data">
                     <label class="mdui-textfield-label">穿透服务选择</label>
                 </div>
 
-                <div style="display: none;" class="mdui-textfield" id="showServerInfoInPut" >
+                <div style="display: none;" class="mdui-textfield" id="showServerInfoInPut">
                     <label class="mdui-textfield-label">自定义穿透服务</label>
                     <input class="mdui-textfield-input" id="showServerInfoInPutVal" placeholder="ip+端口" type="text"/>
                 </div>
@@ -140,15 +160,15 @@
     </div>
 
     <div class="mdui-dialog" id="payImg">
-            <div class="mdui-dialog-content">
-                <div style="text-align: center">
-                    <img height="300" src="img/pay.jpg"/>
-                    <div>打赏请备注账号</div>
-                </div>
+        <div class="mdui-dialog-content">
+            <div style="text-align: center">
+                <img height="300" src="img/pay.jpg"/>
+                <div>打赏请备注账号</div>
             </div>
-            <div class="mdui-dialog-actions">
-                <div class="mdui-btn mdui-ripple" mdui-dialog-cancel>关闭这个傻逼弹窗</div>
-            </div>
+        </div>
+        <div class="mdui-dialog-actions">
+            <div class="mdui-btn mdui-ripple" mdui-dialog-cancel>关闭这个傻逼弹窗</div>
+        </div>
     </div>
 
 </div>
@@ -156,9 +176,9 @@
 <script>
     $("#add_btn").click(function () {
         let serialize = $("#handle-form").serializeArray();
-        for( let a of serialize){
-            if (a.name=='server_info'&&a.value=='-1'){
-                a.value= $("#showServerInfoInPutVal").val()
+        for (let a of serialize) {
+            if (a.name == 'server_info' && a.value == '-1') {
+                a.value = $("#showServerInfoInPutVal").val()
             }
         }
         console.log(serialize)
@@ -172,8 +192,6 @@
             }
         });
     })
-
-
 
 
     var showPay = localStorage.getItem("showPay")
@@ -286,18 +304,26 @@
             serverDataHtml += "<label style='margin-right: 20px' class=\"mdui-radio\">\n" +
                 "                        <input type=\"radio\" value='-1' name=\"server_info\"/>\n" +
                 "                        <i class=\"mdui-radio-icon\"></i>\n" +
-                "                        "  + "自定义服务" + "\n" +
+                "                        " + "自定义服务" + "\n" +
                 "                    </label>"
 
             $("#server_data").html(
                 serverDataHtml
             )
 
-            $("#server_data :radio").on("click",function(){
-                if ($(this).val()==-1){
+            $("#server_data :radio").on("click", function () {
+                if ($(this).val() == -1) {
                     $("#showServerInfoInPut").show()
-                }else {
+                } else {
                     $("#showServerInfoInPut").hide()
+                }
+            })
+
+            $("#type :radio").on("click", function () {
+                if ($(this).val() == 'UDP') {
+                    $("#domains").hide()
+                } else {
+                    $("#domains").show()
                 }
             })
 

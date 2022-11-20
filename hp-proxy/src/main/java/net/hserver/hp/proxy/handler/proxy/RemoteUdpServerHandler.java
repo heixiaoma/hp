@@ -27,7 +27,6 @@ public class RemoteUdpServerHandler extends
 
     public InetSocketAddress getSender(String id) {
         InetSocketAddress inetSocketAddress = Sender.get(id);
-        System.out.println(inetSocketAddress);
         return inetSocketAddress;
     }
 
@@ -43,7 +42,6 @@ public class RemoteUdpServerHandler extends
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         Sender.remove(ctx.channel().id().asLongText());
-        System.out.println("删除发送者");
     }
 
     @Override
@@ -87,7 +85,5 @@ public class RemoteUdpServerHandler extends
         proxyHandler.getCtx().writeAndFlush(messageBuilder.build());
         Sender.remove(ctx.channel().id().asLongText());
         Sender.put(ctx.channel().id().asLongText(), msg.sender());
-        System.out.println(ctx.channel().id().asLongText() + msg.sender());
-        System.out.println("外网的UDP数据返回到内网去 由内网客服端去转发");
     }
 }

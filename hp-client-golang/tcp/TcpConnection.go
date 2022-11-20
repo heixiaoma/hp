@@ -4,20 +4,18 @@ import (
 	"bufio"
 	"hp-client-golang/Protol"
 	"io"
-	"time"
-
 	"net"
 	"strconv"
 )
 
-type Connection struct {
+type TcpConnection struct {
 }
 
-func NewConnection() *Connection {
-	return &Connection{}
+func NewTcpConnection() *TcpConnection {
+	return &TcpConnection{}
 }
 
-func (connection *Connection) Connect(host string, port int, redType bool, handler TcpHandler, call func(mgs string)) net.Conn {
+func (connection *TcpConnection) Connect(host string, port int, redType bool, handler Handler, call func(mgs string)) net.Conn {
 	conn, err := net.Dial("tcp", host+":"+strconv.Itoa(port))
 	if err != nil {
 		call("不能能连到服务器：" + host + ":" + strconv.Itoa(port) + " 原因：" + err.Error())
@@ -50,7 +48,6 @@ func (connection *Connection) Connect(host string, port int, redType bool, handl
 					handler.ChannelRead(conn, data)
 				}
 			}
-			time.Sleep(time.Duration(1) * time.Millisecond)
 		}
 	}()
 	return conn

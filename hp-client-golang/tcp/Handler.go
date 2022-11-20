@@ -2,7 +2,7 @@ package tcp
 
 import "net"
 
-type TcpHandler interface {
+type Handler interface {
 	// ChannelActive 连接激活
 	ChannelActive(conn net.Conn)
 	// ChannelRead 连接有数据时

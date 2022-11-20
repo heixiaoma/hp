@@ -1,8 +1,8 @@
 package tcp
 
 import (
-	"hp-client-golang/HpMessage"
 	"hp-client-golang/Protol"
+	"hp-client-golang/hpMessage"
 	"net"
 	"sync"
 )
@@ -12,7 +12,7 @@ type HpClientHandler struct {
 	Password     string
 	Username     string
 	Domain       string
-	MessageType  HpMessage.HpMessage_MessageType
+	MessageType  hpMessage.HpMessage_MessageType
 	ProxyAddress string
 	ProxyPort    int
 	CallMsg      func(message string)
@@ -26,9 +26,9 @@ var ConnGroup = sync.Map{}
 func (h *HpClientHandler) ChannelActive(conn net.Conn) {
 	h.Conn = conn
 	h.Active = true
-	message := &HpMessage.HpMessage{
-		Type: HpMessage.HpMessage_REGISTER,
-		MetaData: &HpMessage.HpMessage_MetaData{
+	message := &hpMessage.HpMessage{
+		Type: hpMessage.HpMessage_REGISTER,
+		MetaData: &hpMessage.HpMessage_MetaData{
 			Port:     int32(h.Port),
 			Username: h.Username,
 			Password: h.Password,
@@ -40,23 +40,23 @@ func (h *HpClientHandler) ChannelActive(conn net.Conn) {
 }
 
 func (h *HpClientHandler) ChannelRead(conn net.Conn, data interface{}) {
-	message := data.(*HpMessage.HpMessage)
+	message := data.(*hpMessage.HpMessage)
 	switch message.Type {
-	case HpMessage.HpMessage_REGISTER_RESULT:
+	case hpMessage.HpMessage_REGISTER_RESULT:
 		h.CallMsg(message.MetaData.Reason)
 		break
-	case HpMessage.HpMessage_CONNECTED:
+	case hpMessage.HpMessage_CONNECTED:
 		h.connected(message)
 		break
-	case HpMessage.HpMessage_DISCONNECTED:
+	case hpMessage.HpMessage_DISCONNECTED:
 		h.Close(message.MetaData.ChannelId)
 		break
-	case HpMessage.HpMessage_DATA:
+	case hpMessage.HpMessage_DATA:
 		h.writeData(message)
 		break
-	case HpMessage.HpMessage_KEEPALIVE:
+	case hpMessage.HpMessage_KEEPALIVE:
 		h.CallMsg("服务器端返回心跳数据")
-		conn.Write(protol.Encode(&HpMessage.HpMessage{Type: HpMessage.HpMessage_KEEPALIVE}))
+		conn.Write(protol.Encode(&hpMessage.HpMessage{Type: hpMessage.HpMessage_KEEPALIVE}))
 		break
 	default:
 		h.CallMsg("未知类型数据：" + message.String())
@@ -68,11 +68,20 @@ func (h *HpClientHandler) ChannelInactive(conn net.Conn) {
 	h.Active = false
 }
 
-func (h *HpClientHandler) connected(message *HpMessage.HpMessage) {
-	NewConnection().Connect(h.ProxyAddress, h.ProxyPort, false, &LocalProxyHandler{
-		HpClientHandler: h,
-		RemoteChannelId: message.MetaData.ChannelId,
-	}, h.CallMsg)
+func (h *HpClientHandler) connected(message *hpMessage.HpMessage) {
+	//如果是TCP数据包，我们就连接本地的TCP服务器
+	if message.MetaData.Type == hpMessage.HpMessage_TCP {
+		NewTcpConnection().Connect(h.ProxyAddress, h.ProxyPort, false, &LocalProxyHandler{
+			HpClientHandler: h,
+			RemoteChannelId: message.MetaData.ChannelId,
+		}, h.CallMsg)
+	}
+	if message.MetaData.Type == hpMessage.HpMessage_UDP {
+		NewUdpConnection().Connect(h.ProxyAddress, h.ProxyPort, &LocalProxyUdpHandler{
+			HpClientHandler: h,
+			RemoteChannelId: message.MetaData.ChannelId,
+		}, h.CallMsg)
+	}
 }
 func (h *HpClientHandler) Add(channelId string, conn net.Conn) {
 	ConnGroup.Store(channelId, conn)
@@ -100,8 +109,8 @@ func (h *HpClientHandler) CloseAll() {
 	})
 }
 
-func (h *HpClientHandler) writeData(message *HpMessage.HpMessage) {
-	if message.MetaData.Type == HpMessage.HpMessage_TCP {
+func (h *HpClientHandler) writeData(message *hpMessage.HpMessage) {
+	if message.MetaData.Type == hpMessage.HpMessage_TCP {
 		load, ok := ConnGroup.Load(message.MetaData.ChannelId)
 		if ok {
 			conn := load.(net.Conn)
@@ -109,7 +118,14 @@ func (h *HpClientHandler) writeData(message *HpMessage.HpMessage) {
 				conn.Write(message.Data)
 			}
 		}
-	} else if message.MetaData.Type == HpMessage.HpMessage_UDP {
+	} else if message.MetaData.Type == hpMessage.HpMessage_UDP {
 		//todo 需要转发给内网的UDPServer
+		load, ok := ConnGroup.Load(message.MetaData.ChannelId)
+		if ok {
+			conn := load.(net.Conn)
+			if conn != nil {
+				conn.Write(message.Data)
+			}
+		}
 	}
 }

@@ -47,7 +47,6 @@ public class LocalProxyUdpClientHandler extends
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("UDP关闭");
         HpMessageData.HpMessage build = HpMessageData.HpMessage.newBuilder().
                 setMetaData(HpMessageData.HpMessage.MetaData.newBuilder()
                         .setType(HpMessageData.HpMessage.MessageType.UDP)

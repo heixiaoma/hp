@@ -125,6 +125,15 @@ func StartWeb(webPort int, api string) {
 		domain := context.PostForm("domain")
 		remote_port := context.PostForm("remote_port")
 		password := context.PostForm("password")
+		proxyType := context.PostForm("type")
+		messageType := HpMessage.HpMessage_TCP
+		if proxyType == "TCP" {
+			messageType = HpMessage.HpMessage_TCP
+		} else if proxyType == "UDP" {
+			messageType = HpMessage.HpMessage_UDP
+		} else {
+			messageType = HpMessage.HpMessage_TCP_UDP
+		}
 
 		if len(domain) == 0 {
 			context.JSON(http.StatusOK, &Res{
@@ -153,7 +162,7 @@ func StartWeb(webPort int, api string) {
 		ato1, _ := strconv.Atoi(split[1])
 		ato2, _ := strconv.Atoi(remote_port)
 		ato3, _ := strconv.Atoi(port)
-		re := Proxy(HpMessage.HpMessage_TCP, split[0], ato1, username, password, domain, ato2, ip, ato3)
+		re := Proxy(messageType, split[0], ato1, username, password, domain, ato2, ip, ato3)
 		if re {
 			context.JSON(http.StatusOK, &Res{
 				Code: 200,
@@ -165,7 +174,6 @@ func StartWeb(webPort int, api string) {
 				Msg:  "添加失败！检查域名是否已经被使用。",
 			})
 		}
-
 	})
 
 	e.GET("/server/info", func(context *gin.Context) {
@@ -218,7 +226,6 @@ func StartWeb(webPort int, api string) {
 		port := context.Query("port")
 		post := Post("/server/portRemove", url.Values{"userId": {userId}, "port": {port}})
 		context.String(http.StatusOK, post)
-
 	})
 
 	e.POST("/server/domainAdd", func(context *gin.Context) {

@@ -6,7 +6,7 @@
 // 	protoc        v3.21.5
 // source: HpMessage.proto
 
-package HpMessage
+package hpMessage
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -22,7 +22,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-//枚举消息类型
+// 枚举消息类型
 type HpMessage_HpMessageType int32
 
 const (
@@ -81,7 +81,7 @@ func (HpMessage_HpMessageType) EnumDescriptor() ([]byte, []int) {
 	return file_HpMessage_proto_rawDescGZIP(), []int{0, 0}
 }
 
-//传输数据类型
+// 传输数据类型
 type HpMessage_MessageType int32
 
 const (
@@ -197,7 +197,7 @@ func (x *HpMessage) GetData() []byte {
 	return nil
 }
 
-//元数据
+// 元数据
 type HpMessage_MetaData struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

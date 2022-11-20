@@ -60,6 +60,11 @@ public class HpServerHandler extends HpCommonHandler {
                 processRegisterTcp(hpMessage);
             } else if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.UDP) {
                 processRegisterUdp(hpMessage);
+            }else if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.TCP_UDP){
+                processRegisterUdp(hpMessage);
+                processRegisterTcp(hpMessage);
+            }else {
+                ctx.close();
             }
         } else if (register) {
             if (hpMessage.getType() == HpMessageData.HpMessage.HpMessageType.DISCONNECTED) {
@@ -228,7 +233,6 @@ public class HpServerHandler extends HpCommonHandler {
         byte[] bytes = hpMessage.getData().toByteArray();
         remoteConnectionServer.addReceive((long) bytes.length);
         if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.TCP) {
-            System.out.println("内网数据到公网");
             channels.writeAndFlush(bytes, channel -> channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId()));
         }
         if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.UDP) {
