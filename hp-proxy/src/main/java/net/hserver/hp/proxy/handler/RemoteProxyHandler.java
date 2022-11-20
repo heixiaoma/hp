@@ -25,7 +25,7 @@ public class RemoteProxyHandler extends HpAbsHandler {
         tcpServer.addConnectNum();
         HpMessageData.HpMessage.Builder messageBuilder = HpMessageData.HpMessage.newBuilder();
         messageBuilder.setType(HpMessageData.HpMessage.HpMessageType.CONNECTED);
-        messageBuilder.setMetaData(HpMessageData.HpMessage.MetaData.newBuilder().setChannelId(ctx.channel().id().asLongText()).build());
+        messageBuilder.setMetaData(HpMessageData.HpMessage.MetaData.newBuilder().setType(HpMessageData.HpMessage.MessageType.TCP).setChannelId(ctx.channel().id().asLongText()).build());
         proxyHandler.getCtx().writeAndFlush(messageBuilder.build());
     }
 
@@ -37,12 +37,20 @@ public class RemoteProxyHandler extends HpAbsHandler {
         proxyHandler.getCtx().writeAndFlush(messageBuilder.build());
     }
 
+
+    /**
+     * 用户穿透完成在外部创建的TCP服务，当有数据时进来，此时包装数据对象返回给内网客服端
+     * @param ctx
+     * @param msg
+     * @throws Exception
+     */
     @Override
     public void channelRead0(ChannelHandlerContext ctx, byte[] msg) throws Exception {
+        tcpServer.addSend((long) msg.length);
         tcpServer.addPackNum();
         HpMessageData.HpMessage.Builder messageBuilder = HpMessageData.HpMessage.newBuilder();
         messageBuilder.setType(HpMessageData.HpMessage.HpMessageType.DATA);
-        messageBuilder.setMetaData(HpMessageData.HpMessage.MetaData.newBuilder().setChannelId(ctx.channel().id().asLongText()).build());
+        messageBuilder.setMetaData(HpMessageData.HpMessage.MetaData.newBuilder().setType(HpMessageData.HpMessage.MessageType.TCP).setChannelId(ctx.channel().id().asLongText()).build());
         messageBuilder.setData(ByteString.copyFrom(msg));
         proxyHandler.getCtx().writeAndFlush(messageBuilder.build());
     }

@@ -12,6 +12,7 @@ type HpClientHandler struct {
 	Password     string
 	Username     string
 	Domain       string
+	MessageType  HpMessage.HpMessage_MessageType
 	ProxyAddress string
 	ProxyPort    int
 	CallMsg      func(message string)
@@ -34,6 +35,7 @@ func (h *HpClientHandler) ChannelActive(conn net.Conn) {
 			Domain:   h.Domain,
 		},
 	}
+	message.MetaData.Type = h.MessageType
 	conn.Write(protol.Encode(message))
 }
 
@@ -99,11 +101,15 @@ func (h *HpClientHandler) CloseAll() {
 }
 
 func (h *HpClientHandler) writeData(message *HpMessage.HpMessage) {
-	load, ok := ConnGroup.Load(message.MetaData.ChannelId)
-	if ok {
-		conn := load.(net.Conn)
-		if conn != nil {
-			conn.Write(message.Data)
+	if message.MetaData.Type == HpMessage.HpMessage_TCP {
+		load, ok := ConnGroup.Load(message.MetaData.ChannelId)
+		if ok {
+			conn := load.(net.Conn)
+			if conn != nil {
+				conn.Write(message.Data)
+			}
 		}
+	} else if message.MetaData.Type == HpMessage.HpMessage_UDP {
+		//todo 需要转发给内网的UDPServer
 	}
 }

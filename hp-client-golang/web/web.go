@@ -4,6 +4,7 @@ import (
 	"embed"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	HpMessage "hp-client-golang/hpMessage"
 	"hp-client-golang/tcp"
 	"io"
 	"log"
@@ -67,7 +68,7 @@ func Get(uri string) string {
 	return string(body)
 }
 
-func Proxy(server_ip string, server_port int, username string, password string, domain string, remote_port int, ip string, port int) bool {
+func Proxy(messageType HpMessage.HpMessage_MessageType, server_ip string, server_port int, username string, password string, domain string, remote_port int, ip string, port int) bool {
 	_, ok := ConnGroup.Load(domain)
 	if ok {
 		return false
@@ -76,7 +77,7 @@ func Proxy(server_ip string, server_port int, username string, password string, 
 		log.Printf(message)
 		wsSend(Log{Domain: domain, Msg: message})
 	})
-	hpClient.Connect(server_ip, server_port, username, password, domain, remote_port, ip, port)
+	hpClient.Connect(messageType, server_ip, server_port, username, password, domain, remote_port, ip, port)
 	go func() {
 		for {
 			if hpClient.IsKill() {
@@ -84,7 +85,7 @@ func Proxy(server_ip string, server_port int, username string, password string, 
 				return
 			}
 			if !hpClient.GetStatus() {
-				hpClient.Connect(server_ip, server_port, username, password, domain, remote_port, ip, port)
+				hpClient.Connect(messageType, server_ip, server_port, username, password, domain, remote_port, ip, port)
 				wsSend(Log{Domain: domain, Msg: "正在重连"})
 			}
 			time.Sleep(time.Duration(5) * time.Second)
@@ -152,7 +153,7 @@ func StartWeb(webPort int, api string) {
 		ato1, _ := strconv.Atoi(split[1])
 		ato2, _ := strconv.Atoi(remote_port)
 		ato3, _ := strconv.Atoi(port)
-		re := Proxy(split[0], ato1, username, password, domain, ato2, ip, ato3)
+		re := Proxy(HpMessage.HpMessage_TCP, split[0], ato1, username, password, domain, ato2, ip, ato3)
 		if re {
 			context.JSON(http.StatusOK, &Res{
 				Code: 200,

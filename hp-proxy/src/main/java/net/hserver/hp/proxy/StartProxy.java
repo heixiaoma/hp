@@ -10,6 +10,6 @@ import cn.hserver.core.server.util.PropUtil;
 @HServerBoot
 public class StartProxy {
     public static void main(String[] args) {
-        HServerApplication.run(StartProxy.class, new Integer[]{PropUtil.getInstance().getInt("port"),80,443}, args);
+        HServerApplication.run(StartProxy.class, new Integer[]{PropUtil.getInstance().getInt("port"),80}, args);
     }
 }

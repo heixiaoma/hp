@@ -1,6 +1,7 @@
 package tcp
 
 import (
+	HpMessage "hp-client-golang/hpMessage"
 	"net"
 	"strconv"
 )
@@ -20,7 +21,7 @@ func NewHpClient(callMsg func(message string)) *HpClient {
 	}
 }
 
-func (hpClient *HpClient) Connect(serverAddress string, serverPort int, username string, password string, domain string, remotePort int, proxyAddress string, proxyPort int) {
+func (hpClient *HpClient) Connect(messageType HpMessage.HpMessage_MessageType, serverAddress string, serverPort int, username string, password string, domain string, remotePort int, proxyAddress string, proxyPort int) {
 	if hpClient.conn != nil {
 		hpClient.conn.Close()
 	}
@@ -30,6 +31,7 @@ func (hpClient *HpClient) Connect(serverAddress string, serverPort int, username
 		Password:     password,
 		Username:     username,
 		Domain:       domain,
+		MessageType:  messageType,
 		ProxyAddress: proxyAddress,
 		ProxyPort:    proxyPort,
 		CallMsg:      hpClient.CallMsg,

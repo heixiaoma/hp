@@ -14,6 +14,7 @@ import net.hserver.hp.client.handler.HpClientHandler;
 import net.hserver.hp.client.util.NamedThreadFactory;
 import net.hserver.hp.common.codec.HpMessageDecoder;
 import net.hserver.hp.common.codec.HpMessageEncoder;
+import net.hserver.hp.common.protocol.HpMessageData;
 
 import java.io.IOException;
 
@@ -30,7 +31,7 @@ public class HpClient {
         this.callMsg = callMsg;
     }
 
-    public void connect(String serverAddress, int serverPort, String username, String password, String domain, int remotePort, String proxyAddress, int proxyPort) throws IOException, InterruptedException {
+    public void connect(HpMessageData.HpMessage.MessageType type, String serverAddress, int serverPort, String username, String password, String domain, int remotePort, String proxyAddress, int proxyPort) throws IOException, InterruptedException {
         if (future != null) {
             future.channel().close();
             future = null;
@@ -44,7 +45,7 @@ public class HpClient {
             b.handler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
-                    HpClientHandler hpClientHandler = new HpClientHandler(remotePort, username, password, domain,
+                    HpClientHandler hpClientHandler = new HpClientHandler(type,remotePort, username, password, domain,
                             proxyAddress, proxyPort, callMsg);
                     ch.pipeline().addLast(
                             new HpMessageDecoder(),

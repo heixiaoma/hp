@@ -2,6 +2,7 @@ package net.hserver.hp.client;
 
 import net.hserver.hp.client.hp.CallMsg;
 import net.hserver.hp.client.hp.HpClient;
+import net.hserver.hp.common.protocol.HpMessageData;
 
 /**
  * @author hxm
@@ -16,7 +17,7 @@ public class TestHpClient {
             }
         });
 
-        client.connect("hp.nsjiasu.com", 9091, "heixiaoma", "123456", "private",-1, "192.168.5.214", 5000);
+        client.connect(HpMessageData.HpMessage.MessageType.TCP, "127.0.0.1", 9091, "hxm", "2", "aaa", 11111, "192.168.5.214", 5000);
 
 //        new Thread(() -> {
 //            while (true) {

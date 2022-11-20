@@ -1,22 +1,23 @@
 package net.hserver.hp.proxy.handler;
 
 import cn.hserver.core.ioc.IocUtil;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.*;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.bytes.ByteArrayDecoder;
+import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import net.hserver.hp.common.exception.HpException;
 import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessageData;
-import net.hserver.hp.proxy.codec.HpByteArrayDecoder;
-import net.hserver.hp.proxy.codec.HpByteArrayEncoder;
 import net.hserver.hp.proxy.config.WebConfig;
 import net.hserver.hp.proxy.domian.bean.ConnectInfo;
 import net.hserver.hp.proxy.domian.bean.Statistics;
 import net.hserver.hp.proxy.domian.vo.UserVo;
+import net.hserver.hp.proxy.handler.proxy.RemoteUdpServerHandler;
 import net.hserver.hp.proxy.service.HttpService;
 import net.hserver.hp.proxy.utils.NetUtil;
 
@@ -35,6 +36,7 @@ public class HpServerHandler extends HpCommonHandler {
     public static final Map<String, ConnectInfo> CURRENT_STATUS = new ConcurrentHashMap<>();
 
     private static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    private static final Map<String,RemoteUdpServerHandler> UDPCHANNELS = new ConcurrentHashMap<>();
 
     private int port;
 
@@ -54,7 +56,11 @@ public class HpServerHandler extends HpCommonHandler {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HpMessageData.HpMessage hpMessage) throws Exception {
         if (hpMessage.getType() == HpMessageData.HpMessage.HpMessageType.REGISTER) {
-            processRegister(hpMessage);
+            if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.TCP) {
+                processRegisterTcp(hpMessage);
+            } else if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.UDP) {
+                processRegisterUdp(hpMessage);
+            }
         } else if (register) {
             if (hpMessage.getType() == HpMessageData.HpMessage.HpMessageType.DISCONNECTED) {
                 processDisconnected(hpMessage);
@@ -87,18 +93,13 @@ public class HpServerHandler extends HpCommonHandler {
     /**
      * if HpMessage.getType() == HpMessageType.REGISTER
      */
-    private void processRegister(HpMessageData.HpMessage hpMessage) {
+    private void processRegisterTcp(HpMessageData.HpMessage hpMessage) {
         String password = hpMessage.getMetaData().getPassword();
         String username = hpMessage.getMetaData().getUsername();
         String domain = hpMessage.getMetaData().getDomain();
-        int tempPort = 0;
-        Object port = hpMessage.getMetaData().getPort();
-        if (port != null) {
-            tempPort = (int) port;
-        }
+        int tempPort = hpMessage.getMetaData().getPort();
         WebConfig webConfig = IocUtil.getBean(WebConfig.class);
-
-        UserVo login = HttpService.login(username, password,domain, ctx.channel().remoteAddress().toString());
+        UserVo login = HttpService.login(username, password, domain, ctx.channel().remoteAddress().toString());
         /**
          * 查询这个用户是否是合法的，不是合法的直接干掉
          */
@@ -108,36 +109,36 @@ public class HpServerHandler extends HpCommonHandler {
             metaDataBuild.setReason("非法用户，登录失败，有疑问请联系管理员");
         } else if (login.getType() != null && login.getType() == -1) {
             metaDataBuild.setSuccess(false);
-            metaDataBuild.setReason("账号被封，请穿透正能量，有意义的程序哦。用户名：" +username+" 域名："+ domain + " 来源IP：" + ctx.channel().remoteAddress());
+            metaDataBuild.setReason("账号被封，请穿透正能量，有意义的程序哦。用户名：" + username + " 域名：" + domain + " 来源IP：" + ctx.channel().remoteAddress());
         } else if (webConfig.getLevel() != null && webConfig.getLevel() != 0 && login.getLevel() < webConfig.getLevel()) {
             metaDataBuild.setSuccess(false);
-            metaDataBuild.setReason("当前穿透服务限定用户级别： " + webConfig.getLevel() + "、请升级后享受该服务。用户名：" +username+" 域名："+ domain +  " 来源IP：" + ctx.channel().remoteAddress());
+            metaDataBuild.setReason("当前穿透服务限定用户级别： " + webConfig.getLevel() + "、请升级后享受该服务。用户名：" + username + " 域名：" + domain + " 来源IP：" + ctx.channel().remoteAddress());
         } else {
             try {
                 if (!login.getPorts().contains(tempPort) || tempPort <= 0) {
                     tempPort = NetUtil.getAvailablePort();
                 }
                 HpServerHandler thisHandler = this;
-                remoteConnectionServer.bind(tempPort, new ChannelInitializer<SocketChannel>() {
+                remoteConnectionServer.bindTcp(tempPort, new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(
                                 //添加编码器作用是进行统计，包数据
-                                new HpByteArrayDecoder(remoteConnectionServer),
-                                new HpByteArrayEncoder(remoteConnectionServer),
+                                new ByteArrayDecoder(),
+                                new ByteArrayEncoder(),
                                 new RemoteProxyHandler(thisHandler, remoteConnectionServer)
                         );
                         channels.add(ch);
                     }
-                },login.getUsername());
+                }, login.getUsername());
                 metaDataBuild.setSuccess(true);
                 this.port = tempPort;
                 register = true;
-                CURRENT_STATUS.put(String.valueOf(tempPort), new ConnectInfo(username,domain, ctx.channel()));
+                CURRENT_STATUS.put(String.valueOf(tempPort), new ConnectInfo(username, domain, ctx.channel()));
                 String host = IocUtil.getBean(WebConfig.class).getUserHost();
-                metaDataBuild.setReason("连接成功，外网TCP地址是:" +  IocUtil.getBean(WebConfig.class).getHost() + ":" + tempPort + ",外网HTTP地址是：http://" + domain + "." + host + " " + (login.getTips().trim().length() > 0 ? "公告提示：" + login.getTips() : ""));
+                metaDataBuild.setReason("连接成功，外网TCP地址是:" + IocUtil.getBean(WebConfig.class).getHost() + ":" + tempPort + ",外网HTTP地址是：http://" + domain + "." + host + " " + (login.getTips().trim().length() > 0 ? "公告提示：" + login.getTips() : ""));
                 System.out.println("注册成功，外网地址是:  " + host + ":" + tempPort);
-                System.out.println("用户名：" +username+" 域名："+ domain +  " 来源IP：" + ctx.channel().remoteAddress());
+                System.out.println("用户名：" + username + " 域名：" + domain + " 来源IP：" + ctx.channel().remoteAddress());
             } catch (Exception e) {
                 metaDataBuild.setSuccess(false);
                 metaDataBuild.setReason(e.getMessage());
@@ -155,11 +156,85 @@ public class HpServerHandler extends HpCommonHandler {
         }
     }
 
+
     /**
+     * if HpMessage.getType() == HpMessageType.REGISTER
+     */
+    private void processRegisterUdp(HpMessageData.HpMessage hpMessage) {
+        String password = hpMessage.getMetaData().getPassword();
+        String username = hpMessage.getMetaData().getUsername();
+        int tempPort = hpMessage.getMetaData().getPort();
+        WebConfig webConfig = IocUtil.getBean(WebConfig.class);
+        UserVo login = HttpService.login(username, password, "udp", ctx.channel().remoteAddress().toString());
+        /**
+         * 查询这个用户是否是合法的，不是合法的直接干掉
+         */
+        HpMessageData.HpMessage.MetaData.Builder metaDataBuild = HpMessageData.HpMessage.MetaData.newBuilder();
+        if (login == null) {
+            metaDataBuild.setSuccess(false);
+            metaDataBuild.setReason("非法用户，登录失败，有疑问请联系管理员");
+        } else if (login.getType() != null && login.getType() == -1) {
+            metaDataBuild.setSuccess(false);
+            metaDataBuild.setReason("账号被封，请穿透正能量，有意义的程序哦。用户名：" + username + " 来源IP：" + ctx.channel().remoteAddress());
+        } else if (webConfig.getLevel() != null && webConfig.getLevel() != 0 && login.getLevel() < webConfig.getLevel()) {
+            metaDataBuild.setSuccess(false);
+            metaDataBuild.setReason("当前穿透服务限定用户级别： " + webConfig.getLevel() + "、请升级后享受该服务。用户名：" + username + " 来源IP：" + ctx.channel().remoteAddress());
+        } else {
+            try {
+                if (!login.getPorts().contains(tempPort) || tempPort <= 0) {
+                    tempPort = NetUtil.getAvailablePort();
+                }
+                HpServerHandler thisHandler = this;
+                //todo 实现一个UDP服务器，转发到内网数据来
+                remoteConnectionServer.bindUdp(tempPort, new ChannelInitializer<Channel>() {
+                    @Override
+                    public void initChannel(Channel ch) throws Exception {
+                        RemoteUdpServerHandler remoteUdpServerHandler = new RemoteUdpServerHandler(thisHandler, remoteConnectionServer);
+                        ch.pipeline().addLast(
+                                //添加编码器作用是进行统计，包数据
+                                remoteUdpServerHandler
+                        );
+                        UDPCHANNELS.put(ch.id().asLongText(),remoteUdpServerHandler);
+                    }
+                }, login.getUsername());
+                metaDataBuild.setSuccess(true);
+                this.port = tempPort;
+                register = true;
+                CURRENT_STATUS.put(String.valueOf(tempPort), new ConnectInfo(username, "domain", ctx.channel()));
+                metaDataBuild.setReason("连接成功，外网UDP地址是:" + IocUtil.getBean(WebConfig.class).getHost() + ":" + tempPort + (login.getTips().trim().length() > 0 ? " 公告提示：" + login.getTips() : ""));
+            } catch (Exception e) {
+                metaDataBuild.setSuccess(false);
+                metaDataBuild.setReason(e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        HpMessageData.HpMessage.Builder sendBackMessageBuilder = HpMessageData.HpMessage.newBuilder();
+        sendBackMessageBuilder.setType(HpMessageData.HpMessage.HpMessageType.REGISTER_RESULT);
+        HpMessageData.HpMessage.MetaData metaData = metaDataBuild.build();
+        sendBackMessageBuilder.setMetaData(metaData);
+        ctx.writeAndFlush(sendBackMessageBuilder.build());
+        if (!register) {
+            System.out.println("客户注册错误: " + metaData.getReason());
+            ctx.close();
+        }
+    }
+
+
+    /**
+     * 内网数据返回到公网，这里做数据交换，返回给公网用户
      * if HpMessage.getType() == HpMessageType.DATA
      */
     private void processData(HpMessageData.HpMessage hpMessage) {
-        channels.writeAndFlush(hpMessage.getData().toByteArray(), channel -> channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId()));
+        byte[] bytes = hpMessage.getData().toByteArray();
+        remoteConnectionServer.addReceive((long) bytes.length);
+        if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.TCP) {
+            System.out.println("内网数据到公网");
+            channels.writeAndFlush(bytes, channel -> channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId()));
+        }
+        if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.UDP) {
+            RemoteUdpServerHandler remoteUdpServerHandler = UDPCHANNELS.get(hpMessage.getMetaData().getChannelId());
+            remoteUdpServerHandler.getChannelHandlerContext().writeAndFlush(new DatagramPacket(Unpooled.wrappedBuffer(bytes),remoteUdpServerHandler.getSender(hpMessage.getMetaData().getChannelId())));
+        }
     }
 
     /**
@@ -169,5 +244,6 @@ public class HpServerHandler extends HpCommonHandler {
      */
     private void processDisconnected(HpMessageData.HpMessage hpMessage) {
         channels.close(channel -> channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId()));
+        UDPCHANNELS.remove(hpMessage.getMetaData().getChannelId());
     }
 }

@@ -1,17 +1,22 @@
 package net.hserver.hp.proxy.handler;
 
 import cn.hserver.core.server.context.ConstConfig;
+import cn.hserver.core.server.handlers.HumServerHandler;
 import cn.hserver.core.server.util.NamedThreadFactory;
 import cn.hserver.core.server.util.PropUtil;
 import cn.hserver.plugin.web.context.WebConstConfig;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import net.hserver.hp.proxy.domian.bean.GlobalStat;
 import net.hserver.hp.proxy.domian.bean.Statistics;
 
 import java.util.concurrent.atomic.AtomicLong;
+
+import static cn.hserver.core.server.context.ConstConfig.HUM_PORT;
 
 
 /**
@@ -21,7 +26,8 @@ public class TcpServer {
 
     private Statistics statistics;
 
-    private Channel channel;
+    private Channel tcpChannel;
+    private Channel udpChannel;
 
     /**
      * 统计
@@ -38,7 +44,7 @@ public class TcpServer {
     private final static EventLoopGroup bossGroup = new NioEventLoopGroup(new NamedThreadFactory("boss-TcpServer"));
     private final static EventLoopGroup workerGroup = new NioEventLoopGroup(50,new NamedThreadFactory("worker-TcpServer"));
 
-    public synchronized void bind(int port, ChannelInitializer<?> channelInitializer, String username) throws InterruptedException {
+    public synchronized void bindTcp(int port, ChannelInitializer<?> channelInitializer, String username) throws InterruptedException {
         if (username!=null) {
             statistics = new Statistics();
             statistics.setPort(port);
@@ -50,7 +56,27 @@ public class TcpServer {
                     .channel(NioServerSocketChannel.class)
                     .childHandler(channelInitializer)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
-            channel = b.bind(port).sync().channel();
+           tcpChannel = b.bind(port).sync().channel();
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+
+    public synchronized void bindUdp(int port, ChannelInitializer<?> channelInitializer, String username) throws InterruptedException {
+        if (username!=null) {
+            statistics = new Statistics();
+            statistics.setPort(port);
+            statistics.setUsername(username);
+        }
+        try {
+            Bootstrap b = new Bootstrap();
+            b.group(workerGroup)
+                    .channel(NioDatagramChannel.class)
+                    .option(ChannelOption.SO_BROADCAST, true)
+                    .option(ChannelOption.SO_REUSEADDR, true)
+                    .handler(channelInitializer);
+            udpChannel =  b.bind(port).sync().channel();
         } catch (Exception e) {
             throw e;
         }
@@ -96,8 +122,11 @@ public class TcpServer {
     }
 
     public synchronized void close() {
-        if (channel != null) {
-            channel.close();
+        if (udpChannel != null) {
+            udpChannel.close();
+        }
+        if (tcpChannel != null) {
+            tcpChannel.close();
         }
     }
 }

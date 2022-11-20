@@ -67,10 +67,12 @@ public class UserServiceImpl implements UserService {
             //登录失败
             return null;
         }
-        List<DomainEntity> select1 = domainDao.createLambdaQuery().andEq(DomainEntity::getDomain, domain).andEq(DomainEntity::getUserId,user.getId()).select();
-        if (select1 == null||select1.isEmpty()) {
-            //没有该域名登录失败
-            return null;
+        if (!"udp".equals(domain)) {
+            List<DomainEntity> select1 = domainDao.createLambdaQuery().andEq(DomainEntity::getDomain, domain).andEq(DomainEntity::getUserId, user.getId()).select();
+            if (select1 == null || select1.isEmpty()) {
+                //没有该域名登录失败
+                return null;
+            }
         }
         if (user.getPassword().equals(password)) {
             List<PortEntity> select = getPort(user.getId());

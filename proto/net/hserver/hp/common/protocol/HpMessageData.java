@@ -327,6 +327,127 @@ public final class HpMessageData {
       // @@protoc_insertion_point(enum_scope:net.hserver.hp.common.protocol.HpMessage.HpMessageType)
     }
 
+    /**
+     * <pre>
+     *传输数据类型
+     * </pre>
+     *
+     * Protobuf enum {@code net.hserver.hp.common.protocol.HpMessage.MessageType}
+     */
+    public enum MessageType
+        implements com.google.protobuf.ProtocolMessageEnum {
+      /**
+       * <code>TCP = 0;</code>
+       */
+      TCP(0),
+      /**
+       * <code>UDP = 1;</code>
+       */
+      UDP(1),
+      /**
+       * <code>TCP_UDP = 2;</code>
+       */
+      TCP_UDP(2),
+      UNRECOGNIZED(-1),
+      ;
+
+      /**
+       * <code>TCP = 0;</code>
+       */
+      public static final int TCP_VALUE = 0;
+      /**
+       * <code>UDP = 1;</code>
+       */
+      public static final int UDP_VALUE = 1;
+      /**
+       * <code>TCP_UDP = 2;</code>
+       */
+      public static final int TCP_UDP_VALUE = 2;
+
+
+      public final int getNumber() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalArgumentException(
+              "Can't get the number of an unknown enum value.");
+        }
+        return value;
+      }
+
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static MessageType valueOf(int value) {
+        return forNumber(value);
+      }
+
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       */
+      public static MessageType forNumber(int value) {
+        switch (value) {
+          case 0: return TCP;
+          case 1: return UDP;
+          case 2: return TCP_UDP;
+          default: return null;
+        }
+      }
+
+      public static com.google.protobuf.Internal.EnumLiteMap<MessageType>
+          internalGetValueMap() {
+        return internalValueMap;
+      }
+      private static final com.google.protobuf.Internal.EnumLiteMap<
+          MessageType> internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<MessageType>() {
+              public MessageType findValueByNumber(int number) {
+                return MessageType.forNumber(number);
+              }
+            };
+
+      public final com.google.protobuf.Descriptors.EnumValueDescriptor
+          getValueDescriptor() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalStateException(
+              "Can't get the descriptor of an unrecognized enum value.");
+        }
+        return getDescriptor().getValues().get(ordinal());
+      }
+      public final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptorForType() {
+        return getDescriptor();
+      }
+      public static final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptor() {
+        return net.hserver.hp.common.protocol.HpMessageData.HpMessage.getDescriptor().getEnumTypes().get(1);
+      }
+
+      private static final MessageType[] VALUES = values();
+
+      public static MessageType valueOf(
+          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+        if (desc.getType() != getDescriptor()) {
+          throw new java.lang.IllegalArgumentException(
+            "EnumValueDescriptor is not for this type.");
+        }
+        if (desc.getIndex() == -1) {
+          return UNRECOGNIZED;
+        }
+        return VALUES[desc.getIndex()];
+      }
+
+      private final int value;
+
+      private MessageType(int value) {
+        this.value = value;
+      }
+
+      // @@protoc_insertion_point(enum_scope:net.hserver.hp.common.protocol.HpMessage.MessageType)
+    }
+
     public interface MetaDataOrBuilder extends
         // @@protoc_insertion_point(interface_extends:net.hserver.hp.common.protocol.HpMessage.MetaData)
         com.google.protobuf.MessageOrBuilder {
@@ -374,36 +495,51 @@ public final class HpMessageData {
           getDomainBytes();
 
       /**
-       * <code>string channelId = 5;</code>
+       * <code>.net.hserver.hp.common.protocol.HpMessage.MessageType type = 5;</code>
+       * @return The enum numeric value on the wire for type.
+       */
+      int getTypeValue();
+      /**
+       * <code>.net.hserver.hp.common.protocol.HpMessage.MessageType type = 5;</code>
+       * @return The type.
+       */
+      net.hserver.hp.common.protocol.HpMessageData.HpMessage.MessageType getType();
+
+      /**
+       * <code>string channelId = 6;</code>
        * @return The channelId.
        */
       java.lang.String getChannelId();
       /**
-       * <code>string channelId = 5;</code>
+       * <code>string channelId = 6;</code>
        * @return The bytes for channelId.
        */
       com.google.protobuf.ByteString
           getChannelIdBytes();
 
       /**
-       * <code>bool success = 6;</code>
+       * <code>bool success = 7;</code>
        * @return The success.
        */
       boolean getSuccess();
 
       /**
-       * <code>string reason = 7;</code>
+       * <code>string reason = 8;</code>
        * @return The reason.
        */
       java.lang.String getReason();
       /**
-       * <code>string reason = 7;</code>
+       * <code>string reason = 8;</code>
        * @return The bytes for reason.
        */
       com.google.protobuf.ByteString
           getReasonBytes();
     }
     /**
+     * <pre>
+     *元数据
+     * </pre>
+     *
      * Protobuf type {@code net.hserver.hp.common.protocol.HpMessage.MetaData}
      */
     public static final class MetaData extends
@@ -419,6 +555,7 @@ public final class HpMessageData {
         username_ = "";
         password_ = "";
         domain_ = "";
+        type_ = 0;
         channelId_ = "";
         reason_ = "";
       }
@@ -476,18 +613,24 @@ public final class HpMessageData {
                 domain_ = s;
                 break;
               }
-              case 42: {
+              case 40: {
+                int rawValue = input.readEnum();
+
+                type_ = rawValue;
+                break;
+              }
+              case 50: {
                 java.lang.String s = input.readStringRequireUtf8();
 
                 channelId_ = s;
                 break;
               }
-              case 48: {
+              case 56: {
 
                 success_ = input.readBool();
                 break;
               }
-              case 58: {
+              case 66: {
                 java.lang.String s = input.readStringRequireUtf8();
 
                 reason_ = s;
@@ -652,10 +795,29 @@ public final class HpMessageData {
         }
       }
 
-      public static final int CHANNELID_FIELD_NUMBER = 5;
+      public static final int TYPE_FIELD_NUMBER = 5;
+      private int type_;
+      /**
+       * <code>.net.hserver.hp.common.protocol.HpMessage.MessageType type = 5;</code>
+       * @return The enum numeric value on the wire for type.
+       */
+      @java.lang.Override public int getTypeValue() {
+        return type_;
+      }
+      /**
+       * <code>.net.hserver.hp.common.protocol.HpMessage.MessageType type = 5;</code>
+       * @return The type.
+       */
+      @java.lang.Override public net.hserver.hp.common.protocol.HpMessageData.HpMessage.MessageType getType() {
+        @SuppressWarnings("deprecation")
+        net.hserver.hp.common.protocol.HpMessageData.HpMessage.MessageType result = net.hserver.hp.common.protocol.HpMessageData.HpMessage.MessageType.valueOf(type_);
+        return result == null ? net.hserver.hp.common.protocol.HpMessageData.HpMessage.MessageType.UNRECOGNIZED : result;
+      }
+
+      public static final int CHANNELID_FIELD_NUMBER = 6;
       private volatile java.lang.Object channelId_;
       /**
-       * <code>string channelId = 5;</code>
+       * <code>string channelId = 6;</code>
        * @return The channelId.
        */
       @java.lang.Override
@@ -672,7 +834,7 @@ public final class HpMessageData {
         }
       }
       /**
-       * <code>string channelId = 5;</code>
+       * <code>string channelId = 6;</code>
        * @return The bytes for channelId.
        */
       @java.lang.Override
@@ -690,10 +852,10 @@ public final class HpMessageData {
         }
       }
 
-      public static final int SUCCESS_FIELD_NUMBER = 6;
+      public static final int SUCCESS_FIELD_NUMBER = 7;
       private boolean success_;
       /**
-       * <code>bool success = 6;</code>
+       * <code>bool success = 7;</code>
        * @return The success.
        */
       @java.lang.Override
@@ -701,10 +863,10 @@ public final class HpMessageData {
         return success_;
       }
 
-      public static final int REASON_FIELD_NUMBER = 7;
+      public static final int REASON_FIELD_NUMBER = 8;
       private volatile java.lang.Object reason_;
       /**
-       * <code>string reason = 7;</code>
+       * <code>string reason = 8;</code>
        * @return The reason.
        */
       @java.lang.Override
@@ -721,7 +883,7 @@ public final class HpMessageData {
         }
       }
       /**
-       * <code>string reason = 7;</code>
+       * <code>string reason = 8;</code>
        * @return The bytes for reason.
        */
       @java.lang.Override
@@ -765,14 +927,17 @@ public final class HpMessageData {
         if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(domain_)) {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 4, domain_);
         }
+        if (type_ != net.hserver.hp.common.protocol.HpMessageData.HpMessage.MessageType.TCP.getNumber()) {
+          output.writeEnum(5, type_);
+        }
         if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(channelId_)) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 5, channelId_);
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 6, channelId_);
         }
         if (success_ != false) {
-          output.writeBool(6, success_);
+          output.writeBool(7, success_);
         }
         if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(reason_)) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 7, reason_);
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 8, reason_);
         }
         unknownFields.writeTo(output);
       }
@@ -796,15 +961,19 @@ public final class HpMessageData {
         if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(domain_)) {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, domain_);
         }
+        if (type_ != net.hserver.hp.common.protocol.HpMessageData.HpMessage.MessageType.TCP.getNumber()) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeEnumSize(5, type_);
+        }
         if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(channelId_)) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, channelId_);
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, channelId_);
         }
         if (success_ != false) {
           size += com.google.protobuf.CodedOutputStream
-            .computeBoolSize(6, success_);
+            .computeBoolSize(7, success_);
         }
         if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(reason_)) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(7, reason_);
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(8, reason_);
         }
         size += unknownFields.getSerializedSize();
         memoizedSize = size;
@@ -829,6 +998,7 @@ public final class HpMessageData {
             .equals(other.getPassword())) return false;
         if (!getDomain()
             .equals(other.getDomain())) return false;
+        if (type_ != other.type_) return false;
         if (!getChannelId()
             .equals(other.getChannelId())) return false;
         if (getSuccess()
@@ -854,6 +1024,8 @@ public final class HpMessageData {
         hash = (53 * hash) + getPassword().hashCode();
         hash = (37 * hash) + DOMAIN_FIELD_NUMBER;
         hash = (53 * hash) + getDomain().hashCode();
+        hash = (37 * hash) + TYPE_FIELD_NUMBER;
+        hash = (53 * hash) + type_;
         hash = (37 * hash) + CHANNELID_FIELD_NUMBER;
         hash = (53 * hash) + getChannelId().hashCode();
         hash = (37 * hash) + SUCCESS_FIELD_NUMBER;
@@ -957,6 +1129,10 @@ public final class HpMessageData {
         return builder;
       }
       /**
+       * <pre>
+       *元数据
+       * </pre>
+       *
        * Protobuf type {@code net.hserver.hp.common.protocol.HpMessage.MetaData}
        */
       public static final class Builder extends
@@ -1002,6 +1178,8 @@ public final class HpMessageData {
 
           domain_ = "";
 
+          type_ = 0;
+
           channelId_ = "";
 
           success_ = false;
@@ -1038,6 +1216,7 @@ public final class HpMessageData {
           result.username_ = username_;
           result.password_ = password_;
           result.domain_ = domain_;
+          result.type_ = type_;
           result.channelId_ = channelId_;
           result.success_ = success_;
           result.reason_ = reason_;
@@ -1103,6 +1282,9 @@ public final class HpMessageData {
           if (!other.getDomain().isEmpty()) {
             domain_ = other.domain_;
             onChanged();
+          }
+          if (other.type_ != 0) {
+            setTypeValue(other.getTypeValue());
           }
           if (!other.getChannelId().isEmpty()) {
             channelId_ = other.channelId_;
@@ -1403,9 +1585,63 @@ public final class HpMessageData {
           return this;
         }
 
+        private int type_ = 0;
+        /**
+         * <code>.net.hserver.hp.common.protocol.HpMessage.MessageType type = 5;</code>
+         * @return The enum numeric value on the wire for type.
+         */
+        @java.lang.Override public int getTypeValue() {
+          return type_;
+        }
+        /**
+         * <code>.net.hserver.hp.common.protocol.HpMessage.MessageType type = 5;</code>
+         * @param value The enum numeric value on the wire for type to set.
+         * @return This builder for chaining.
+         */
+        public Builder setTypeValue(int value) {
+          
+          type_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>.net.hserver.hp.common.protocol.HpMessage.MessageType type = 5;</code>
+         * @return The type.
+         */
+        @java.lang.Override
+        public net.hserver.hp.common.protocol.HpMessageData.HpMessage.MessageType getType() {
+          @SuppressWarnings("deprecation")
+          net.hserver.hp.common.protocol.HpMessageData.HpMessage.MessageType result = net.hserver.hp.common.protocol.HpMessageData.HpMessage.MessageType.valueOf(type_);
+          return result == null ? net.hserver.hp.common.protocol.HpMessageData.HpMessage.MessageType.UNRECOGNIZED : result;
+        }
+        /**
+         * <code>.net.hserver.hp.common.protocol.HpMessage.MessageType type = 5;</code>
+         * @param value The type to set.
+         * @return This builder for chaining.
+         */
+        public Builder setType(net.hserver.hp.common.protocol.HpMessageData.HpMessage.MessageType value) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          
+          type_ = value.getNumber();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>.net.hserver.hp.common.protocol.HpMessage.MessageType type = 5;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearType() {
+          
+          type_ = 0;
+          onChanged();
+          return this;
+        }
+
         private java.lang.Object channelId_ = "";
         /**
-         * <code>string channelId = 5;</code>
+         * <code>string channelId = 6;</code>
          * @return The channelId.
          */
         public java.lang.String getChannelId() {
@@ -1421,7 +1657,7 @@ public final class HpMessageData {
           }
         }
         /**
-         * <code>string channelId = 5;</code>
+         * <code>string channelId = 6;</code>
          * @return The bytes for channelId.
          */
         public com.google.protobuf.ByteString
@@ -1438,7 +1674,7 @@ public final class HpMessageData {
           }
         }
         /**
-         * <code>string channelId = 5;</code>
+         * <code>string channelId = 6;</code>
          * @param value The channelId to set.
          * @return This builder for chaining.
          */
@@ -1453,7 +1689,7 @@ public final class HpMessageData {
           return this;
         }
         /**
-         * <code>string channelId = 5;</code>
+         * <code>string channelId = 6;</code>
          * @return This builder for chaining.
          */
         public Builder clearChannelId() {
@@ -1463,7 +1699,7 @@ public final class HpMessageData {
           return this;
         }
         /**
-         * <code>string channelId = 5;</code>
+         * <code>string channelId = 6;</code>
          * @param value The bytes for channelId to set.
          * @return This builder for chaining.
          */
@@ -1481,7 +1717,7 @@ public final class HpMessageData {
 
         private boolean success_ ;
         /**
-         * <code>bool success = 6;</code>
+         * <code>bool success = 7;</code>
          * @return The success.
          */
         @java.lang.Override
@@ -1489,7 +1725,7 @@ public final class HpMessageData {
           return success_;
         }
         /**
-         * <code>bool success = 6;</code>
+         * <code>bool success = 7;</code>
          * @param value The success to set.
          * @return This builder for chaining.
          */
@@ -1500,7 +1736,7 @@ public final class HpMessageData {
           return this;
         }
         /**
-         * <code>bool success = 6;</code>
+         * <code>bool success = 7;</code>
          * @return This builder for chaining.
          */
         public Builder clearSuccess() {
@@ -1512,7 +1748,7 @@ public final class HpMessageData {
 
         private java.lang.Object reason_ = "";
         /**
-         * <code>string reason = 7;</code>
+         * <code>string reason = 8;</code>
          * @return The reason.
          */
         public java.lang.String getReason() {
@@ -1528,7 +1764,7 @@ public final class HpMessageData {
           }
         }
         /**
-         * <code>string reason = 7;</code>
+         * <code>string reason = 8;</code>
          * @return The bytes for reason.
          */
         public com.google.protobuf.ByteString
@@ -1545,7 +1781,7 @@ public final class HpMessageData {
           }
         }
         /**
-         * <code>string reason = 7;</code>
+         * <code>string reason = 8;</code>
          * @param value The reason to set.
          * @return This builder for chaining.
          */
@@ -1560,7 +1796,7 @@ public final class HpMessageData {
           return this;
         }
         /**
-         * <code>string reason = 7;</code>
+         * <code>string reason = 8;</code>
          * @return This builder for chaining.
          */
         public Builder clearReason() {
@@ -1570,7 +1806,7 @@ public final class HpMessageData {
           return this;
         }
         /**
-         * <code>string reason = 7;</code>
+         * <code>string reason = 8;</code>
          * @param value The bytes for reason to set.
          * @return This builder for chaining.
          */
@@ -2413,18 +2649,21 @@ public final class HpMessageData {
   static {
     java.lang.String[] descriptorData = {
       "\n\017HpMessage.proto\022\036net.hserver.hp.common" +
-      ".protocol\"\227\003\n\tHpMessage\022E\n\004type\030\001 \001(\01627." +
+      ".protocol\"\212\004\n\tHpMessage\022E\n\004type\030\001 \001(\01627." +
       "net.hserver.hp.common.protocol.HpMessage" +
       ".HpMessageType\022D\n\010metaData\030\002 \001(\01322.net.h" +
       "server.hp.common.protocol.HpMessage.Meta" +
-      "Data\022\014\n\004data\030\003 \001(\014\032\200\001\n\010MetaData\022\014\n\004port\030" +
+      "Data\022\014\n\004data\030\003 \001(\014\032\305\001\n\010MetaData\022\014\n\004port\030" +
       "\001 \001(\005\022\020\n\010username\030\002 \001(\t\022\020\n\010password\030\003 \001(" +
-      "\t\022\016\n\006domain\030\004 \001(\t\022\021\n\tchannelId\030\005 \001(\t\022\017\n\007" +
-      "success\030\006 \001(\010\022\016\n\006reason\030\007 \001(\t\"l\n\rHpMessa" +
-      "geType\022\014\n\010REGISTER\020\000\022\023\n\017REGISTER_RESULT\020" +
-      "\001\022\r\n\tCONNECTED\020\002\022\020\n\014DISCONNECTED\020\003\022\010\n\004DA" +
-      "TA\020\004\022\r\n\tKEEPALIVE\020\005B\034B\rHpMessageDataZ\013./" +
-      "HpMessageb\006proto3"
+      "\t\022\016\n\006domain\030\004 \001(\t\022C\n\004type\030\005 \001(\01625.net.hs" +
+      "erver.hp.common.protocol.HpMessage.Messa" +
+      "geType\022\021\n\tchannelId\030\006 \001(\t\022\017\n\007success\030\007 \001" +
+      "(\010\022\016\n\006reason\030\010 \001(\t\"l\n\rHpMessageType\022\014\n\010R" +
+      "EGISTER\020\000\022\023\n\017REGISTER_RESULT\020\001\022\r\n\tCONNEC" +
+      "TED\020\002\022\020\n\014DISCONNECTED\020\003\022\010\n\004DATA\020\004\022\r\n\tKEE" +
+      "PALIVE\020\005\",\n\013MessageType\022\007\n\003TCP\020\000\022\007\n\003UDP\020" +
+      "\001\022\013\n\007TCP_UDP\020\002B\034B\rHpMessageDataZ\013./HpMes" +
+      "sageb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -2441,7 +2680,7 @@ public final class HpMessageData {
     internal_static_net_hserver_hp_common_protocol_HpMessage_MetaData_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_hserver_hp_common_protocol_HpMessage_MetaData_descriptor,
-        new java.lang.String[] { "Port", "Username", "Password", "Domain", "ChannelId", "Success", "Reason", });
+        new java.lang.String[] { "Port", "Username", "Password", "Domain", "Type", "ChannelId", "Success", "Reason", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)
