@@ -204,7 +204,9 @@
     var userInfo = localStorage.getItem("userInfo")
     if (userInfo) {
         userInfo = JSON.parse(userInfo)
-
+        mdui.snackbar({
+            message: userInfo.tips
+        });
 
         /**
          * 刷新table数据
