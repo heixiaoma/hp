@@ -276,10 +276,13 @@ var upGrader = websocket.Upgrader{
 	},
 }
 
-func wsSend(log Log) {
+func wsSend(msg Log) {
+	defer func() {
+		recover()
+	}()
 	ConnWsGroup.Range(func(key, value interface{}) bool {
 		WS := key.(*websocket.Conn)
-		err := WS.WriteJSON(log)
+		err := WS.WriteJSON(msg)
 		if err != nil {
 			return false
 		}
