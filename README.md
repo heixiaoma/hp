@@ -28,8 +28,8 @@
 # docker 方式运行
 
 ```shell
-docker run -P -d -p 10240:10240  registry.cn-shenzhen.aliyuncs.com/hserver/hp:v7
-docker run -P -d -p 10240:10240  registry.cn-shenzhen.aliyuncs.com/hserver/hp:v7-arm64
+docker run -P -d -p 10240:10240  registry.cn-shenzhen.aliyuncs.com/hserver/hp:latest
+docker run -P -d -p 10240:10240  registry.cn-shenzhen.aliyuncs.com/hserver/hp:latest-arm64
 ```
 
 
