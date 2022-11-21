@@ -135,14 +135,17 @@ func StartWeb(webPort int, api string) {
 			messageType = HpMessage.HpMessage_TCP_UDP
 		}
 
-		if len(domain) == 0 {
-			context.JSON(http.StatusOK, &Res{
-				Code: -1,
-				Msg:  "域名不能为空，如果还没有添加，请菜单里添加域名，然后刷新配置后重试",
-			})
-			return
+		if proxyType != "UDP" {
+			if len(domain) == 0 {
+				context.JSON(http.StatusOK, &Res{
+					Code: -1,
+					Msg:  "域名不能为空，如果还没有添加，请菜单里添加域名，然后刷新配置后重试",
+				})
+				return
+			}
+		} else {
+			domain = "udp:" + ip + ":" + port
 		}
-
 		if len(server_info) == 0 {
 			context.JSON(http.StatusOK, &Res{
 				Code: -1,
