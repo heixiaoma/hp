@@ -21,6 +21,8 @@ import net.hserver.hp.proxy.handler.proxy.RemoteUdpServerHandler;
 import net.hserver.hp.proxy.service.HttpService;
 import net.hserver.hp.proxy.utils.NetUtil;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -36,9 +38,9 @@ public class HpServerHandler extends HpCommonHandler {
     public static final Map<String, ConnectInfo> CURRENT_STATUS = new ConcurrentHashMap<>();
 
     private static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-    private static final Map<String,RemoteUdpServerHandler> UDPCHANNELS = new ConcurrentHashMap<>();
+    private static final Map<String, RemoteUdpServerHandler> UDPCHANNELS = new ConcurrentHashMap<>();
 
-    private int port;
+    private final List<Integer> ports = new ArrayList<>();
 
     private boolean register = false;
 
@@ -60,10 +62,10 @@ public class HpServerHandler extends HpCommonHandler {
                 processRegisterTcp(hpMessage);
             } else if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.UDP) {
                 processRegisterUdp(hpMessage);
-            }else if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.TCP_UDP){
+            } else if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.TCP_UDP) {
                 processRegisterUdp(hpMessage);
                 processRegisterTcp(hpMessage);
-            }else {
+            } else {
                 ctx.close();
             }
         } else if (register) {
@@ -84,15 +86,18 @@ public class HpServerHandler extends HpCommonHandler {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         try {
-            CURRENT_STATUS.remove(String.valueOf(port));
+            for (Integer port : this.ports) {
+                CURRENT_STATUS.remove(String.valueOf(port));
+            }
             Statistics statistics = remoteConnectionServer.getStatistics();
             HttpService.updateStatistics(statistics);
         } catch (Throwable ignored) {
         }
         remoteConnectionServer.close();
         if (register) {
-            System.out.println("停止服务器的端口: " + port);
+            System.out.println("停止服务器的端口: " + ports);
         }
+        ports.clear();
     }
 
     /**
@@ -137,7 +142,7 @@ public class HpServerHandler extends HpCommonHandler {
                     }
                 }, login.getUsername());
                 metaDataBuild.setSuccess(true);
-                this.port = tempPort;
+                this.ports.add(tempPort);
                 register = true;
                 CURRENT_STATUS.put(String.valueOf(tempPort), new ConnectInfo(username, domain, ctx.channel()));
                 String host = IocUtil.getBean(WebConfig.class).getUserHost();
@@ -199,13 +204,13 @@ public class HpServerHandler extends HpCommonHandler {
                                 //添加编码器作用是进行统计，包数据
                                 remoteUdpServerHandler
                         );
-                        UDPCHANNELS.put(ch.id().asLongText(),remoteUdpServerHandler);
+                        UDPCHANNELS.put(ch.id().asLongText(), remoteUdpServerHandler);
                     }
                 }, login.getUsername());
                 metaDataBuild.setSuccess(true);
-                this.port = tempPort;
+                this.ports.add(tempPort);
                 register = true;
-                CURRENT_STATUS.put(String.valueOf(tempPort), new ConnectInfo(username, "domain", ctx.channel()));
+                CURRENT_STATUS.put(String.valueOf(tempPort), new ConnectInfo(username, "(udp)", ctx.channel()));
                 metaDataBuild.setReason("连接成功，外网UDP地址是:" + IocUtil.getBean(WebConfig.class).getHost() + ":" + tempPort + (login.getTips().trim().length() > 0 ? " 公告提示：" + login.getTips() : ""));
             } catch (Exception e) {
                 metaDataBuild.setSuccess(false);
@@ -237,7 +242,7 @@ public class HpServerHandler extends HpCommonHandler {
         }
         if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.UDP) {
             RemoteUdpServerHandler remoteUdpServerHandler = UDPCHANNELS.get(hpMessage.getMetaData().getChannelId());
-            remoteUdpServerHandler.getChannelHandlerContext().writeAndFlush(new DatagramPacket(Unpooled.wrappedBuffer(bytes),remoteUdpServerHandler.getSender(hpMessage.getMetaData().getChannelId())));
+            remoteUdpServerHandler.getChannelHandlerContext().writeAndFlush(new DatagramPacket(Unpooled.wrappedBuffer(bytes), remoteUdpServerHandler.getSender(hpMessage.getMetaData().getChannelId())));
         }
     }
 
