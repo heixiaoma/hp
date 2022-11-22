@@ -8,8 +8,11 @@ import cn.hserver.plugin.web.context.WebConstConfig;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.handler.traffic.GlobalChannelTrafficShapingHandler;
+import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import net.hserver.hp.common.codec.HpMessageDecoder;
 import net.hserver.hp.common.codec.HpMessageEncoder;
+import net.hserver.hp.proxy.config.CostConfig;
 import net.hserver.hp.proxy.handler.HpServerHandler;
 
 import java.net.InetSocketAddress;
@@ -28,6 +31,8 @@ public class HpProtocolDispatcher implements ProtocolDispatcherAdapter {
             port = PropUtil.getInstance().getInt("port");
         }
         if (socketAddress.getPort() == port) {
+            //全局20 单个通道4M
+            channelPipeline.addLast(new GlobalTrafficShapingHandler(WebConstConfig.BUSINESS_EVENT, CostConfig.M, CostConfig.M));
             channelPipeline.addLast(new IdleStateHandler(60, 30, 0));
             channelPipeline.addLast(new HpMessageDecoder());
             channelPipeline.addLast(new HpMessageEncoder());
