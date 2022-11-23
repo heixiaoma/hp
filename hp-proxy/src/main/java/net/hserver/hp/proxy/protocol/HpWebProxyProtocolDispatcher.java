@@ -12,6 +12,7 @@ import cn.hserver.plugin.web.protocol.DispatchHttp;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpServerCodec;
+import net.hserver.hp.proxy.config.CostConfig;
 import net.hserver.hp.proxy.config.WebConfig;
 import net.hserver.hp.proxy.handler.HpServerHandler;
 import net.hserver.hp.proxy.handler.proxy.FrontendHandler;
@@ -76,6 +77,8 @@ public class HpWebProxyProtocolDispatcher extends DispatchHttp {
     }
 
     public void addProxyHandler(ChannelPipeline pipeline, Integer port) {
+        pipeline.channel().config().setWriteBufferHighWaterMark(CostConfig.M_H);
+        pipeline.channel().config().setWriteBufferLowWaterMark(CostConfig.M_L);
         pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new FrontendHandler(port));
     }
 

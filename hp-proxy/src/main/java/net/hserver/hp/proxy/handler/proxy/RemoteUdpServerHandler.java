@@ -9,6 +9,8 @@ import io.netty.channel.socket.DatagramPacket;
 import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessageData;
 import net.hserver.hp.proxy.handler.TcpServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -16,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class RemoteUdpServerHandler extends
         SimpleChannelInboundHandler<DatagramPacket> {
+    private static final Logger log = LoggerFactory.getLogger(RemoteUdpServerHandler.class);
 
     private final TcpServer tcpServer;
 
@@ -47,7 +50,7 @@ public class RemoteUdpServerHandler extends
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
             throws Exception {
-        cause.printStackTrace();
+       log.error("UDP",cause);
         ctx.close();
     }
 

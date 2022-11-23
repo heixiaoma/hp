@@ -8,6 +8,8 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.HttpRequest;
 import net.hserver.hp.proxy.config.WebConfig;
 import net.hserver.hp.proxy.utils.FileUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +20,7 @@ import static net.hserver.hp.proxy.utils.FileUtil.readFile;
 
 public class RouterHandler extends SimpleChannelInboundHandler<HttpRequest> {
     public static String dataHtml = "与服务器断开了连接";
+    private static final Logger log = LoggerFactory.getLogger(RouterHandler.class);
 
     static {
         Map<String, Object> data = new HashMap<>();
@@ -51,8 +54,11 @@ public class RouterHandler extends SimpleChannelInboundHandler<HttpRequest> {
         ctx.flush();
     }
 
+    @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        log.error("官网错误 ......", cause);
         BuildResponse.writeException(ctx, cause);
+
     }
 
     public enum ERROR {

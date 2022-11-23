@@ -31,8 +31,6 @@ public class HpProtocolDispatcher implements ProtocolDispatcherAdapter {
             port = PropUtil.getInstance().getInt("port");
         }
         if (socketAddress.getPort() == port) {
-            //全局20 单个通道4M
-            channelPipeline.addLast(new GlobalTrafficShapingHandler(WebConstConfig.BUSINESS_EVENT, CostConfig.M, CostConfig.M));
             channelPipeline.addLast(new IdleStateHandler(60, 30, 0));
             channelPipeline.addLast(new HpMessageDecoder());
             channelPipeline.addLast(new HpMessageEncoder());

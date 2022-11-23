@@ -5,11 +5,16 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import net.hserver.hp.common.protocol.HpMessageData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 /**
  * @author hxm
  */
 public abstract class HpCommonHandler extends SimpleChannelInboundHandler<HpMessageData.HpMessage> {
+    private static final Logger log = LoggerFactory.getLogger(HpCommonHandler.class);
 
     protected ChannelHandlerContext ctx;
 
@@ -24,8 +29,7 @@ public abstract class HpCommonHandler extends SimpleChannelInboundHandler<HpMess
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        System.out.println("Exception caught ...");
-        cause.printStackTrace();
+        log.error("HP通道 ......",cause);
         ctx.close();
     }
 

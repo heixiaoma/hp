@@ -5,6 +5,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.ReferenceCountUtil;
+import net.hserver.hp.proxy.config.CostConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +14,14 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
 
     private final Integer port;
     private Channel outboundChannel;
+
+
+    @Override
+    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
+        log.debug("限制操作，让WEB代理两个通道实现同步读写 开关状态:{}",ctx.channel().isWritable());
+        ctx.channel().config().setAutoRead(ctx.channel().isWritable());
+        outboundChannel.config().setAutoRead(ctx.channel().isWritable());
+    }
 
 
     public FrontendHandler(Integer port) {
@@ -76,7 +85,7 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
+        log.error("WEB通道 ......",cause);
         closeOnFlush(ctx.channel());
     }
 }

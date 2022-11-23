@@ -5,15 +5,26 @@ import io.netty.channel.ChannelHandlerContext;
 import net.hserver.hp.common.handler.HpAbsHandler;
 import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessageData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author hxm
  */
 public class RemoteProxyHandler extends HpAbsHandler {
+    private static final Logger log = LoggerFactory.getLogger(RemoteProxyHandler.class);
 
     private final HpCommonHandler proxyHandler;
 
     private final TcpServer tcpServer;
+
+
+    @Override
+    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
+        log.debug("限制操作，让HP和外网两个通道实现同步读写 开关状态:{}",ctx.channel().isWritable());
+        ctx.channel().config().setAutoRead(ctx.channel().isWritable());
+        proxyHandler.getCtx().channel().config().setAutoRead(ctx.channel().isWritable());
+    }
 
     public RemoteProxyHandler(HpCommonHandler proxyHandler, TcpServer tcpServer) {
         this.proxyHandler = proxyHandler;
@@ -40,6 +51,7 @@ public class RemoteProxyHandler extends HpAbsHandler {
 
     /**
      * 用户穿透完成在外部创建的TCP服务，当有数据时进来，此时包装数据对象返回给内网客服端
+     *
      * @param ctx
      * @param msg
      * @throws Exception

@@ -13,6 +13,7 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import net.hserver.hp.common.exception.HpException;
 import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessageData;
+import net.hserver.hp.proxy.config.CostConfig;
 import net.hserver.hp.proxy.config.WebConfig;
 import net.hserver.hp.proxy.domian.bean.ConnectInfo;
 import net.hserver.hp.proxy.domian.bean.Statistics;
@@ -20,6 +21,8 @@ import net.hserver.hp.proxy.domian.vo.UserVo;
 import net.hserver.hp.proxy.handler.proxy.RemoteUdpServerHandler;
 import net.hserver.hp.proxy.service.HttpService;
 import net.hserver.hp.proxy.utils.NetUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @ChannelHandler.Sharable
 public class HpServerHandler extends HpCommonHandler {
+    private static final Logger log = LoggerFactory.getLogger(HpServerHandler.class);
 
     private final TcpServer remoteConnectionServer = new TcpServer();
 
@@ -54,6 +58,7 @@ public class HpServerHandler extends HpCommonHandler {
             }
         });
     }
+
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HpMessageData.HpMessage hpMessage) throws Exception {
@@ -132,6 +137,8 @@ public class HpServerHandler extends HpCommonHandler {
                 remoteConnectionServer.bindTcp(tempPort, new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
+                        ch.config().setWriteBufferHighWaterMark(CostConfig.M_H);
+                        ch.config().setWriteBufferLowWaterMark(CostConfig.M_L);
                         ch.pipeline().addLast(
                                 //添加编码器作用是进行统计，包数据
                                 new ByteArrayDecoder(),
