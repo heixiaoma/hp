@@ -21,7 +21,7 @@ public class RemoteProxyHandler extends HpAbsHandler {
 
     @Override
     public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
-        log.debug("限制操作，让HP和外网两个通道实现同步读写 开关状态:{}",ctx.channel().isWritable());
+        log.info("限制操作，让HP和外网两个通道实现同步读写 开关状态:{}",ctx.channel().isWritable());
         ctx.channel().config().setAutoRead(ctx.channel().isWritable());
         proxyHandler.getCtx().channel().config().setAutoRead(ctx.channel().isWritable());
     }

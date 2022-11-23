@@ -4,6 +4,7 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import io.netty.util.ReferenceCountUtil;
 import net.hserver.hp.proxy.config.CostConfig;
 import org.slf4j.Logger;
@@ -15,13 +16,6 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
     private final Integer port;
     private Channel outboundChannel;
 
-
-    @Override
-    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
-        log.debug("限制操作，让WEB代理两个通道实现同步读写 开关状态:{}",ctx.channel().isWritable());
-        ctx.channel().config().setAutoRead(ctx.channel().isWritable());
-        outboundChannel.config().setAutoRead(ctx.channel().isWritable());
-    }
 
 
     public FrontendHandler(Integer port) {
@@ -62,7 +56,13 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
             b.group(inboundChannel.eventLoop());
             b.option(ChannelOption.AUTO_READ, true)
                     .channel(NioSocketChannel.class)
-                    .handler(new BackendHandler(inboundChannel));
+                    .handler(new ChannelInitializer<Channel>() {
+                        @Override
+                        protected void initChannel(Channel ch) throws Exception {
+                            ch.pipeline().addLast(new GlobalTrafficShapingHandler(ch.eventLoop(),CostConfig.M_L,CostConfig.M_L));
+                            ch.pipeline().addLast(new BackendHandler(inboundChannel));
+                        }
+                    });
             b.connect("127.0.0.1", port).addListener((ChannelFutureListener) future -> {
                 if (future.isSuccess()) {
                     outboundChannel = future.channel();
