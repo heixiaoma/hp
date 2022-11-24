@@ -10,6 +10,8 @@ import net.hserver.hp.proxy.config.CostConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 public class FrontendHandler extends ChannelInboundHandlerAdapter {
     private static final Logger log = LoggerFactory.getLogger(FrontendHandler.class);
 
@@ -31,8 +33,7 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
 
     public void write(ChannelHandlerContext ctx, Object msg) {
         outboundChannel.writeAndFlush(msg).addListener((ChannelFutureListener) future -> {
-            if (future.isSuccess()) {
-            } else {
+            if (!future.isSuccess()) {
                 future.channel().close();
                 ReferenceCountUtil.release(msg);
             }
@@ -82,7 +83,9 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        log.error("WEB通道 ......",cause);
+        if (!(cause instanceof IOException)) {
+            log.error("WEB通道 ......", cause);
+        }
         closeOnFlush(ctx.channel());
     }
 }
