@@ -31,7 +31,9 @@ public abstract class HpAbsHandler extends SimpleChannelInboundHandler<byte[]> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("外网TCP ......",cause);
+        if (!(cause instanceof IOException)){
+            log.error("外网TCP ......",cause);
+        }
         ctx.close();
     }
 
