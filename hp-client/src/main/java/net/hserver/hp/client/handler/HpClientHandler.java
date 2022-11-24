@@ -40,7 +40,6 @@ public class HpClientHandler extends SimpleChannelInboundHandler<HpMessageData.H
     private ChannelHandlerContext ctx;
     private final ConcurrentHashMap<String, LocalProxyHandler> TcpChannelHandlerMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, LocalProxyUdpClientHandler> UdpChannelHandlerMap = new ConcurrentHashMap<>();
-    private final ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     public HpClientHandler(HpMessageData.HpMessage.MessageType type, int port, String username, String password, String domain, String proxyAddress, int proxyPort, CallMsg callMsg) {
         this.port = port;
@@ -100,7 +99,14 @@ public class HpClientHandler extends SimpleChannelInboundHandler<HpMessageData.H
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        channelGroup.close();
+        for (LocalProxyHandler value : TcpChannelHandlerMap.values()) {
+            value.getCtx().close();
+        }
+        for (LocalProxyUdpClientHandler value : UdpChannelHandlerMap.values()) {
+            value.getCtx().close();
+        }
+        TcpChannelHandlerMap.clear();
+        UdpChannelHandlerMap.clear();
         callMsg.message("与HP服务器断开了连接");
     }
 
@@ -133,7 +139,6 @@ public class HpClientHandler extends SimpleChannelInboundHandler<HpMessageData.H
                     public void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new ByteArrayDecoder(), new ByteArrayEncoder(), localProxyHandler);
                         TcpChannelHandlerMap.put(message.getMetaData().getChannelId(), localProxyHandler);
-                        channelGroup.add(ch);
                     }
                 });
                 Channel channel = b.connect(proxyAddress, proxyPort).sync().channel();
@@ -150,7 +155,6 @@ public class HpClientHandler extends SimpleChannelInboundHandler<HpMessageData.H
                             public void initChannel(Channel ch) throws Exception {
                                 ch.pipeline().addLast(new ByteArrayDecoder(), new ByteArrayEncoder(), localProxyUdpClientHandler);
                                 UdpChannelHandlerMap.put(message.getMetaData().getChannelId(), localProxyUdpClientHandler);
-                                channelGroup.add(ch);
                             }
                         });
                 Channel channel = humClient.bind(0).sync().channel();
@@ -209,7 +213,7 @@ public class HpClientHandler extends SimpleChannelInboundHandler<HpMessageData.H
             LocalProxyUdpClientHandler handler = UdpChannelHandlerMap.get(channelId);
             if (handler != null && handler.getCtx() != null) {
                 ChannelHandlerContext ctx = handler.getCtx();
-                ctx.writeAndFlush(new DatagramPacket(Unpooled.wrappedBuffer(message.getData().toByteArray()),new InetSocketAddress(proxyAddress,proxyPort)));
+                ctx.writeAndFlush(new DatagramPacket(Unpooled.wrappedBuffer(message.getData().toByteArray()), new InetSocketAddress(proxyAddress, proxyPort)));
             }
         }
     }
