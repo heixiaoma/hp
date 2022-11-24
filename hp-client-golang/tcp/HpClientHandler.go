@@ -50,7 +50,6 @@ func (h *HpClientHandler) ChannelRead(conn net.Conn, data interface{}) {
 		h.connected(message)
 		break
 	case hpMessage.HpMessage_DISCONNECTED:
-		println("远端删除", message.MetaData.ChannelId)
 		h.Close(message.MetaData.ChannelId)
 		break
 	case hpMessage.HpMessage_DATA:
