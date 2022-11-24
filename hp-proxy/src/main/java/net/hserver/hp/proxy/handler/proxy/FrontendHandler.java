@@ -32,7 +32,6 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
     public void write(ChannelHandlerContext ctx, Object msg) {
         outboundChannel.writeAndFlush(msg).addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
-                ctx.channel().read();
             } else {
                 future.channel().close();
                 ReferenceCountUtil.release(msg);
@@ -54,19 +53,17 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
             final Channel inboundChannel = ctx.channel();
             Bootstrap b = new Bootstrap();
             b.group(inboundChannel.eventLoop());
-            b.option(ChannelOption.AUTO_READ, true)
+            b.option(ChannelOption.AUTO_READ, false)
                     .channel(NioSocketChannel.class)
                     .handler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
-                            ch.pipeline().addLast(new GlobalTrafficShapingHandler(ch.eventLoop(),CostConfig.M_L,CostConfig.M_L));
                             ch.pipeline().addLast(new BackendHandler(inboundChannel));
                         }
                     });
             b.connect("127.0.0.1", port).addListener((ChannelFutureListener) future -> {
                 if (future.isSuccess()) {
                     outboundChannel = future.channel();
-                    inboundChannel.read();
                     write(ctx, msg);
                 } else {
                     inboundChannel.close();
