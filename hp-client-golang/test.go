@@ -11,8 +11,9 @@ func main() {
 	hpClient := tcp.NewHpClient(func(message string) {
 		log.Printf(message)
 	})
-	hpClient.Connect(hpMessage.HpMessage_TCP, "127.0.0.1", 9091, "hxm", "2", "aaa", 11111, "192.168.5.214", 5000)
+	hpClient.Connect(hpMessage.HpMessage_TCP, "127.0.0.1", 9092, "666666", "666666", "heixiaoma", 11111, "127.0.0.1", 7777)
 	for {
+		println(hpClient.GetStatus())
 		time.Sleep(time.Duration(5) * time.Second)
 	}
 }

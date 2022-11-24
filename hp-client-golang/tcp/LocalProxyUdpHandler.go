@@ -28,7 +28,10 @@ func (l *LocalProxyUdpHandler) ChannelRead(conn net.Conn, data interface{}) {
 			ChannelId: l.RemoteChannelId,
 		},
 	}
-	l.HpClientHandler.Conn.Write(protol.Encode(message))
+	_, err := l.HpClientHandler.Conn.Write(protol.Encode(message))
+	if err != nil {
+		l.HpClientHandler.CallMsg("内网发送远端错误：" + err.Error())
+	}
 }
 
 func (l *LocalProxyUdpHandler) ChannelInactive(conn net.Conn) {

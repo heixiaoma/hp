@@ -1,6 +1,7 @@
 package tcp
 
 import (
+	"encoding/json"
 	"hp-client-golang/Protol"
 	"hp-client-golang/hpMessage"
 	"net"
@@ -49,6 +50,7 @@ func (h *HpClientHandler) ChannelRead(conn net.Conn, data interface{}) {
 		h.connected(message)
 		break
 	case hpMessage.HpMessage_DISCONNECTED:
+		println("远端删除", message.MetaData.ChannelId)
 		h.Close(message.MetaData.ChannelId)
 		break
 	case hpMessage.HpMessage_DATA:
@@ -59,7 +61,8 @@ func (h *HpClientHandler) ChannelRead(conn net.Conn, data interface{}) {
 		conn.Write(protol.Encode(&hpMessage.HpMessage{Type: hpMessage.HpMessage_KEEPALIVE}))
 		break
 	default:
-		h.CallMsg("未知类型数据：" + message.String())
+		marshal, _ := json.Marshal(message.MetaData)
+		h.CallMsg("未知类型数据：" + string(marshal))
 	}
 
 }
@@ -118,6 +121,7 @@ func (h *HpClientHandler) writeData(message *hpMessage.HpMessage) {
 				conn.Write(message.Data)
 			}
 		}
+
 	} else if message.MetaData.Type == hpMessage.HpMessage_UDP {
 		//todo 需要转发给内网的UDPServer
 		load, ok := ConnGroup.Load(message.MetaData.ChannelId)

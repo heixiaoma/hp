@@ -17,7 +17,7 @@ public class TestHpClient {
             }
         });
 
-        client.connect(HpMessageData.HpMessage.MessageType.TCP_UDP, "127.0.0.1", 9091, "hxm", "2", "aaa", 11111, "192.168.5.214", 5000);
+        client.connect(HpMessageData.HpMessage.MessageType.TCP, "hp.nsjiasu.com", 9091, "666666", "666666", "heixiaoma", -1, "127.0.0.1", 7777);
 
 //        new Thread(() -> {
 //            while (true) {

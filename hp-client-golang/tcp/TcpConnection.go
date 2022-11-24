@@ -27,24 +27,39 @@ func (connection *TcpConnection) Connect(host string, port int, redType bool, ha
 		reader := bufio.NewReader(conn)
 		for {
 			//尝试读检查连接激活
-			_, err := reader.Peek(1)
-			if err != nil {
-				handler.ChannelInactive(conn)
-				return
-			}
-			if redType {
+			switch handler.(type) {
+			case *HpClientHandler:
+
+				hp := handler.(*HpClientHandler)
+				if !hp.Active {
+					return
+				}
 				decode, e := protol.Decode(reader)
 				if e != nil {
-					println(e.Error())
+					call(e.Error())
+					handler.ChannelInactive(conn)
+					return
 				}
 				if decode != nil {
 					handler.ChannelRead(conn, decode)
 				}
-
-			} else {
+			case *LocalProxyHandler:
+				proxyHandler := handler.(*LocalProxyHandler)
+				if !proxyHandler.Active {
+					return
+				}
+				_, err2 := reader.Peek(1)
+				if err2 != nil {
+					call("连接异常进行关闭:" + err2.Error())
+					handler.ChannelInactive(conn)
+					return
+				}
 				if reader.Buffered() > 0 {
 					data := make([]byte, reader.Buffered())
-					io.ReadFull(reader, data)
+					_, err2 := io.ReadFull(reader, data)
+					if err2 != nil {
+						call("读取异常：" + err2.Error())
+					}
 					handler.ChannelRead(conn, data)
 				}
 			}

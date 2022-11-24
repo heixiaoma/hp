@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/binary"
+	"encoding/hex"
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/snappy"
 	"hp-client-golang/hpMessage"
 	"io"
 )
@@ -25,7 +25,11 @@ func Decode(reader *bufio.Reader) (*hpMessage.HpMessage, error) {
 		return nil, err
 	}
 	message := &hpMessage.HpMessage{}
-	proto.Unmarshal(d, message)
+	err = proto.Unmarshal(d, message)
+	if err != nil {
+		println(hex.Dump(d))
+		return nil, err
+	}
 	return message, nil
 }
 
@@ -38,34 +42,15 @@ func encode(mes []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	//真实消息进行zstd压缩发送
-	compress := snappy.Encode(nil, mes)
-	if len(compress) < len(mes) {
-		//开启压缩编码
-		err = binary.Write(dataPackage, binary.BigEndian, byte(1))
-		//写长度
-		err = binary.Write(dataPackage, binary.BigEndian, int32(len(compress)))
-		if err != nil {
-			return nil, err
-		}
-		//写入消息
-		err = binary.Write(dataPackage, binary.BigEndian, compress)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		//不开启压缩编码
-		err = binary.Write(dataPackage, binary.BigEndian, byte(0))
-		//写长度
-		err = binary.Write(dataPackage, binary.BigEndian, int32(len(mes)))
-		if err != nil {
-			return nil, err
-		}
-		//写入消息
-		err = binary.Write(dataPackage, binary.BigEndian, mes)
-		if err != nil {
-			return nil, err
-		}
+	//写长度
+	err = binary.Write(dataPackage, binary.BigEndian, int32(len(mes)))
+	if err != nil {
+		return nil, err
+	}
+	//写入消息
+	err = binary.Write(dataPackage, binary.BigEndian, mes)
+	if err != nil {
+		return nil, err
 	}
 	return dataPackage.Bytes(), nil
 }
@@ -76,26 +61,20 @@ func decode(reader *bufio.Reader) ([]byte, error) {
 	//读取数据包的开头 int =9999 等4 字节
 	//是否解压 byte 等1字节
 	//长度 int 等4字节
-	headerAndLength, err := reader.Peek(9)
+	headerAndLength, err := reader.Peek(8)
 	if err != nil {
 		return []byte{}, err
 	}
 	header := bytesToInt(headerAndLength[0:4])
-	isCompress := headerAndLength[4:5]
-	length := bytesToInt(headerAndLength[5:])
+	length := bytesToInt(headerAndLength[4:])
 	if header == 9999 {
 		//读取 header+长度
-		data := make([]byte, 9+length)
+		data := make([]byte, 8+length)
 		//直接读完，不够的直接等待
 		_, err := io.ReadFull(reader, data)
 		//读取出来的字节流进行解压操作
-		bytes := data[9:]
-		if isCompress[0] == 1 {
-			decompress, err := snappy.Decode(nil, bytes)
-			return decompress, err
-		} else {
-			return bytes, err
-		}
+		b := data[8:]
+		return b, err
 	} else {
 		return nil, nil
 	}
