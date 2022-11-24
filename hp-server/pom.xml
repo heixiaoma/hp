@@ -20,6 +20,13 @@
             <groupId>cn.hserver</groupId>
             <artifactId>hserver-plugin-web</artifactId>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.ibeetl/beetlsql -->
+        <dependency>
+            <groupId>com.ibeetl</groupId>
+            <artifactId>beetlsql</artifactId>
+            <version>3.19.3-RELEASE</version>
+        </dependency>
+
         <dependency>
             <groupId>cn.hserver</groupId>
             <artifactId>hserver-plugin-beetlsql</artifactId>

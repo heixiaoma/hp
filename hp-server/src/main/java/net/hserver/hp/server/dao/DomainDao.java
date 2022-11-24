@@ -13,8 +13,7 @@ public interface DomainDao extends BaseMapper<DomainEntity> {
 
 
     default int deleteByUserId(String userId){
-        //TODO bug
-        return this.createLambdaQuery().andEq(DomainEntity::getUserId,userId).delete();
+        return executeUpdate("delete from sys_domain where user_id='"+userId+"'");
     }
 
 }

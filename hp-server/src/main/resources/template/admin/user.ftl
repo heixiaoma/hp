@@ -147,7 +147,7 @@
                 </div>
             </div>
             <div class="mdui-dialog-actions">
-                <button class="mdui-btn mdui-ripple" mdui-dialog-cancel>取消</button>
+                <div class="mdui-btn mdui-ripple" mdui-dialog-cancel>取消</div>
                 <button type="submit" class="mdui-btn mdui-ripple">确定</button>
             </div>
         </form>
