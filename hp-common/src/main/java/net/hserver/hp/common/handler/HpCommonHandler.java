@@ -29,7 +29,9 @@ public abstract class HpCommonHandler extends SimpleChannelInboundHandler<HpMess
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("HP通道 ......",cause);
+        if (!(cause instanceof IOException)){
+            log.error("HP通道 ......",cause);
+        }
         ctx.close();
     }
 
