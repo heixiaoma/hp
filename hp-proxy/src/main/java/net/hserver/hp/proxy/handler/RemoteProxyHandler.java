@@ -18,14 +18,6 @@ public class RemoteProxyHandler extends HpAbsHandler {
 
     private final TcpServer tcpServer;
 
-
-    @Override
-    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
-        log.info("限制操作，让HP和外网两个通道实现同步读写 开关状态:{}",ctx.channel().isWritable());
-        ctx.channel().config().setAutoRead(ctx.channel().isWritable());
-        proxyHandler.getCtx().channel().config().setAutoRead(ctx.channel().isWritable());
-    }
-
     public RemoteProxyHandler(HpCommonHandler proxyHandler, TcpServer tcpServer) {
         this.proxyHandler = proxyHandler;
         this.tcpServer = tcpServer;

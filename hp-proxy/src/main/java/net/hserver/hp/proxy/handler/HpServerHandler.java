@@ -138,9 +138,8 @@ public class HpServerHandler extends HpCommonHandler {
                 remoteConnectionServer.bindTcp(tempPort, new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
-                        ch.config().setWriteBufferHighWaterMark(CostConfig.M_H);
-                        ch.config().setWriteBufferLowWaterMark(CostConfig.M_L);
                         ch.pipeline().addLast(
+                                new GlobalTrafficShapingHandler(ch.eventLoop(),CostConfig.M_L,CostConfig.M_L),
                                 //添加编码器作用是进行统计，包数据
                                 new ByteArrayDecoder(),
                                 new ByteArrayEncoder(),
