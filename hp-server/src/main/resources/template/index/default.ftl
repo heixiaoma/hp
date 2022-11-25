@@ -31,8 +31,8 @@
         </div>
         <div class="mdui-typo" style="margin-top: 50px">
             <span><a href="https://gitee.com/HServer/hp" rel="nofollow" target="_blank">开源地址</a></span>
-            <span><a href="https://jq.qq.com/?_wv=1027&k=jWfkkSda" rel="nofollow"
-                     target="_blank">QQ群：432217351</a></span>
+            <span><a href="https://jq.qq.com/?_wv=1027&k=9xMZrFCQ" rel="nofollow"
+                     target="_blank">新QQ群：767474069</a></span>
         </div>
     </div>
 
