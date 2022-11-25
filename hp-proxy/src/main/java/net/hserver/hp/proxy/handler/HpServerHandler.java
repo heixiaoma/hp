@@ -139,7 +139,6 @@ public class HpServerHandler extends HpCommonHandler {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(
-                                new GlobalTrafficShapingHandler(ch.eventLoop(),CostConfig.M_L,CostConfig.M_L),
                                 //添加编码器作用是进行统计，包数据
                                 new ByteArrayDecoder(),
                                 new ByteArrayEncoder(),

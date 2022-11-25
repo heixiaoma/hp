@@ -129,4 +129,13 @@ public class TcpServer {
             tcpChannel.close();
         }
     }
+
+    public synchronized void setAutoRead(boolean autoRead) {
+        if (udpChannel != null&&udpChannel.isActive()) {
+            udpChannel.config().setAutoRead(autoRead);
+        }
+        if (tcpChannel != null&&tcpChannel.isActive()) {
+            tcpChannel.config().setAutoRead(autoRead);
+        }
+    }
 }
