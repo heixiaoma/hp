@@ -12,8 +12,6 @@ import org.slf4j.LoggerFactory;
  * @author hxm
  */
 public class RemoteProxyHandler extends HpAbsHandler {
-    private static final Logger log = LoggerFactory.getLogger(RemoteProxyHandler.class);
-
     private final HpCommonHandler proxyHandler;
 
     private final TcpServer tcpServer;
@@ -25,7 +23,6 @@ public class RemoteProxyHandler extends HpAbsHandler {
 
     @Override
     public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
-        log.info("限制操作，让HP和外网两个通道实现同步读写 开关状态:{}",ctx.channel().isWritable());
         ctx.channel().config().setAutoRead(ctx.channel().isWritable());
         proxyHandler.getCtx().channel().config().setAutoRead(ctx.channel().isWritable());
     }
@@ -33,7 +30,6 @@ public class RemoteProxyHandler extends HpAbsHandler {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         if (ctx.channel().isWritable()) {
-            log.info("重新激活");
             proxyHandler.getCtx().channel().config().setAutoRead(true);
         }
         tcpServer.addConnectNum();

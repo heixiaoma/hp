@@ -52,6 +52,7 @@ public class TcpServer {
         }
        try {
             ServerBootstrap b = new ServerBootstrap();
+            b.option(ChannelOption.WRITE_BUFFER_WATER_MARK,new WriteBufferWaterMark(1024*1024,1024*1024*10));
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .childHandler(channelInitializer)
