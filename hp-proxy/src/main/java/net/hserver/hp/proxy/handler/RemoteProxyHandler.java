@@ -12,11 +12,11 @@ import org.slf4j.LoggerFactory;
  * @author hxm
  */
 public class RemoteProxyHandler extends HpAbsHandler {
-    private final HpCommonHandler proxyHandler;
+    private final HpServerHandler proxyHandler;
 
     private final TcpServer tcpServer;
 
-    public RemoteProxyHandler(HpCommonHandler proxyHandler, TcpServer tcpServer) {
+    public RemoteProxyHandler(HpServerHandler proxyHandler, TcpServer tcpServer) {
         this.proxyHandler = proxyHandler;
         this.tcpServer = tcpServer;
     }
@@ -24,12 +24,16 @@ public class RemoteProxyHandler extends HpAbsHandler {
     @Override
     public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
         ctx.channel().config().setAutoRead(ctx.channel().isWritable());
-        proxyHandler.getCtx().channel().config().setAutoRead(ctx.channel().isWritable());
+        if (ctx.channel().isWritable()&&proxyHandler.getCtx().channel().isWritable()) {
+            proxyHandler.getCtx().channel().config().setAutoRead(true);
+        }else {
+            proxyHandler.getCtx().channel().config().setAutoRead(false);
+        }
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        if (ctx.channel().isWritable()) {
+        if (proxyHandler.getCtx().channel().isWritable()) {
             proxyHandler.getCtx().channel().config().setAutoRead(true);
         }
         tcpServer.addConnectNum();
@@ -44,7 +48,8 @@ public class RemoteProxyHandler extends HpAbsHandler {
         HpMessageData.HpMessage.Builder messageBuilder = HpMessageData.HpMessage.newBuilder();
         messageBuilder.setType(HpMessageData.HpMessage.HpMessageType.DISCONNECTED);
         messageBuilder.setMetaData(HpMessageData.HpMessage.MetaData.newBuilder().setChannelId(ctx.channel().id().asLongText()).build());
-        proxyHandler.getCtx().writeAndFlush(messageBuilder.build());
+        HpMessageData.HpMessage build = messageBuilder.build();
+        proxyHandler.getCtx().writeAndFlush(build);
     }
 
 

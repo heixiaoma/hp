@@ -21,6 +21,19 @@ public class BackendHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         ctx.read();
+        if (inboundChannel.isWritable()) {
+            inboundChannel.config().setAutoRead(true);
+        }
+    }
+
+    @Override
+    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
+        ctx.channel().config().setAutoRead(ctx.channel().isWritable());
+        if (ctx.channel().isWritable() && inboundChannel.isWritable()) {
+            inboundChannel.config().setAutoRead(true);
+        } else {
+            inboundChannel.config().setAutoRead(false);
+        }
     }
 
     @Override
@@ -48,7 +61,7 @@ public class BackendHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        log.error("WEB代理反向写",cause);
+        log.error("WEB代理反向写", cause);
         FrontendHandler.closeOnFlush(ctx.channel());
     }
 }

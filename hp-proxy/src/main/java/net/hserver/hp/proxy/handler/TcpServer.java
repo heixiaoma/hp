@@ -11,6 +11,7 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import net.hserver.hp.proxy.config.CostConfig;
 import net.hserver.hp.proxy.domian.bean.GlobalStat;
 import net.hserver.hp.proxy.domian.bean.Statistics;
 
@@ -42,22 +43,21 @@ public class TcpServer {
     private final AtomicLong receive = new AtomicLong();
 
     private final static EventLoopGroup bossGroup = new NioEventLoopGroup(new NamedThreadFactory("boss-TcpServer"));
-    private final static EventLoopGroup workerGroup = new NioEventLoopGroup(50,new NamedThreadFactory("worker-TcpServer"));
+    private final static EventLoopGroup workerGroup = new NioEventLoopGroup(50, new NamedThreadFactory("worker-TcpServer"));
 
     public synchronized void bindTcp(int port, ChannelInitializer<?> channelInitializer, String username) throws InterruptedException {
-        if (username!=null) {
+        if (username != null) {
             statistics = new Statistics();
             statistics.setPort(port);
             statistics.setUsername(username);
         }
-       try {
+        try {
             ServerBootstrap b = new ServerBootstrap();
-            b.option(ChannelOption.WRITE_BUFFER_WATER_MARK,new WriteBufferWaterMark(1024*1024,1024*1024*10));
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .childHandler(channelInitializer)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
-           tcpChannel = b.bind(port).sync().channel();
+            tcpChannel = b.bind(port).sync().channel();
         } catch (Exception e) {
             throw e;
         }
@@ -65,7 +65,7 @@ public class TcpServer {
 
 
     public synchronized void bindUdp(int port, ChannelInitializer<?> channelInitializer, String username) throws InterruptedException {
-        if (username!=null) {
+        if (username != null) {
             statistics = new Statistics();
             statistics.setPort(port);
             statistics.setUsername(username);
@@ -77,7 +77,7 @@ public class TcpServer {
                     .option(ChannelOption.SO_BROADCAST, true)
                     .option(ChannelOption.SO_REUSEADDR, true)
                     .handler(channelInitializer);
-            udpChannel =  b.bind(port).sync().channel();
+            udpChannel = b.bind(port).sync().channel();
         } catch (Exception e) {
             throw e;
         }
@@ -99,12 +99,12 @@ public class TcpServer {
         packNum.incrementAndGet();
     }
 
-    public void addSend(Long num){
+    public void addSend(Long num) {
         GlobalStat.addSend(num);
         send.addAndGet(num);
     }
 
-    public void addReceive(Long num){
+    public void addReceive(Long num) {
         GlobalStat.addReceive(num);
         receive.addAndGet(num);
     }
@@ -128,15 +128,6 @@ public class TcpServer {
         }
         if (tcpChannel != null) {
             tcpChannel.close();
-        }
-    }
-
-    public synchronized void setAutoRead(boolean autoRead) {
-        if (udpChannel != null&&udpChannel.isActive()) {
-            udpChannel.config().setAutoRead(autoRead);
-        }
-        if (tcpChannel != null&&tcpChannel.isActive()) {
-            tcpChannel.config().setAutoRead(autoRead);
         }
     }
 }

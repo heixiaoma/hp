@@ -18,17 +18,6 @@ import java.io.IOException;
 public abstract class HpAbsHandler extends SimpleChannelInboundHandler<byte[]> {
     private static final Logger log = LoggerFactory.getLogger(HpAbsHandler.class);
 
-    protected ChannelHandlerContext ctx;
-
-    public ChannelHandlerContext getCtx() {
-        return ctx;
-    }
-
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        this.ctx = ctx;
-    }
-
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         if (!(cause instanceof IOException)){
