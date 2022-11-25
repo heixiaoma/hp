@@ -5,7 +5,5 @@ import cn.hserver.core.ioc.IocUtil;
 public class CostConfig {
     public static String VER_TOKEN = "";
     private static final Integer M = 1024 * 1024;
-    public static Integer LH = M * 50;
-    //默认5M
-    public static Integer LL = M * IocUtil.getBean(WebConfig.class).getLimit();
+    public static Integer LL = (int) (M * IocUtil.getBean(WebConfig.class).getLimit());
 }

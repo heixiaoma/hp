@@ -25,16 +25,16 @@ public class WebConfig {
     private String name;
 
     @Value("limit")
-    private Integer limit;
+    private Double limit;
 
-    public Integer getLimit() {
+    public Double getLimit() {
         if (limit == null || limit <= 0) {
-            limit = 5;
+            limit = 5.0;
         }
         return limit;
     }
 
-    public void setLimit(Integer limit) {
+    public void setLimit(Double limit) {
         this.limit = limit;
     }
 
