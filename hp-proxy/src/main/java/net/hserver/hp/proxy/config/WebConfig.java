@@ -24,6 +24,20 @@ public class WebConfig {
     @Value("name")
     private String name;
 
+    @Value("limit")
+    private Integer limit;
+
+    public Integer getLimit() {
+        if (limit == null || limit <= 0) {
+            limit = 5;
+        }
+        return limit;
+    }
+
+    public void setLimit(Integer limit) {
+        this.limit = limit;
+    }
+
     public String getName() {
         return name;
     }
