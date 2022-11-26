@@ -198,15 +198,15 @@ public class OpenApiController {
     @POST("/server/domainAdd")
     public JsonResult domainAdd(String userId, String domain) {
         domain = domain.trim();
-        if (domain.length() <= 5) {
-            return JsonResult.error("域名的长度太短，大于等于6位");
+        if (domain.length() <= 3) {
+            return JsonResult.error("域名的长度太短，大于等于4位");
         }
         if (!UserCheckUtil.checkUsername(domain)) {
             return JsonResult.error("域名只能小写字母和数字");
         }
         List<DomainEntity> ports = domainDao.createLambdaQuery().andEq(DomainEntity::getUserId, userId).select();
-        if (ports.size() > 1) {
-            return JsonResult.error("域名过多，暂时不能过多申请");
+        if (ports.size() > 2) {
+            return JsonResult.error("限定每人3个域名，域名过多，暂时不能过多申请");
         }
         List<DomainEntity> select = domainDao.createLambdaQuery().andEq(DomainEntity::getDomain, domain).select();
         if (select.isEmpty()) {
