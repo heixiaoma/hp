@@ -34,7 +34,7 @@ public class IndexController {
     public void index(HttpRequest request, HttpResponse response) {
         Map<String, Object> data = new HashMap<>(5);
         data.put("token", request.query("token"));
-        data.put("host", webConfig.getHost());
+        data.put("host", webConfig.getUserHost());
         data.put("statisticsSize", HpServerHandler.CURRENT_STATUS.size());
         data.put("statisticsData", HpServerHandler.CURRENT_STATUS);
         StringBuilder flowType = new StringBuilder();
