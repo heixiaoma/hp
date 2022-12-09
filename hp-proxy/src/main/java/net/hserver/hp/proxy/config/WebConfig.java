@@ -24,20 +24,6 @@ public class WebConfig {
     @Value("name")
     private String name;
 
-    @Value("limit")
-    private Double limit;
-
-    public Double getLimit() {
-        if (limit == null || limit <= 0) {
-            limit = 5.0;
-        }
-        return limit;
-    }
-
-    public void setLimit(Double limit) {
-        this.limit = limit;
-    }
-
     public String getName() {
         return name;
     }

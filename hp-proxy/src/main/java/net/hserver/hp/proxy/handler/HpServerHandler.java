@@ -1,6 +1,7 @@
 package net.hserver.hp.proxy.handler;
 
 import cn.hserver.core.ioc.IocUtil;
+import cn.hserver.core.server.util.JvmStack;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.group.ChannelGroup;
@@ -25,6 +26,7 @@ import net.hserver.hp.proxy.utils.NetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +52,28 @@ public class HpServerHandler extends HpCommonHandler {
     private boolean register = false;
 
     public HpServerHandler() {
+    }
+
+
+    public void printMem(boolean flag) {
+        try {
+            Class<?> c = Class.forName("java.nio.Bits");
+            Field maxMemory = c.getDeclaredField("maxMemory");
+            maxMemory.setAccessible(true);
+            Field reservedMemory = c.getDeclaredField("reservedMemory");
+            reservedMemory.setAccessible(true);
+            Long maxMemoryValue = (Long) maxMemory.get(null);
+            Long reservedMemoryValue = (Long) reservedMemory.get(null);
+            log.info("channelWritabilityChanged-->{},maxMemoryValue:{},reservedMemoryValue:{}",flag, (maxMemoryValue / (1024 * 1024) + "m"), (reservedMemoryValue / 1024 * 1024 + "m"));
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
+        ctx.channel().config().setAutoRead(ctx.channel().isWritable());
+        printMem(ctx.channel().isWritable());
     }
 
     public static void offline(String domain) {

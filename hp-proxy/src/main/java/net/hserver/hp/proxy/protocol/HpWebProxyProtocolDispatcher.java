@@ -1,6 +1,5 @@
 package net.hserver.hp.proxy.protocol;
 
-import cn.hserver.core.interfaces.ProtocolDispatcherAdapter;
 import cn.hserver.core.ioc.annotation.Autowired;
 import cn.hserver.core.ioc.annotation.Bean;
 import cn.hserver.core.ioc.annotation.Order;
@@ -12,8 +11,6 @@ import cn.hserver.plugin.web.protocol.DispatchHttp;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.traffic.GlobalTrafficShapingHandler;
-import net.hserver.hp.proxy.config.CostConfig;
 import net.hserver.hp.proxy.config.WebConfig;
 import net.hserver.hp.proxy.handler.HpServerHandler;
 import net.hserver.hp.proxy.handler.proxy.FrontendHandler;

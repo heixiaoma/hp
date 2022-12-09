@@ -20,7 +20,6 @@ import static net.hserver.hp.proxy.utils.FileUtil.readFile;
 
 public class RouterHandler extends SimpleChannelInboundHandler<HttpRequest> {
     public static String dataHtml = "与服务器断开了连接";
-    private static final Logger log = LoggerFactory.getLogger(RouterHandler.class);
 
     static {
         Map<String, Object> data = new HashMap<>();
@@ -31,7 +30,6 @@ public class RouterHandler extends SimpleChannelInboundHandler<HttpRequest> {
             e.printStackTrace();
         }
     }
-
 
     private final ERROR error;
 
@@ -49,16 +47,13 @@ public class RouterHandler extends SimpleChannelInboundHandler<HttpRequest> {
         ctx.close();
     }
 
-
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         ctx.flush();
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("官网错误 ......", cause);
         BuildResponse.writeException(ctx, cause);
-
     }
 
     public enum ERROR {
