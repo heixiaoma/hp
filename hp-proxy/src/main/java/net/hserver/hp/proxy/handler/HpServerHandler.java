@@ -57,14 +57,9 @@ public class HpServerHandler extends HpCommonHandler {
 
     public void printMem(boolean flag) {
         try {
-            Class<?> c = Class.forName("java.nio.Bits");
-            Field maxMemory = c.getDeclaredField("maxMemory");
-            maxMemory.setAccessible(true);
-            Field reservedMemory = c.getDeclaredField("reservedMemory");
-            reservedMemory.setAccessible(true);
-            Long maxMemoryValue = (Long) maxMemory.get(null);
-            Long reservedMemoryValue = (Long) reservedMemory.get(null);
-            log.info("channelWritabilityChanged-->{},maxMemoryValue:{},reservedMemoryValue:{}",flag, (maxMemoryValue / (1024 * 1024) + "m"), (reservedMemoryValue / 1024 * 1024 + "m"));
+            JvmStack.printGCInfo();
+            JvmStack.printMemoryInfo();
+            log.info("channelWritabilityChanged-->{}",flag);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

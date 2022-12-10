@@ -12,7 +12,7 @@ import io.netty.channel.WriteBufferWaterMark;
 @HServerBoot
 public class StartProxy {
     public static void main(String[] args) {
-        HServerApplication.addTcpOptions(ChannelOption.valueOf("WRITE_BUFFER_WATER_MARK"), new WriteBufferWaterMark(1024 * 1024 * 5, 1024 * 1024 * 10));
+        HServerApplication.addTcpOptions(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(1024 * 1024 * 50, 1024 * 1024 * 250));
         HServerApplication.run(StartProxy.class, new Integer[]{PropUtil.getInstance().getInt("port"), 80, 443}, args);
     }
 }
