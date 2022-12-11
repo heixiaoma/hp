@@ -18,7 +18,11 @@ func NewTcpConnection() *TcpConnection {
 func (connection *TcpConnection) Connect(host string, port int, redType bool, handler Handler, call func(mgs string)) net.Conn {
 	conn, err := net.Dial("tcp", host+":"+strconv.Itoa(port))
 	if err != nil {
-		call("不能能连到服务器：" + host + ":" + strconv.Itoa(port) + " 原因：" + err.Error())
+		if redType {
+			call("不能能连到穿透服务器：" + host + ":" + strconv.Itoa(port) + " 原因：" + err.Error())
+		} else {
+			call("不能能连到内网服务器：" + host + ":" + strconv.Itoa(port) + " 原因：" + err.Error())
+		}
 		return nil
 	}
 	handler.ChannelActive(conn)
