@@ -46,9 +46,14 @@ type Res struct {
 func Post(uri string, data url.Values) string {
 	resp, err := http.PostForm(API+uri, data)
 	if err != nil {
-		// handle error
+		log.Println(err)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(resp.Body)
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "nil"
@@ -58,9 +63,14 @@ func Post(uri string, data url.Values) string {
 func Get(uri string) string {
 	resp, err := http.Get(API + uri)
 	if err != nil {
-		// handle error
+		log.Println(err)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(resp.Body)
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "nil"
