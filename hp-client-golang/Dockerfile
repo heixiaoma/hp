@@ -9,4 +9,4 @@ EXPOSE 10240
 
 CMD ./hp-client-golang-amd64
 
-#
+#docker build -t hp-client .
