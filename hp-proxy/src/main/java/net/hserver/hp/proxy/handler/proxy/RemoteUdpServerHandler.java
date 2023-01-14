@@ -6,6 +6,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
+import io.netty.util.Attribute;
+import io.netty.util.AttributeKey;
 import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessageData;
 import net.hserver.hp.proxy.handler.TcpServer;
@@ -23,34 +25,18 @@ public class RemoteUdpServerHandler extends
     private final TcpServer tcpServer;
 
     private final HpCommonHandler proxyHandler;
-
-    private ChannelHandlerContext channelHandlerContext;
-
-    private final Map<String, InetSocketAddress> Sender = new ConcurrentHashMap<>();
-
-    public InetSocketAddress getSender(String id) {
-        InetSocketAddress inetSocketAddress = Sender.get(id);
-        return inetSocketAddress;
-    }
+    public static final AttributeKey<InetSocketAddress> SENDER = AttributeKey.valueOf("Sender");
 
     public RemoteUdpServerHandler(HpCommonHandler proxyHandler, TcpServer tcpServer) {
         this.tcpServer = tcpServer;
         this.proxyHandler = proxyHandler;
     }
 
-    public ChannelHandlerContext getChannelHandlerContext() {
-        return channelHandlerContext;
-    }
-
-    @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        Sender.remove(ctx.channel().id().asLongText());
-    }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
             throws Exception {
-       log.error("UDP",cause);
+        log.error("UDP", cause);
         ctx.close();
     }
 
@@ -62,7 +48,6 @@ public class RemoteUdpServerHandler extends
      */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        this.channelHandlerContext = ctx;
         tcpServer.addConnectNum();
         HpMessageData.HpMessage.Builder messageBuilder = HpMessageData.HpMessage.newBuilder();
         messageBuilder.setType(HpMessageData.HpMessage.HpMessageType.CONNECTED);
@@ -86,7 +71,7 @@ public class RemoteUdpServerHandler extends
         messageBuilder.setMetaData(HpMessageData.HpMessage.MetaData.newBuilder().setType(HpMessageData.HpMessage.MessageType.UDP).setChannelId(ctx.channel().id().asLongText()).build());
         messageBuilder.setData(ByteString.copyFrom(ByteBufUtil.getBytes(msg.content())));
         proxyHandler.getCtx().writeAndFlush(messageBuilder.build());
-        Sender.remove(ctx.channel().id().asLongText());
-        Sender.put(ctx.channel().id().asLongText(), msg.sender());
+        final Attribute<InetSocketAddress> attr = ctx.channel().attr(SENDER);
+        attr.set(msg.sender());
     }
 }

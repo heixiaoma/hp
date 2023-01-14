@@ -1,23 +1,17 @@
 package net.hserver.hp.proxy.handler;
 
-import cn.hserver.core.server.context.ConstConfig;
-import cn.hserver.core.server.handlers.HumServerHandler;
 import cn.hserver.core.server.util.NamedThreadFactory;
-import cn.hserver.core.server.util.PropUtil;
-import cn.hserver.plugin.web.context.WebConstConfig;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import net.hserver.hp.proxy.config.CostConfig;
 import net.hserver.hp.proxy.domian.bean.GlobalStat;
 import net.hserver.hp.proxy.domian.bean.Statistics;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import static cn.hserver.core.server.context.ConstConfig.HUM_PORT;
 
 
 /**
@@ -53,6 +47,7 @@ public class TcpServer {
         }
         try {
             ServerBootstrap b = new ServerBootstrap();
+            //todo 添加流量整形控制
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .childHandler(channelInitializer)

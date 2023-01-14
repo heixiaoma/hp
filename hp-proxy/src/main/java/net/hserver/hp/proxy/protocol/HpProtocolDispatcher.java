@@ -31,6 +31,8 @@ public class HpProtocolDispatcher implements ProtocolDispatcherAdapter {
             port = PropUtil.getInstance().getInt("port");
         }
         if (socketAddress.getPort() == port) {
+            //todo 添加流量整形控制
+            channelPipeline.addLast(new GlobalTrafficShapingHandler(ctx.executor(), 1024 * 512, 1024 * 512) );
             channelPipeline.addLast(new IdleStateHandler(60, 30, 0));
             channelPipeline.addLast(new HpMessageDecoder());
             channelPipeline.addLast(new HpMessageEncoder());

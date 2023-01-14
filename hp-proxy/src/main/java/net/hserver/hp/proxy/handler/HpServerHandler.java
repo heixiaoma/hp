@@ -11,7 +11,9 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.bytes.ByteArrayDecoder;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import io.netty.handler.traffic.GlobalTrafficShapingHandler;
+import io.netty.util.Attribute;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import io.netty.util.internal.PlatformDependent;
 import net.hserver.hp.common.exception.HpException;
 import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessageData;
@@ -27,9 +29,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -45,7 +49,7 @@ public class HpServerHandler extends HpCommonHandler {
     public static final Map<String, ConnectInfo> CURRENT_STATUS = new ConcurrentHashMap<>();
 
     private static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-    private static final Map<String, RemoteUdpServerHandler> UDPCHANNELS = new ConcurrentHashMap<>();
+    private static final ChannelGroup udp_channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     private final List<Integer> ports = new ArrayList<>();
 
@@ -54,22 +58,6 @@ public class HpServerHandler extends HpCommonHandler {
     public HpServerHandler() {
     }
 
-
-    public void printMem(boolean flag) {
-        try {
-            JvmStack.printGCInfo();
-            JvmStack.printMemoryInfo();
-            log.info("channelWritabilityChanged-->{}",flag);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
-        ctx.channel().config().setAutoRead(ctx.channel().isWritable());
-        printMem(ctx.channel().isWritable());
-    }
 
     public static void offline(String domain) {
         CURRENT_STATUS.forEach((k, v) -> {
@@ -159,6 +147,7 @@ public class HpServerHandler extends HpCommonHandler {
                     public void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(
                                 //添加编码器作用是进行统计，包数据
+                                new GlobalTrafficShapingHandler(ctx.executor(), 1024 * 512, 1024 * 512),
                                 new ByteArrayDecoder(),
                                 new ByteArrayEncoder(),
                                 new RemoteProxyHandler(thisHandler, remoteConnectionServer)
@@ -220,7 +209,6 @@ public class HpServerHandler extends HpCommonHandler {
                     tempPort = NetUtil.getAvailablePort();
                 }
                 HpServerHandler thisHandler = this;
-                //todo 实现一个UDP服务器，转发到内网数据来
                 remoteConnectionServer.bindUdp(tempPort, new ChannelInitializer<Channel>() {
                     @Override
                     public void initChannel(Channel ch) throws Exception {
@@ -229,7 +217,7 @@ public class HpServerHandler extends HpCommonHandler {
                                 //添加编码器作用是进行统计，包数据
                                 remoteUdpServerHandler
                         );
-                        UDPCHANNELS.put(ch.id().asLongText(), remoteUdpServerHandler);
+                        udp_channels.add(ch);
                     }
                 }, login.getUsername());
                 metaDataBuild.setSuccess(true);
@@ -263,11 +251,24 @@ public class HpServerHandler extends HpCommonHandler {
         byte[] bytes = hpMessage.getData().toByteArray();
         remoteConnectionServer.addReceive((long) bytes.length);
         if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.TCP) {
-            channels.writeAndFlush(bytes, channel -> channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId()));
+            final Channel targetChannel = channels.stream().filter(channel ->
+                    channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId())
+            ).findFirst().orElse(null);
+            if (targetChannel != null) {
+                targetChannel.writeAndFlush(bytes);
+            }
         }
         if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.UDP) {
-            RemoteUdpServerHandler remoteUdpServerHandler = UDPCHANNELS.get(hpMessage.getMetaData().getChannelId());
-            remoteUdpServerHandler.getChannelHandlerContext().writeAndFlush(new DatagramPacket(Unpooled.wrappedBuffer(bytes), remoteUdpServerHandler.getSender(hpMessage.getMetaData().getChannelId())));
+            final Channel targetChannel = udp_channels.stream().filter(channel ->
+                    channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId())
+            ).findFirst().orElse(null);
+            if (targetChannel != null) {
+                final Attribute<InetSocketAddress> attr = targetChannel.attr(RemoteUdpServerHandler.SENDER);
+                final InetSocketAddress inetSocketAddress = attr.get();
+                if (inetSocketAddress != null) {
+                    targetChannel.writeAndFlush(new DatagramPacket(Unpooled.wrappedBuffer(bytes), inetSocketAddress));
+                }
+            }
         }
     }
 
@@ -278,6 +279,6 @@ public class HpServerHandler extends HpCommonHandler {
      */
     private void processDisconnected(HpMessageData.HpMessage hpMessage) {
         channels.close(channel -> channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId()));
-        UDPCHANNELS.remove(hpMessage.getMetaData().getChannelId());
+        udp_channels.close(channel -> channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId()));
     }
 }

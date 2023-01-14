@@ -21,15 +21,6 @@ public class RemoteProxyHandler extends HpAbsHandler {
         this.tcpServer = tcpServer;
     }
 
-    @Override
-    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
-        ctx.channel().config().setAutoRead(ctx.channel().isWritable());
-        if (ctx.channel().isWritable()&&proxyHandler.getCtx().channel().isWritable()) {
-            proxyHandler.getCtx().channel().config().setAutoRead(true);
-        }else {
-            proxyHandler.getCtx().channel().config().setAutoRead(false);
-        }
-    }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
