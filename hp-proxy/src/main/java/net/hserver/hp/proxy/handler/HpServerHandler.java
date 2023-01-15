@@ -147,7 +147,7 @@ public class HpServerHandler extends HpCommonHandler {
                     public void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(
                                 //添加编码器作用是进行统计，包数据
-                                new GlobalTrafficShapingHandler(ctx.executor(), 1024 * 512, 1024 * 512),
+                                new FlowGlobalTrafficShapingHandler(ctx.executor()),
                                 new ByteArrayDecoder(),
                                 new ByteArrayEncoder(),
                                 new RemoteProxyHandler(thisHandler, remoteConnectionServer)
