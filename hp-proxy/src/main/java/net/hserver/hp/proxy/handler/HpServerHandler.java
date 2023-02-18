@@ -270,6 +270,14 @@ public class HpServerHandler extends HpCommonHandler {
                     channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId())
             ).findFirst().orElse(null);
             if (targetChannel != null) {
+                //关闭当前所有通道的读功能，等缓存写出去在打开读取外部资源
+                if (targetChannel.isWritable()){
+                    for (ConnectInfo value : CURRENT_STATUS.values()) {
+                        if (!value.getChannel().config().isAutoRead()) {
+                            value.getChannel().config().setAutoRead(true);
+                        }
+                    }
+                }
                 targetChannel.writeAndFlush(bytes);
             }
         }
