@@ -268,6 +268,6 @@ public class OpenApiController {
                     log.debug("file {} transfer progress: {}/{}", file.getName(), progress, total);
                 }
             }
-        }, request.getCtx());
+        }, request);
     }
 }
