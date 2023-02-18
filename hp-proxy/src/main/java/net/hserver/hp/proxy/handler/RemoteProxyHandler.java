@@ -30,7 +30,6 @@ public class RemoteProxyHandler extends HpAbsHandler {
     }
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        ctx.flush();
         if (!ctx.channel().isWritable()) {
             Channel channel = ctx.channel();
             channel.config().setAutoRead(false);
@@ -38,8 +37,7 @@ public class RemoteProxyHandler extends HpAbsHandler {
     }
 
     @Override
-    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception
-    {
+    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
         boolean writable = channel.isWritable();
         channel.config().setAutoRead(writable);
@@ -64,9 +62,6 @@ public class RemoteProxyHandler extends HpAbsHandler {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        if (proxyHandler.getCtx().channel().isWritable()) {
-            proxyHandler.getCtx().channel().config().setAutoRead(true);
-        }
         tcpServer.addConnectNum();
         HpMessageData.HpMessage.Builder messageBuilder = HpMessageData.HpMessage.newBuilder();
         messageBuilder.setType(HpMessageData.HpMessage.HpMessageType.CONNECTED);

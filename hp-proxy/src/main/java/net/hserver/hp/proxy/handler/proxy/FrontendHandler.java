@@ -35,23 +35,7 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
         Channel channel = ctx.channel();
         boolean writable = channel.isWritable();
         channel.config().setAutoRead(writable);
-        //todo 控制HP通道的读取，主要是内网上传服务器导致数据积压
-        //获取是否有不可写通道
-        Channel channel1 = channels.stream().filter(k->!k.isWritable()).findFirst().orElse(null);
-        //所有外部存在不可写通道，hp不能读取
-        if (channel1!=null){
-            for (ConnectInfo value : CURRENT_STATUS.values()) {
-                if (value.getChannel().config().isAutoRead()) {
-                    value.getChannel().config().setAutoRead(false);
-                }
-            }
-        }else {
-            for (ConnectInfo value : CURRENT_STATUS.values()) {
-                if (!value.getChannel().config().isAutoRead()) {
-                    value.getChannel().config().setAutoRead(true);
-                }
-            }
-        }
+        outboundChannel.config().setAutoRead(writable);
     }
 
 
