@@ -12,6 +12,7 @@ import net.hserver.hp.proxy.domian.bean.Statistics;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import static net.hserver.hp.proxy.config.CostConfig.WRITE_BUFFER_WATER_MARK;
 
 
 /**
@@ -47,10 +48,10 @@ public class TcpServer {
         }
         try {
             ServerBootstrap b = new ServerBootstrap();
-            //todo 添加流量整形控制
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .childHandler(channelInitializer)
+                    .option(ChannelOption.WRITE_BUFFER_WATER_MARK, WRITE_BUFFER_WATER_MARK)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
             tcpChannel = b.bind(port).sync().channel();
         } catch (Exception e) {

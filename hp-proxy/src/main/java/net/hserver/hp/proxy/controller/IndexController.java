@@ -102,7 +102,7 @@ public class IndexController {
                     log.debug("file {} transfer progress: {}/{}", file.getName(), progress, total);
                 }
             }
-        }, request);
+        },request);
     }
 
 }

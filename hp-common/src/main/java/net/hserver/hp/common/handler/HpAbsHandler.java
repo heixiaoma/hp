@@ -26,12 +26,6 @@ public abstract class HpAbsHandler extends SimpleChannelInboundHandler<byte[]> {
         ctx.close();
     }
 
-
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        ctx.flush();
-    }
-
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {

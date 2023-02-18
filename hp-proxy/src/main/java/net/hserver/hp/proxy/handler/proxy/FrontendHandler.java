@@ -4,13 +4,17 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import io.netty.util.ReferenceCountUtil;
-import net.hserver.hp.proxy.config.CostConfig;
+import io.netty.util.internal.PlatformDependent;
+import net.hserver.hp.proxy.domian.bean.ConnectInfo;
+import net.hserver.hp.proxy.handler.HpServerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+
+import static net.hserver.hp.proxy.handler.HpServerHandler.CURRENT_STATUS;
+
 
 public class FrontendHandler extends ChannelInboundHandlerAdapter {
     private static final Logger log = LoggerFactory.getLogger(FrontendHandler.class);
@@ -18,6 +22,27 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
     private final Integer port;
     private Channel outboundChannel;
 
+
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+        if (!ctx.channel().isWritable()) {
+            Channel channel = ctx.channel();
+            channel.config().setAutoRead(false);
+        }
+    }
+
+    @Override
+    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
+        Channel channel = ctx.channel();
+        boolean writable = channel.isWritable();
+        channel.config().setAutoRead(writable);
+        //todo 控制HP通道的读取，主要是内网上传服务器导致数据积压
+        for (ConnectInfo value : CURRENT_STATUS.values()) {
+            if (value.getChannel().isActive()){
+                value.getChannel().config().setAutoRead(writable);
+            }
+        }
+    }
 
 
     public FrontendHandler(Integer port) {

@@ -1,26 +1,54 @@
 package net.hserver.hp.proxy.handler;
 
 import com.google.protobuf.ByteString;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.internal.PlatformDependent;
 import net.hserver.hp.common.handler.HpAbsHandler;
-import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessageData;
+import net.hserver.hp.proxy.domian.bean.ConnectInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static net.hserver.hp.proxy.handler.HpServerHandler.CURRENT_STATUS;
 
 /**
  * @author hxm
  */
 public class RemoteProxyHandler extends HpAbsHandler {
+    private static final Logger log = LoggerFactory.getLogger(RemoteProxyHandler.class);
+
     private final HpServerHandler proxyHandler;
 
     private final TcpServer tcpServer;
+
 
     public RemoteProxyHandler(HpServerHandler proxyHandler, TcpServer tcpServer) {
         this.proxyHandler = proxyHandler;
         this.tcpServer = tcpServer;
     }
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+        ctx.flush();
+        if (!ctx.channel().isWritable()) {
+            Channel channel = ctx.channel();
+            channel.config().setAutoRead(false);
+        }
+    }
 
+    @Override
+    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception
+    {
+        Channel channel = ctx.channel();
+        boolean writable = channel.isWritable();
+        channel.config().setAutoRead(writable);
+        //todo 控制HP通道的读取，主要是内网上传服务器导致数据积压
+        for (ConnectInfo value : CURRENT_STATUS.values()) {
+            if (value.getChannel().isActive()){
+                value.getChannel().config().setAutoRead(writable);
+            }
+        }
+    }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {

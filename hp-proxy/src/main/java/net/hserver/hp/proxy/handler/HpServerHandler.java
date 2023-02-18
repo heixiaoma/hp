@@ -17,7 +17,6 @@ import io.netty.util.internal.PlatformDependent;
 import net.hserver.hp.common.exception.HpException;
 import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessageData;
-import net.hserver.hp.proxy.config.CostConfig;
 import net.hserver.hp.proxy.config.WebConfig;
 import net.hserver.hp.proxy.domian.bean.ConnectInfo;
 import net.hserver.hp.proxy.domian.bean.Statistics;
@@ -28,14 +27,11 @@ import net.hserver.hp.proxy.utils.NetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-
 
 /**
  * @author hxm
@@ -48,7 +44,7 @@ public class HpServerHandler extends HpCommonHandler {
 
     public static final Map<String, ConnectInfo> CURRENT_STATUS = new ConcurrentHashMap<>();
 
-    private static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    public static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private static final ChannelGroup udp_channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     private final List<Integer> ports = new ArrayList<>();
@@ -58,6 +54,25 @@ public class HpServerHandler extends HpCommonHandler {
     public HpServerHandler() {
     }
 
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+        if (!ctx.channel().isWritable()) {
+            Channel channel = ctx.channel();
+            channel.config().setAutoRead(false);
+        }
+    }
+
+    @Override
+    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception
+    {
+        Channel channel = ctx.channel();
+        boolean writable = channel.isWritable();
+        channel.config().setAutoRead(writable);
+        //todo 控制web代理和外网的读写、针对外网用户忘内网输入
+        for (Channel channel1 : channels) {
+            channel1.config().setAutoRead(writable);
+        }
+    }
 
     public static void offline(String domain) {
         CURRENT_STATUS.forEach((k, v) -> {
@@ -147,7 +162,7 @@ public class HpServerHandler extends HpCommonHandler {
                     public void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(
                                 //添加编码器作用是进行统计，包数据
-                                new FlowGlobalTrafficShapingHandler(ctx.executor()),
+//                                new FlowGlobalTrafficShapingHandler(ctx.executor()),
                                 new ByteArrayDecoder(),
                                 new ByteArrayEncoder(),
                                 new RemoteProxyHandler(thisHandler, remoteConnectionServer)
