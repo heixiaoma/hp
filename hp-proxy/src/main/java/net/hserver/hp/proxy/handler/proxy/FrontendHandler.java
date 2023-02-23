@@ -5,38 +5,15 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.ReferenceCountUtil;
-import net.hserver.hp.proxy.domian.bean.ConnectInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-
-import static net.hserver.hp.proxy.handler.HpServerHandler.CURRENT_STATUS;
-import static net.hserver.hp.proxy.handler.HpServerHandler.channels;
-
-
 public class FrontendHandler extends ChannelInboundHandlerAdapter {
     private static final Logger log = LoggerFactory.getLogger(FrontendHandler.class);
 
     private final Integer port;
     private Channel outboundChannel;
-
-
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        if (!ctx.channel().isWritable()) {
-            Channel channel = ctx.channel();
-            channel.config().setAutoRead(false);
-        }
-    }
-
-    @Override
-    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
-        Channel channel = ctx.channel();
-        boolean writable = channel.isWritable();
-        channel.config().setAutoRead(writable);
-        outboundChannel.config().setAutoRead(writable);
-    }
 
 
     public FrontendHandler(Integer port) {

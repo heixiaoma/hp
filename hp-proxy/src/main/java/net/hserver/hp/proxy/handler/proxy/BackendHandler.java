@@ -35,8 +35,7 @@ public class BackendHandler extends ChannelInboundHandlerAdapter {
                 future.channel().close();
                 inboundChannel.close();
                 if (msg == ReferenceCounted.class) {
-                    ReferenceCounted msg1 = (ReferenceCounted) msg;
-                    if (msg1.refCnt() > 0) {
+                    if (((ReferenceCounted) msg).refCnt() > 0) {
                         ReferenceCountUtil.release(msg);
                     }
                 }

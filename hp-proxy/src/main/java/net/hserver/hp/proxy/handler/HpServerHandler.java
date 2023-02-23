@@ -1,7 +1,6 @@
 package net.hserver.hp.proxy.handler;
 
 import cn.hserver.core.ioc.IocUtil;
-import cn.hserver.core.server.util.JvmStack;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.group.ChannelGroup;
@@ -10,10 +9,8 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.bytes.ByteArrayDecoder;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
-import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import io.netty.util.Attribute;
 import io.netty.util.concurrent.GlobalEventExecutor;
-import io.netty.util.internal.PlatformDependent;
 import net.hserver.hp.common.exception.HpException;
 import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessageData;
@@ -52,26 +49,6 @@ public class HpServerHandler extends HpCommonHandler {
     private boolean register = false;
 
     public HpServerHandler() {
-    }
-
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        if (!ctx.channel().isWritable()) {
-            Channel channel = ctx.channel();
-            channel.config().setAutoRead(false);
-        }
-    }
-
-    @Override
-    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception
-    {
-        Channel channel = ctx.channel();
-        boolean writable = channel.isWritable();
-        channel.config().setAutoRead(writable);
-        //todo 控制web代理和外网的读写、针对外网用户忘内网输入
-        for (Channel channel1 : channels) {
-            channel1.config().setAutoRead(writable);
-        }
     }
 
     public static void offline(String domain) {
@@ -257,30 +234,21 @@ public class HpServerHandler extends HpCommonHandler {
         }
     }
 
-
     /**
      * 内网数据返回到公网，这里做数据交换，返回给公网用户
      * if HpMessage.getType() == HpMessageType.DATA
      */
-    private void processData(HpMessageData.HpMessage hpMessage) {
+    private  void processData(HpMessageData.HpMessage hpMessage) {
         byte[] bytes = hpMessage.getData().toByteArray();
         remoteConnectionServer.addReceive((long) bytes.length);
         if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.TCP) {
-            final Channel targetChannel = channels.stream().filter(channel ->
+            channels.stream().filter(channel ->
                     channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId())
-            ).findFirst().orElse(null);
-            if (targetChannel != null) {
-                //关闭当前所有通道的读功能，等缓存写出去在打开读取外部资源
-                if (targetChannel.isWritable()){
-                    for (ConnectInfo value : CURRENT_STATUS.values()) {
-                        if (!value.getChannel().config().isAutoRead()) {
-                            value.getChannel().config().setAutoRead(true);
-                        }
-                    }
-                }
-                targetChannel.writeAndFlush(bytes);
-            }
+            ).findFirst().ifPresent(targetChannel -> targetChannel.writeAndFlush(bytes).addListener(future -> {
+                getCtx().channel().config().setAutoRead(targetChannel.isWritable());
+            }));
         }
+
         if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.UDP) {
             final Channel targetChannel = udp_channels.stream().filter(channel ->
                     channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId())
@@ -289,7 +257,9 @@ public class HpServerHandler extends HpCommonHandler {
                 final Attribute<InetSocketAddress> attr = targetChannel.attr(RemoteUdpServerHandler.SENDER);
                 final InetSocketAddress inetSocketAddress = attr.get();
                 if (inetSocketAddress != null) {
-                    targetChannel.writeAndFlush(new DatagramPacket(Unpooled.wrappedBuffer(bytes), inetSocketAddress));
+                    targetChannel.writeAndFlush(new DatagramPacket(Unpooled.wrappedBuffer(bytes), inetSocketAddress)).addListener(future -> {
+                        getCtx().channel().config().setAutoRead(targetChannel.isWritable());
+                    });
                 }
             }
         }

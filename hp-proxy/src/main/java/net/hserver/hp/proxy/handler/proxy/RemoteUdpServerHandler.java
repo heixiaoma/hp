@@ -70,7 +70,9 @@ public class RemoteUdpServerHandler extends
         messageBuilder.setType(HpMessageData.HpMessage.HpMessageType.DATA);
         messageBuilder.setMetaData(HpMessageData.HpMessage.MetaData.newBuilder().setType(HpMessageData.HpMessage.MessageType.UDP).setChannelId(ctx.channel().id().asLongText()).build());
         messageBuilder.setData(ByteString.copyFrom(ByteBufUtil.getBytes(msg.content())));
-        proxyHandler.getCtx().writeAndFlush(messageBuilder.build());
+        proxyHandler.getCtx().writeAndFlush(messageBuilder.build()).addListener(future -> {
+            ctx.channel().config().setAutoRead(proxyHandler.getCtx().channel().isWritable());
+        });
         final Attribute<InetSocketAddress> attr = ctx.channel().attr(SENDER);
         attr.set(msg.sender());
     }
