@@ -1,5 +1,6 @@
 package net.hserver.hp.proxy.handler;
 
+import cn.hserver.core.server.context.ConstConfig;
 import cn.hserver.core.server.util.NamedThreadFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
@@ -50,7 +51,9 @@ public class TcpServer {
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .childHandler(channelInitializer)
+                    .childOption(ChannelOption.TCP_NODELAY, true)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
+            b.option(ChannelOption.SO_BACKLOG, ConstConfig.backLog);
             tcpChannel = b.bind(port).sync().channel();
         } catch (Exception e) {
             throw e;

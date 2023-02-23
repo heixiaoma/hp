@@ -244,16 +244,17 @@ public class HpServerHandler extends HpCommonHandler {
         if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.TCP) {
             channels.stream().filter(channel ->
                     channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId())
-            ).findFirst().ifPresent(targetChannel -> targetChannel.writeAndFlush(bytes).addListener(future -> {
-                getCtx().channel().config().setAutoRead(targetChannel.isWritable());
-            }));
+            ).findFirst().ifPresent(targetChannel ->{
+                targetChannel.writeAndFlush(bytes).addListener(future -> {
+                    getCtx().channel().config().setAutoRead(targetChannel.isWritable());
+                });
+            });
         }
 
         if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.UDP) {
-            final Channel targetChannel = udp_channels.stream().filter(channel ->
+            udp_channels.stream().filter(channel ->
                     channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId())
-            ).findFirst().orElse(null);
-            if (targetChannel != null) {
+            ).findFirst().ifPresent(targetChannel ->{
                 final Attribute<InetSocketAddress> attr = targetChannel.attr(RemoteUdpServerHandler.SENDER);
                 final InetSocketAddress inetSocketAddress = attr.get();
                 if (inetSocketAddress != null) {
@@ -261,7 +262,7 @@ public class HpServerHandler extends HpCommonHandler {
                         getCtx().channel().config().setAutoRead(targetChannel.isWritable());
                     });
                 }
-            }
+            });
         }
     }
 

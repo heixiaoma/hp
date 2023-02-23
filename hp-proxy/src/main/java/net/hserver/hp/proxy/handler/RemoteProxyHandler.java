@@ -26,6 +26,9 @@ public class RemoteProxyHandler extends HpAbsHandler {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        if (ctx.channel().isWritable()) {
+            proxyHandler.getCtx().channel().config().setAutoRead(ctx.channel().isWritable());
+        }
         tcpServer.addConnectNum();
         HpMessageData.HpMessage.Builder messageBuilder = HpMessageData.HpMessage.newBuilder();
         messageBuilder.setType(HpMessageData.HpMessage.HpMessageType.CONNECTED);

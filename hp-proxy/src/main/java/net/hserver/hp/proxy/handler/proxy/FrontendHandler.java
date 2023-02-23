@@ -26,7 +26,6 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-
     public void write(ChannelHandlerContext ctx, Object msg) {
         outboundChannel.writeAndFlush(msg).addListener((ChannelFutureListener) future -> {
             if (!future.isSuccess()) {
@@ -49,8 +48,7 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
         } else {
             final Channel inboundChannel = ctx.channel();
             Bootstrap b = new Bootstrap();
-            b.group(inboundChannel.eventLoop());
-            b.option(ChannelOption.AUTO_READ, false)
+            b.group(inboundChannel.eventLoop())
                     .channel(NioSocketChannel.class)
                     .handler(new ChannelInitializer<Channel>() {
                         @Override
