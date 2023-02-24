@@ -26,6 +26,8 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
+
+
     public void write(ChannelHandlerContext ctx, Object msg) {
         outboundChannel.writeAndFlush(msg).addListener((ChannelFutureListener) future -> {
             if (!future.isSuccess()) {

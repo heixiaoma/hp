@@ -19,6 +19,16 @@ public class BackendHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
+    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
+        //如果连接服务器的内的内部转发不可以写等状态变化，需要控制外网上传数据的状态。用于处理上传时导致的问题
+        if (inboundChannel!=null) {
+            inboundChannel.config().setAutoRead(ctx.channel().isWritable());
+        }
+    }
+
+
+
+    @Override
     public void channelActive(ChannelHandlerContext ctx) {
         inboundChannel.config().setAutoRead(inboundChannel.isWritable());
     }
