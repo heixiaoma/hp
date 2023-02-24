@@ -29,6 +29,13 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
+    @Override
+    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
+        super.channelWritabilityChanged(ctx);
+        if (outboundChannel!=null){
+            outboundChannel.config().setAutoRead(ctx.channel().isWritable());
+        }
+    }
 
     public void write(ChannelHandlerContext ctx, Object msg) {
         outboundChannel.writeAndFlush(msg).addListener((ChannelFutureListener) future -> {
