@@ -39,7 +39,7 @@ public abstract class HpCommonHandler extends SimpleChannelInboundHandler<HpMess
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent e = (IdleStateEvent) evt;
-            //如果数据堆积情况，不能关闭连接，它在努力传输数据
+            //如果数据堆积情况，不能关闭连接，
             if (e.state() == IdleState.READER_IDLE&&ctx.channel().isWritable()) {
                 System.out.println("Read idle loss connection.");
                 ctx.close();

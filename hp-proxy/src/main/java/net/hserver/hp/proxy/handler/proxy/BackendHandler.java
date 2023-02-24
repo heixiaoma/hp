@@ -19,46 +19,42 @@ public class BackendHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
-        //如果连接服务器的内的内部转发不可以写等状态变化，需要控制外网上传数据的状态。用于处理上传时导致的问题
-        if (inboundChannel!=null) {
-            inboundChannel.config().setAutoRead(ctx.channel().isWritable());
-        }
-    }
-
-
-
-    @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        inboundChannel.config().setAutoRead(inboundChannel.isWritable());
+        ctx.read();
+        if (inboundChannel.isWritable()) {
+            inboundChannel.config().setAutoRead(true);
+        }
     }
 
     @Override
     public void channelRead(final ChannelHandlerContext ctx, Object msg) {
         inboundChannel.writeAndFlush(msg).addListener((ChannelFutureListener) future -> {
-            ctx.channel().config().setAutoRead(inboundChannel.isWritable());
             if (future.isSuccess()) {
                 ctx.channel().read();
             } else {
                 future.channel().close();
                 inboundChannel.close();
                 if (msg == ReferenceCounted.class) {
-                    if (((ReferenceCounted) msg).refCnt() > 0) {
-                        ReferenceCountUtil.release(msg);
+                    ReferenceCounted msg1 = (ReferenceCounted) msg;
+                    if (msg1.refCnt() > 0) {
+                        if (((ReferenceCounted) msg).refCnt() > 0) {
+                            ReferenceCountUtil.release(msg);
+                        }
                     }
                 }
             }
         });
     }
 
-    @Override
-    public void channelInactive(ChannelHandlerContext ctx) {
-        FrontendHandler.closeOnFlush(inboundChannel);
-    }
+        @Override
+        public void channelInactive (ChannelHandlerContext ctx){
+            FrontendHandler.closeOnFlush(inboundChannel);
+        }
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        log.error("WEB代理反向写", cause);
-        FrontendHandler.closeOnFlush(ctx.channel());
-    }
+        @Override
+        public void exceptionCaught (ChannelHandlerContext ctx, Throwable cause){
+            log.error("WEB代理反向写", cause);
+            FrontendHandler.closeOnFlush(ctx.channel());
+        }
 }
+

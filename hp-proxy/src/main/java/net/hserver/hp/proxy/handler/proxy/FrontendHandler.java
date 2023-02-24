@@ -4,11 +4,14 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import io.netty.util.ReferenceCountUtil;
+import net.hserver.hp.proxy.config.CostConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+
 public class FrontendHandler extends ChannelInboundHandlerAdapter {
     private static final Logger log = LoggerFactory.getLogger(FrontendHandler.class);
 
@@ -27,46 +30,41 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
     }
 
 
-
     public void write(ChannelHandlerContext ctx, Object msg) {
         outboundChannel.writeAndFlush(msg).addListener((ChannelFutureListener) future -> {
-            if (!future.isSuccess()) {
-                future.channel().close();
-                ReferenceCountUtil.release(msg);
+            if (future.isSuccess()) {
+            } else {
+                if (!future.isSuccess()) {
+                    future.channel().close();
+                    ReferenceCountUtil.release(msg);
+
+                }
             }
         });
     }
 
     @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        final Channel inboundChannel = ctx.channel();
+        Bootstrap b = new Bootstrap();
+        b.group(inboundChannel.eventLoop())
+                .channel(NioSocketChannel.class)
+                .handler(new ChannelInitializer<Channel>() {
+                    @Override
+                    protected void initChannel(Channel ch) throws Exception {
+                        ch.pipeline().addLast(new BackendHandler(inboundChannel));
+                    }
+                });
+        outboundChannel = b.connect("127.0.0.1", port).sync().channel();
+    }
+
+    @Override
     public void channelRead(final ChannelHandlerContext ctx, Object msg) {
-        if (outboundChannel != null) {
-            if (outboundChannel.isActive()) {
-                write(ctx, msg);
-            } else {
-                outboundChannel.close();
-                outboundChannel = null;
-                ReferenceCountUtil.release(msg);
-            }
+        if (outboundChannel.isActive()) {
+            write(ctx, msg);
         } else {
-            final Channel inboundChannel = ctx.channel();
-            Bootstrap b = new Bootstrap();
-            b.group(inboundChannel.eventLoop())
-                    .channel(NioSocketChannel.class)
-                    .handler(new ChannelInitializer<Channel>() {
-                        @Override
-                        protected void initChannel(Channel ch) throws Exception {
-                            ch.pipeline().addLast(new BackendHandler(inboundChannel));
-                        }
-                    });
-            b.connect("127.0.0.1", port).addListener((ChannelFutureListener) future -> {
-                if (future.isSuccess()) {
-                    outboundChannel = future.channel();
-                    write(ctx, msg);
-                } else {
-                    inboundChannel.close();
-                    ReferenceCountUtil.release(msg);
-                }
-            });
+            outboundChannel.close();
+            ReferenceCountUtil.release(msg);
         }
     }
 
@@ -79,9 +77,11 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        log.error("WEB通道 ......", cause);
         if (!(cause instanceof IOException)) {
             log.error("WEB通道 ......", cause);
         }
         closeOnFlush(ctx.channel());
     }
 }
+
