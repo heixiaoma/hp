@@ -39,6 +39,7 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
 
     public void write(ChannelHandlerContext ctx, Object msg) {
         outboundChannel.writeAndFlush(msg).addListener((ChannelFutureListener) future -> {
+            ctx.channel().config().setAutoRead(outboundChannel.isWritable());
                 if (!future.isSuccess()) {
                     future.channel().close();
                     ReferenceCountUtil.release(msg);

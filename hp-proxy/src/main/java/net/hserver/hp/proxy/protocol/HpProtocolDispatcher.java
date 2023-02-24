@@ -20,7 +20,7 @@ public class HpProtocolDispatcher implements ProtocolDispatcherAdapter {
 
     private Integer port;
 
-    //判断HP头
+    //判断HP头cd
     @Override
     public boolean dispatcher(ChannelHandlerContext ctx, ChannelPipeline channelPipeline, byte[] bytes) {
         InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().localAddress();
