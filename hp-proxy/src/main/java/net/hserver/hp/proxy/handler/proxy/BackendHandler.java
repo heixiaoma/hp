@@ -18,20 +18,11 @@ public class BackendHandler extends ChannelInboundHandlerAdapter {
         this.inboundChannel = inboundChannel;
     }
 
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) {
-        ctx.read();
-        if (inboundChannel.isWritable()) {
-            inboundChannel.config().setAutoRead(true);
-        }
-    }
 
     @Override
     public void channelRead(final ChannelHandlerContext ctx, Object msg) {
         inboundChannel.writeAndFlush(msg).addListener((ChannelFutureListener) future -> {
-            if (future.isSuccess()) {
-                ctx.channel().read();
-            } else {
+            if (!future.isSuccess()) {
                 future.channel().close();
                 inboundChannel.close();
                 if (msg == ReferenceCounted.class) {

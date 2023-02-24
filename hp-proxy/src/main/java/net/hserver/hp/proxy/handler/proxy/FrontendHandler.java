@@ -32,14 +32,10 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
 
     public void write(ChannelHandlerContext ctx, Object msg) {
         outboundChannel.writeAndFlush(msg).addListener((ChannelFutureListener) future -> {
-            if (future.isSuccess()) {
-            } else {
                 if (!future.isSuccess()) {
                     future.channel().close();
                     ReferenceCountUtil.release(msg);
-
                 }
-            }
         });
     }
 
@@ -77,7 +73,6 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        log.error("WEB通道 ......", cause);
         if (!(cause instanceof IOException)) {
             log.error("WEB通道 ......", cause);
         }
