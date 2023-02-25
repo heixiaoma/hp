@@ -46,6 +46,12 @@
                 <div class="mdui-list-item-content">用户管理</div>
             </div>
         </a>
+        <a class="mdui-collapse-item mdui-collapse-item-open" href="/admin/config">
+            <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-deep-orange-a100">layers</i>
+                <div class="mdui-list-item-content">自动穿透</div>
+            </div>
+        </a>
         <a class="mdui-collapse-item mdui-collapse-item-open" href="/admin/log">
             <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
                 <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">layers</i>

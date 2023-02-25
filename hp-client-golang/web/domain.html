@@ -9,6 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp"/>
     <link rel="stylesheet" href="common/css/mdui.min.css"/>
     <link rel="stylesheet" href="common/css/paging.css"/>
+    <script src="api.js"></script>
     <script src="common/js/jquery.min.js"></script>
     <script src="common/js/paging.js"></script>
     <script src="common/js/mdui.min.js"></script>
@@ -43,6 +44,12 @@
                 <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
                     <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-green">layers</i>
                     <div class="mdui-list-item-content">域名管理</div>
+                </div>
+            </a>
+            <a class="mdui-collapse-item mdui-collapse-item-open" href="autoproxy.html">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <i class="mdui-list-item-icon mdui-icon  material-icons mdui-text-color-cyan-300">layers</i>
+                    <div class="mdui-list-item-content">自动穿透</div>
                 </div>
             </a>
             <a class="mdui-collapse-item mdui-collapse-item-open" href="log.html">
@@ -117,24 +124,22 @@
     var userInfo = localStorage.getItem("userInfo")
     if (userInfo) {
         userInfo = JSON.parse(userInfo)
-        function stop(url) {
-            $.get(url, function (result) {
-                result=JSON.parse(result)
+        function stop(userId,domain) {
+            $.post(apiAddress+"/server/domainRemove",{userId:userId,domain:domain}, function (result) {
                 alert(result.msg)
-                location.reload()
+                reload()
             });
         }
         console.log(userInfo)
         $("#userInfo").val(userInfo.id)
         var tabData = ""
-        $.get("/server/domainList?userId="+userInfo.id, function (result) {
-            result=JSON.parse(result)
+        $.get(apiAddress+"/server/domainList?userId="+userInfo.id, function (result) {
             for (let a of result.data) {
                 tabData += "  <tr>\n" +
                     "                <td>" + a.domain + "</td>\n" +
                     "                <td>\n" +
                     "                    <button class=\"mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-orange-accent mdui-ripple\"\n" +
-                    "                       onclick='stop(\"/server/domainRemove?userId=" + userInfo.id + "&domain="+a.domain+"\")'>\n" +
+                    "                    onclick=\"stop('"+userInfo.id+"','"+a.domain+"')\">\n" +
                     "                        删除\n" +
                     "                    </button>\n" +
                     "                </td>\n" +
@@ -150,18 +155,33 @@
         let val = $("#userInfo").val();
         let val1 = $("#domain").val();
         if (val && val1) {
-            $.post("/server/domainAdd", {userId: val, domain: val1}, function (result) {
-                result=JSON.parse(result)
+            $.post(apiAddress+"/server/domainAdd", {userId: val, domain: val1}, function (result) {
                 if (result.code === 200) {
                     alert(result.msg)
-
-                    location.reload()
+                    reload()
                 } else {
                     alert(result.msg)
                 }
             });
         }
     })
+
+
+    /**
+     * 刷新
+     */
+    function reload(){
+        $.post(apiAddress+"/user/login", {username: userInfo.username, password: userInfo.password}, function (result) {
+            if (result.code === 200) {
+                localStorage.setItem("userInfo", JSON.stringify(result.data))
+                location.reload()
+            } else {
+                $("#closeLogin").click()
+                mdui.alert(result.msg);
+            }
+        });
+    }
+
 
 </script>
 

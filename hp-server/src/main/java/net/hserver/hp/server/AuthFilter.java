@@ -3,6 +3,7 @@ package net.hserver.hp.server;
 import cn.hserver.plugin.web.context.Webkit;
 import cn.hserver.plugin.web.interfaces.FilterAdapter;
 import cn.hserver.plugin.web.interfaces.HttpRequest;
+import io.netty.handler.codec.http.HttpMethod;
 import net.hserver.hp.server.config.WebConfig;
 import cn.hserver.core.ioc.annotation.Autowired;
 import cn.hserver.core.ioc.annotation.Bean;
@@ -23,6 +24,14 @@ public class AuthFilter implements FilterAdapter {
 
     @Override
     public void doFilter(Webkit webkit) throws Exception {
+        webkit.httpResponse.setHeader("Access-Control-Allow-Origin", "*");
+        webkit.httpResponse.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE");
+        webkit.httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
+        webkit.httpResponse.setHeader("Access-Control-Allow-Headers", "*");
+        if (webkit.httpRequest.getRequestType().equals(HttpMethod.OPTIONS)) {
+            webkit.httpResponse.sendHtml("");
+            return;
+        }
         HttpRequest request = webkit.httpRequest;
         if (request.getUri().contains("admin")) {
             String auth = request.getHeader("cookie");

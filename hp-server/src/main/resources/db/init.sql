@@ -83,6 +83,24 @@ CREATE TABLE "sys_statistics" (
   PRIMARY KEY ("id")
 );
 
+
+DROP TABLE IF EXISTS "sys_config";
+CREATE TABLE "sys_config" (
+                              "id" text NOT NULL,
+                              "user_id" text NOT NULL,
+                              "username" text NOT NULL,
+                              "password" text NOT NULL,
+                              "device_id" text NOT NULL,
+                              "user_host" TEXT,
+                              "server_host" TEXT,
+                              "type" TEXT,
+                              "domain" TEXT,
+                              "port" TEXT,
+                              "create_time" TEXT,
+                              PRIMARY KEY ("id")
+);
+
+
 # --添加管理员信息
 INSERT INTO "sys_user"("id", "username", "password", "type","create_time") VALUES ('1', 'admin', '123456', '1','1609660694000');
 

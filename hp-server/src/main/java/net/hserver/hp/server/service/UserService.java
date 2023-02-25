@@ -39,6 +39,8 @@ public interface UserService {
      */
     List<PortEntity> getPort(String userId);
 
+    UserEntity getUserById(String userId);
+
     List<DomainEntity> getDomain(String userId);
 
     /**

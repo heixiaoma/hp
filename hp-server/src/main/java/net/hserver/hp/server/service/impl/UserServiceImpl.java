@@ -42,6 +42,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserEntity getUserById(String userId) {
+        return userDao.single(userId);
+    }
+
+    @Override
     public List<DomainEntity> getDomain(String userId) {
         return domainDao.createLambdaQuery().andEq(DomainEntity::getUserId, userId).select();
     }

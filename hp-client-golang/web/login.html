@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="common/css/index.css"/>
     <link rel="stylesheet" href="common/css/mdui.min.css"/>
     <link rel="stylesheet" href="common/css/paging.css"/>
+    <script src="api.js"></script>
     <script src="common/js/jquery.min.js"></script>
     <script src="common/js/paging.js"></script>
     <script src="common/js/mdui.min.js"></script>
@@ -87,8 +88,7 @@
             let val = $("#username").val();
             let val1 = $("#password").val();
             if (val && val1) {
-                $.post("/user/login", {username: val, password: val1}, function (result) {
-                    result = JSON.parse(result)
+                $.post(apiAddress+"/user/login", {username: val, password: val1}, function (result) {
                     if (result.code === 200) {
                         localStorage.setItem("userInfo", JSON.stringify(result.data))
                         if (result.data.level==0){
@@ -108,8 +108,7 @@
             let val = $("#reg_username").val();
             let val1 = $("#reg_password").val();
             if (val && val1) {
-                $.post("/user/reg", {username: val, password: val1}, function (result) {
-                    result = JSON.parse(result)
+                $.post(apiAddress+"/user/reg", {username: val, password: val1}, function (result) {
                     if (result.code === 200) {
                         alert(result.msg)
                         location.reload()
@@ -152,10 +151,6 @@
     <div class="banner"><h1><strong>H</strong><strong>P</strong>内网穿透
     </h1>
         <div class="meta">我们支持TCP和UDP协议，针对 http/https ws/wss 协议做了大量的优化工作可以更加灵活的控制。让用户使用更佳舒服简单</div>
-        <div class="actions"><a href="https://gitee.com/HServer/hp-android-client/releases" class="mdui-btn mdui-ripple"
-                                target="_blank">APK下载</a><a
-                href="https://gitee.com/HServer/hp/releases" class="mdui-btn mdui-ripple">其他端下载</a>
-        </div>
         <div class="mdui-typo" style="margin-top: 50px">
             <span><a href="https://gitee.com/HServer/hp" rel="nofollow" target="_blank">开源地址</a></span>
             <span><a href="https://jq.qq.com/?_wv=1027&k=jWfkkSda" rel="nofollow"
@@ -253,9 +248,11 @@
 </body>
 
 <script>
-    $.get("/server/pay", function (result) {
-        result = JSON.parse(result)
+    $.get(apiAddress+"/server/pay", function (result) {
         var tabData = ""
+        if (result.code!==200){
+            return
+        }
         for (let a of result.data) {
             tabData += "   <div class=\"mdui-col pay\">\n" +
                 "                        <div>" + a.username + "</div>\n" +

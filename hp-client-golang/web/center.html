@@ -9,6 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp"/>
     <link rel="stylesheet" href="common/css/mdui.min.css"/>
     <link rel="stylesheet" href="common/css/paging.css"/>
+    <script src="api.js"></script>
     <script src="common/js/jquery.min.js"></script>
     <script src="common/js/paging.js"></script>
     <script src="common/js/mdui.min.js"></script>
@@ -43,6 +44,12 @@
                 <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
                     <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-green">layers</i>
                     <div class="mdui-list-item-content">域名管理</div>
+                </div>
+            </a>
+            <a class="mdui-collapse-item mdui-collapse-item-open" href="autoproxy.html">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <i class="mdui-list-item-icon mdui-icon  material-icons mdui-text-color-cyan-300">layers</i>
+                    <div class="mdui-list-item-content">自动穿透</div>
                 </div>
             </a>
             <a class="mdui-collapse-item mdui-collapse-item-open" href="log.html">
@@ -144,7 +151,7 @@
 
                 <div style="display: none;" class="mdui-textfield" id="showServerInfoInPut">
                     <label class="mdui-textfield-label">自定义穿透服务</label>
-                    <input class="mdui-textfield-input" id="showServerInfoInPutVal" placeholder="ip+端口" type="text"/>
+                    <input class="mdui-textfield-input" id="showServerInfoInPutVal" placeholder="ip:端口" type="text"/>
                 </div>
 
                 <div class="mdui-textfield" id="domains">
@@ -176,6 +183,7 @@
 <script>
     $("#add_btn").click(function () {
         let serialize = $("#handle-form").serializeArray();
+        //处理自定义穿透服务选项
         for (let a of serialize) {
             if (a.name == 'server_info' && a.value == '-1') {
                 a.value = $("#showServerInfoInPutVal").val()
@@ -241,8 +249,7 @@
         }
 
         $("#refUser").click(function () {
-            $.post("/user/login", {username: userInfo.username, password: userInfo.password}, function (result) {
-                result = JSON.parse(result)
+            $.post(apiAddress+"/user/login", {username: userInfo.username, password: userInfo.password}, function (result) {
                 if (result.code === 200) {
                     localStorage.setItem("userInfo", JSON.stringify(result.data))
                     location.href = "./center.html";
@@ -288,8 +295,7 @@
 
         var serverData = []
 
-        $.get("/load/data", function (result) {
-            result = JSON.parse(result)
+        $.get(apiAddress+"/load/data", function (result) {
             if (result.code === 200) {
                 serverData.push(...result.data)
             }

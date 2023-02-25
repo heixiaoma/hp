@@ -2,6 +2,8 @@ package web
 
 import (
 	"embed"
+	"encoding/json"
+	"github.com/denisbrodbeck/machineid"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	HpMessage "hp-client-golang/hpMessage"
@@ -9,7 +11,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"net/url"
 	"strconv"
 	"strings"
 	"sync"
@@ -18,7 +19,6 @@ import (
 
 //go:embed *
 var staticFs embed.FS
-var API = "http://ksweb.club:9090"
 
 // 创建一个以域名为主得map
 var ConnGroup = sync.Map{}
@@ -43,39 +43,20 @@ type Res struct {
 	Msg  string
 }
 
-func Post(uri string, data url.Values) string {
-	resp, err := http.PostForm(API+uri, data)
-	if err != nil {
-		log.Println(err)
-	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			log.Println(err)
-		}
-	}(resp.Body)
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return "nil"
-	}
-	return string(body)
+type DeviceInfo struct {
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	UserHost   string `json:"userHost"`
+	ServerHost string `json:"serverHost"`
+	Type       string `json:"type"`
+	Domain     string `json:"domain"`
+	Port       string `json:"port"`
 }
-func Get(uri string) string {
-	resp, err := http.Get(API + uri)
-	if err != nil {
-		log.Println(err)
-	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			log.Println(err)
-		}
-	}(resp.Body)
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return "nil"
-	}
-	return string(body)
+
+type DeviceData struct {
+	Code int           `json:"code"`
+	Msg  string        `json:"msg"`
+	Data []*DeviceInfo `json:"data"`
 }
 
 func Proxy(messageType HpMessage.HpMessage_MessageType, server_ip string, server_port int, username string, password string, domain string, remote_port int, ip string, port int) bool {
@@ -105,28 +86,15 @@ func Proxy(messageType HpMessage.HpMessage_MessageType, server_ip string, server
 	return true
 }
 
-func StartWeb(webPort int, api string) {
-	API = api
+func StartWeb(webPort int) {
 	gin.SetMode(gin.ReleaseMode)
 	gin.DefaultWriter = io.Discard
 	e := gin.Default()
 	e.StaticFS("/static", http.FS(staticFs))
-	e.POST("/user/login", func(context *gin.Context) {
-		username := context.PostForm("username")
-		password := context.PostForm("password")
-		post := Post("/user/login", url.Values{"username": {username}, "password": {password}})
-		context.String(http.StatusOK, post)
-	})
-	e.POST("/user/reg", func(context *gin.Context) {
-		username := context.PostForm("username")
-		password := context.PostForm("password")
-		post := Post("/user/reg", url.Values{"username": {username}, "password": {password}})
-		context.String(http.StatusOK, post)
-	})
-	e.GET("/load/data", func(context *gin.Context) {
-		post := Get("/load/data")
-		context.String(http.StatusOK, post)
-	})
+
+	/**
+	添加穿透
+	*/
 	e.POST("/server/proxy", func(context *gin.Context) {
 		ip := context.PostForm("ip")
 		port := context.PostForm("port")
@@ -189,6 +157,9 @@ func StartWeb(webPort int, api string) {
 		}
 	})
 
+	/**
+	当前穿透列表
+	*/
 	e.GET("/server/info", func(context *gin.Context) {
 		ret := make([]*ServerInfo, 0)
 		ConnGroup.Range(func(key, value interface{}) bool {
@@ -203,6 +174,10 @@ func StartWeb(webPort int, api string) {
 		})
 		context.JSON(http.StatusOK, ret)
 	})
+
+	/**
+	停止穿透服务
+	*/
 	e.GET("/server/stop", func(context *gin.Context) {
 		domain := context.Query("domain")
 		load, ok := ConnGroup.Load(domain)
@@ -222,54 +197,11 @@ func StartWeb(webPort int, api string) {
 		}
 	})
 
-	e.POST("/server/portAdd", func(context *gin.Context) {
-		userId := context.PostForm("userId")
-		port := context.PostForm("port")
-		post := Post("/server/portAdd", url.Values{"userId": {userId}, "port": {port}})
-		println(post)
-		context.String(http.StatusOK, post)
-	})
-	e.GET("/server/portList", func(context *gin.Context) {
-		userId := context.Query("userId")
-		post := Get("/server/portList?userId=" + userId)
-		context.String(http.StatusOK, post)
-	})
-	e.GET("/server/portRemove", func(context *gin.Context) {
-		userId := context.Query("userId")
-		port := context.Query("port")
-		post := Post("/server/portRemove", url.Values{"userId": {userId}, "port": {port}})
-		context.String(http.StatusOK, post)
-	})
-
-	e.POST("/server/domainAdd", func(context *gin.Context) {
-		userId := context.PostForm("userId")
-		domain := context.PostForm("domain")
-		post := Post("/server/domainAdd", url.Values{"userId": {userId}, "domain": {domain}})
-		context.String(http.StatusOK, post)
-	})
-
-	e.GET("/server/domainList", func(context *gin.Context) {
-		userId := context.Query("userId")
-		post := Get("/server/domainList?userId=" + userId)
-		context.String(http.StatusOK, post)
-	})
-	e.GET("/server/domainRemove", func(context *gin.Context) {
-		userId := context.Query("userId")
-		domain := context.Query("domain")
-		post := Post("/server/domainRemove", url.Values{"userId": {userId}, "domain": {domain}})
-		context.String(http.StatusOK, post)
-	})
-
-	e.GET("/server/pay", func(context *gin.Context) {
-		post := Get("/server/pay")
-		context.String(http.StatusOK, post)
-	})
-
-	e.GET("/server/logList", func(context *gin.Context) {
-		username := context.Query("username")
-		page := context.Query("page")
-		post := Get("/statistics/getMyInfo?page=" + page + "&username=" + username)
-		context.String(http.StatusOK, post)
+	/**
+	查询设备ID
+	*/
+	e.GET("/device/info", func(context *gin.Context) {
+		context.JSON(http.StatusOK, deviceID())
 	})
 
 	e.GET("/", func(context *gin.Context) {
@@ -301,6 +233,72 @@ func wsSend(msg Log) {
 		}
 		return true
 	})
+}
+
+func deviceID() string {
+	id, err := machineid.ProtectedID("HP")
+	if err != nil {
+		return "NO_ID"
+	}
+	return id
+}
+
+// InitCloudDevice /**
+func InitCloudDevice() {
+	id := deviceID()
+	if id == "NO_ID" {
+		log.Println("未获取道设备ID，不能加载云端资源")
+		return
+	}
+	resp, err := http.Get("http://ksweb.club:9090/config/listDevice?deviceId=" + id)
+	if err != nil {
+		log.Println(err)
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Println("获取云端资源失败")
+	}
+	data := &DeviceData{}
+	err = json.Unmarshal(body, data)
+	if err == nil {
+		//启动穿透的配置调用
+		for i := range data.Data {
+			info := data.Data[i]
+			var hpType HpMessage.HpMessage_MessageType
+			if info.Type == "TCP" {
+				hpType = HpMessage.HpMessage_TCP
+			} else if info.Type == "UDP" {
+				hpType = HpMessage.HpMessage_UDP
+			} else if info.Type == "TCP_UDP" {
+				hpType = HpMessage.HpMessage_TCP_UDP
+			} else {
+				log.Println("穿透类型未知：" + info.Type)
+				return
+			}
+
+			split1 := strings.Split(info.ServerHost, ":")
+			serverIp := split1[0]
+			serverPort, _ := strconv.Atoi(split1[1])
+			port, _ := strconv.Atoi(info.Port)
+
+			split2 := strings.Split(info.UserHost, ":")
+			userIp := split2[0]
+			userPort, _ := strconv.Atoi(split2[1])
+			re := Proxy(hpType, serverIp, serverPort, info.Username, info.Password, info.Domain, port, userIp, userPort)
+			if re {
+				log.Println("内网服务：" + info.UserHost + " 启动成功")
+			} else {
+				log.Println("内网服务：" + info.UserHost + " 启动失败")
+			}
+		}
+
+	}
 }
 
 func ws(c *gin.Context) {
