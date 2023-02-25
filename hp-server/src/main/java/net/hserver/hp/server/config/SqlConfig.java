@@ -38,7 +38,7 @@ public class SqlConfig {
             SQLManagerBuilder builder = new SQLManagerBuilder(source);
             builder.setSqlLoader(new MarkdownClasspathLoader("/sql"));
             builder.setNc(new UnderlinedNameConversion());
-            builder.setInters(new Interceptor[]{new DebugInterceptor()});
+//            builder.setInters(new Interceptor[]{new DebugInterceptor()});
             builder.setDbStyle(new SQLiteStyle());
             SQLManager sqlManager = builder.build();
             if (flag) {
