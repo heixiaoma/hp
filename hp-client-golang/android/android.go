@@ -4,6 +4,6 @@ import (
 	"hp-client-golang/web"
 )
 
-func Start(port int, api string) {
-	web.StartWeb(port, api)
+func Start(port int) {
+	web.StartWeb(port)
 }
