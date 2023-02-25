@@ -108,6 +108,13 @@
         </table>
     </div>
 
+    <div style="padding: .6rem;word-break: break-all; ">
+        <p>当前设备ID:<p id="deviceId">获取不到设备ID(意味着你用不了这个功能)</p></p>
+        <p style="letter-spacing:.1rem">
+            <br>功能说明：<br>如果你在这里添加了云端存储，那么HP启动时就会加载云端配置，然后进行内网穿透，减少了每次打开都需要重新填写配置这种反人类的，头大的事情。该功能要求设备ID，目前我们假定我获取的设备ID是唯一的就行，出现bug我在去优化这个获取硬件唯一ID的事情。
+            <br> <br>注意事项:<br>在A设备添加只能用于A设备，登录B设备时，因为设备ID不一样，就读取不到配置，一个账号可以添加三个配置，配置完成后重启程序方能看效果</p>
+    </div>
+
     <div class="mdui-dialog" id="addUser" style="overflow: scroll">
         <form id="handle-form">
             <div class="mdui-dialog-content">
@@ -170,6 +177,7 @@
             if (result!=="NO_ID"){
                 deviceId=result
                 $("#deviceIdText").text(result.slice(0,6)+"..."+result.slice(-6))
+                $("#deviceId").text(deviceId)
             }
         });
 
@@ -180,7 +188,7 @@
             var domainHtml = "      <label class=\"mdui-textfield-label\">穿透域名</label>\n" +
                 "                    "
 
-            for (let a of userInfo.domains) {
+            for (let a of Object.keys(userInfo.domains)) {
                 domainHtml += "<label style='margin-right: 20px' class=\"mdui-radio\">\n" +
                     "                        <input type=\"radio\" value='" + a + "' name=\"domain\"/>\n" +
                     "                        <i class=\"mdui-radio-icon\"></i>\n" +

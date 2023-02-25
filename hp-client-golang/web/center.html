@@ -266,13 +266,14 @@
         var domainHtml = "      <label class=\"mdui-textfield-label\">穿透域名</label>\n" +
             "                    "
 
-        for (let a of userInfo.domains) {
+        for (let a of Object.keys(userInfo.domains)) {
             domainHtml += "<label style='margin-right: 20px' class=\"mdui-radio\">\n" +
                 "                        <input type=\"radio\" value='" + a + "' name=\"domain\"/>\n" +
                 "                        <i class=\"mdui-radio-icon\"></i>\n" +
                 "                        " + a + "\n" +
                 "                    </label>"
         }
+
         $("#domains").html(
             domainHtml
         )
