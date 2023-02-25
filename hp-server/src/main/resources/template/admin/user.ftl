@@ -27,7 +27,6 @@
             <tr>
                 <th>用户名</th>
                 <th>密码</th>
-                <th>开通域名</th>
                 <th>开通端口</th>
                 <th>用户级别</th>
                 <th>最近登录IP</th>
@@ -60,11 +59,7 @@
                                         <input class="mdui-textfield-input" name="type" type="text"
                                                value="${userVo.type}"/>
                                     </div>
-                                    <div class="mdui-textfield">
-                                        <label class="mdui-textfield-label">二级域名</label>
-                                        <input class="mdui-textfield-input" name="domains" type="text"
-                                               value="<#list userVo.domains as domain>${domain!},</#list>"/>
-                                    </div>
+
                                     <div class="mdui-textfield">
                                         <label class="mdui-textfield-label">TCP端口号固定 多个逗号隔开</label>
                                         <input class="mdui-textfield-input" name="ports" type="text"
@@ -85,12 +80,6 @@
 
                         <td>${userVo.username}</td>
                         <td>${userVo.password}</td>
-                        <td>
-                            <#list userVo.domains as domain>
-                                ${domain!} &nbsp;
-                            </#list>
-                        </td>
-
                         <td>
                             <#list userVo.ports as port>
                                 ${port?c} &nbsp;
@@ -138,9 +127,6 @@
                 </div>
                 <div class="mdui-textfield">
                     <input class="mdui-textfield-input" name="ports" placeholder="端口号 逗号分隔" type="text"/>
-                </div>
-                <div class="mdui-textfield">
-                    <input class="mdui-textfield-input" name="domains" placeholder="域名 逗号分隔" type="text"/>
                 </div>
                 <div class="mdui-textfield">
                     <input class="mdui-textfield-input" name="level" placeholder="用户级别" type="text"/>

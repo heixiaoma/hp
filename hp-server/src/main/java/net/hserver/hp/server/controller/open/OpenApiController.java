@@ -130,7 +130,7 @@ public class OpenApiController {
             if (address == null) {
                 address = request.getIpAddress();
             }
-            UserVo login = userService.login(username, password, address);
+            UserVo login = userService.login(username.trim(), password.trim(), address);
             if (login != null) {
                 login.setTips(ConstConfig.TIPS);
                 return JsonResult.ok("登录成功.").put("data", login);
