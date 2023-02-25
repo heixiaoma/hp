@@ -15,7 +15,7 @@
     <script src="/common/js/mdui.min.js"></script>
     <title>内网穿透</title>
 </head>
-<body class="mdui-appbar-with-toolbar  mdui-theme-primary-indigo mdui-theme-accent-pink mdui-theme-layout-auto">
+<body class=" mdui-theme-primary-indigo mdui-theme-accent-pink mdui-theme-layout-auto">
 <header class="mdui-appbar mdui-appbar-fixed">
 <#--    <div class="mdui-toolbar mdui-color-theme">-->
 <#--        <div class="mdui-toolbar-spacer"></div>-->
