@@ -12,6 +12,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpServerCodec;
 import net.hserver.hp.proxy.config.WebConfig;
+import net.hserver.hp.proxy.domian.bean.ConnectInfo;
 import net.hserver.hp.proxy.handler.HpServerHandler;
 import net.hserver.hp.proxy.handler.proxy.FrontendHandler;
 import net.hserver.hp.proxy.handler.proxy.RouterHandler;
@@ -46,18 +47,18 @@ public class HpWebProxyProtocolDispatcher extends DispatchHttp {
                     if (host.startsWith(webConfig.getHost())) {
                         return super.dispatcher(ctx, channelPipeline, headers);
                     }
-                    final Integer[] userPort = {-1};
                     String[] split = host.split("\\.");
                     String domain = split[0];
-                    HpServerHandler.CURRENT_STATUS.forEach((k, v) -> {
-                        if (v.getDomain().equals(domain)) {
-                            userPort[0] = Integer.parseInt(k);
-                        }
-                    });
-                    if (userPort[0] == -1) {
+
+                    ConnectInfo connectInfo = HpServerHandler.CURRENT_STATUS.stream().filter(v -> domain.equals(v.getDomain())).findFirst().orElse(null);
+                    if (connectInfo==null){
+                         connectInfo = HpServerHandler.CURRENT_STATUS.stream().filter(v -> host.equals(v.getCustomDomain())).findFirst().orElse(null);
+                    }
+
+                    if (connectInfo==null) {
                         addErrorHandler(channelPipeline, RouterHandler.ERROR.OFF_LINE);
                     } else {
-                        addProxyHandler(channelPipeline, userPort[0]);
+                        addProxyHandler(channelPipeline, connectInfo.getPort());
                     }
                     return true;
                 }

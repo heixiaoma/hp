@@ -91,9 +91,9 @@ public class UserServiceImpl implements UserService {
             for (PortEntity portEntity : select) {
                 ports.add(portEntity.getPort());
             }
-            List<String> domains = new ArrayList<>();
+            Map<String,String> domains = new HashMap<>();
             for (DomainEntity domainEntity : domainEntityList) {
-                domains.add(domainEntity.getDomain());
+                domains.put(domainEntity.getDomain(), domainEntity.getCustomDomain());
             }
             userVo.setLevel(user.getLevel());
             userVo.setDomains(domains);
@@ -122,9 +122,9 @@ public class UserServiceImpl implements UserService {
             for (PortEntity portEntity : select) {
                 ports.add(portEntity.getPort());
             }
-            List<String> domains = new ArrayList<>();
+            Map<String,String> domains = new HashMap<>();
             for (DomainEntity domainEntity : domain) {
-                domains.add(domainEntity.getDomain());
+                domains.put(domainEntity.getDomain(), domainEntity.getCustomDomain());
             }
             userVo.setLevel(user.getLevel());
             userVo.setDomains(domains);
@@ -153,9 +153,9 @@ public class UserServiceImpl implements UserService {
             for (PortEntity portEntity : select) {
                 ports.add(portEntity.getPort());
             }
-            List<String> domains = new ArrayList<>();
+            Map<String,String> domains = new HashMap<>();
             for (DomainEntity domainEntity : domain) {
-                domains.add(domainEntity.getDomain());
+                domains.put(domainEntity.getDomain(), domainEntity.getCustomDomain());
             }
             userVo.setDomains(domains);
             userVo.setPorts(ports);
@@ -284,8 +284,24 @@ public class UserServiceImpl implements UserService {
         Calendar instance = Calendar.getInstance();
         instance.setTime(new Date());
         instance.add(Calendar.MONTH, -1);
-        userDao.getSQLManager().executeUpdate(
-                new SQLReady("delete from sys_user where (level is null or level = 0) and login_time < " + instance.getTimeInMillis())
+        //过期的用户查询然后删除端口配置，域名配置，自定义启动配置
+        List<String> execute = userDao.getSQLManager().execute(
+                new SQLReady("select user_id from sys_user where (level is null or level = 0) and login_time < " + instance.getTimeInMillis()),
+                String.class
         );
+        for (String s : execute) {
+            userDao.getSQLManager().executeUpdate(
+                    new SQLReady("delete from sys_user where user_id='"+s+"'")
+            );
+            userDao.getSQLManager().executeUpdate(
+                    new SQLReady("delete from sys_domain where user_id='"+s+"'")
+            );
+            userDao.getSQLManager().executeUpdate(
+                    new SQLReady("delete from sys_config where user_id='"+s+"'")
+            );
+            userDao.getSQLManager().executeUpdate(
+                    new SQLReady("delete from sys_port where user_id='"+s+"'")
+            );
+        }
     }
 }

@@ -57,6 +57,7 @@ CREATE TABLE "sys_domain" (
     "id" text NOT NULL,
     "user_id" text NOT NULL,
     "domain" TEXT,
+    "custom_domain" TEXT,
     "create_time" TEXT,
     PRIMARY KEY ("id")
 );

@@ -27,8 +27,7 @@ import org.slf4j.LoggerFactory;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * @author hxm
@@ -39,12 +38,11 @@ public class HpServerHandler extends HpCommonHandler {
 
     private final TcpServer remoteConnectionServer = new TcpServer();
 
-    public static final Map<String, ConnectInfo> CURRENT_STATUS = new ConcurrentHashMap<>();
+    public static final List<ConnectInfo> CURRENT_STATUS = new ArrayList<>();
 
     public static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-    private static final ChannelGroup udp_channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-    private final List<Integer> ports = new ArrayList<>();
+    private static final ChannelGroup udp_channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     private boolean register = false;
 
@@ -52,11 +50,10 @@ public class HpServerHandler extends HpCommonHandler {
     }
 
     public static void offline(String domain) {
-        CURRENT_STATUS.forEach((k, v) -> {
-            if (v.getDomain().equals(domain)) {
-                v.getChannel().close();
-            }
-        });
+        List<ConnectInfo> collect = CURRENT_STATUS.stream().filter(v -> v.getDomain().equals(domain)).collect(Collectors.toList());
+        for (ConnectInfo connectInfo : collect) {
+            connectInfo.getChannel().close();
+        }
     }
 
 
@@ -90,19 +87,17 @@ public class HpServerHandler extends HpCommonHandler {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        List<ConnectInfo> collect = CURRENT_STATUS.stream().filter(v -> v.getChannel().id().asLongText().equals(ctx.channel().id().asLongText())).collect(Collectors.toList());
         try {
-            for (Integer port : this.ports) {
-                CURRENT_STATUS.remove(String.valueOf(port));
-            }
+            CURRENT_STATUS.removeAll(collect);
             Statistics statistics = remoteConnectionServer.getStatistics();
             HttpService.updateStatistics(statistics);
         } catch (Throwable ignored) {
         }
         remoteConnectionServer.close();
         if (register) {
-            System.out.println("停止服务器的端口: " + ports);
+            System.out.println("停止服务器的端口: " + collect);
         }
-        ports.clear();
     }
 
     /**
@@ -148,9 +143,8 @@ public class HpServerHandler extends HpCommonHandler {
                     }
                 }, login.getUsername());
                 metaDataBuild.setSuccess(true);
-                this.ports.add(tempPort);
                 register = true;
-                CURRENT_STATUS.put(String.valueOf(tempPort), new ConnectInfo(username, domain, ctx.channel()));
+                CURRENT_STATUS.add(new ConnectInfo(tempPort,username, domain,login.getDomains().get(domain), ctx.channel()));
                 String host = IocUtil.getBean(WebConfig.class).getUserHost();
                 metaDataBuild.setReason("连接成功，外网TCP地址是:" + IocUtil.getBean(WebConfig.class).getHost() + ":" + tempPort + ",外网HTTP地址是：http://" + domain + "." + host + " " + (login.getTips().trim().length() > 0 ? "公告提示：" + login.getTips() : ""));
                 System.out.println("注册成功，外网地址是:  " + host + ":" + tempPort);
@@ -213,9 +207,8 @@ public class HpServerHandler extends HpCommonHandler {
                     }
                 }, login.getUsername());
                 metaDataBuild.setSuccess(true);
-                this.ports.add(tempPort);
                 register = true;
-                CURRENT_STATUS.put(String.valueOf(tempPort), new ConnectInfo(username, "(udp)", ctx.channel()));
+                CURRENT_STATUS.add(new ConnectInfo(tempPort,username, "(udp)", ctx.channel()));
                 metaDataBuild.setReason("连接成功，外网UDP地址是:" + IocUtil.getBean(WebConfig.class).getHost() + ":" + tempPort + (login.getTips().trim().length() > 0 ? " 公告提示：" + login.getTips() : ""));
             } catch (Exception e) {
                 metaDataBuild.setSuccess(false);

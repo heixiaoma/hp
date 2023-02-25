@@ -1,6 +1,7 @@
 package net.hserver.hp.server.domian.vo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author hxm
@@ -18,7 +19,7 @@ public class UserVo {
 
     private Integer level;
 
-    private List<String> domains;
+    private Map<String,String> domains;
 
     private List<Integer> ports;
 
@@ -34,11 +35,11 @@ public class UserVo {
         return level;
     }
 
-    public List<String> getDomains() {
+    public Map<String, String> getDomains() {
         return domains;
     }
 
-    public void setDomains(List<String> domains) {
+    public void setDomains(Map<String, String> domains) {
         this.domains = domains;
     }
 

@@ -8,25 +8,57 @@ import java.util.Date;
 
 public class ConnectInfo {
 
-    private String  username;
+    private String username;
 
     private String domain;
 
+    private String customDomain;
+
     private Channel channel;
+
+    private Integer port;
 
     private String ip;
 
     private String date;
 
-    public ConnectInfo(String username,String domain, Channel channel) {
+    public String getCustomDomain() {
+        return customDomain;
+    }
+
+    public void setCustomDomain(String customDomain) {
+        this.customDomain = customDomain;
+    }
+
+    public ConnectInfo(Integer port,String username, String domain, Channel channel) {
+        this.port=port;
         this.username = username;
         this.domain = domain;
         this.channel = channel;
         this.ip = channel.remoteAddress().toString();
-        this.date= DateUtil.dateToStamp(new Date());
+        this.date = DateUtil.dateToStamp(new Date());
     }
 
+    public ConnectInfo(Integer port,String username, String domain, String customDomain, Channel channel) {
+        this.port=port;
+        this.username = username;
+        this.domain = domain;
+        this.customDomain = customDomain;
+        this.channel = channel;
+        this.ip = channel.remoteAddress().toString();
+        this.date = DateUtil.dateToStamp(new Date());
+    }
+
+
     public ConnectInfo() {
+    }
+
+    public Integer getPort() {
+        return port;
+    }
+
+    public void setPort(Integer port) {
+        this.port = port;
     }
 
     public String getUsername() {
@@ -67,5 +99,18 @@ public class ConnectInfo {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    @Override
+    public String toString() {
+        return "ConnectInfo{" +
+                "username='" + username + '\'' +
+                ", domain='" + domain + '\'' +
+                ", customDomain='" + customDomain + '\'' +
+                ", channel=" + channel +
+                ", port=" + port +
+                ", ip='" + ip + '\'' +
+                ", date='" + date + '\'' +
+                '}';
     }
 }

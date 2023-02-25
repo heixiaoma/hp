@@ -13,7 +13,19 @@ public class DomainEntity {
     private String id;
     private String userId;
     private String domain;
+    private String customDomain;
     private String createTime;
+
+    public String getCustomDomain() {
+        if (customDomain==null){
+            return "";
+        }
+        return customDomain;
+    }
+
+    public void setCustomDomain(String customDomain) {
+        this.customDomain = customDomain;
+    }
 
     public String getId() {
         return id;

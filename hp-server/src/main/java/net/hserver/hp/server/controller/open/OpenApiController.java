@@ -5,9 +5,11 @@ import cn.hserver.core.server.util.JsonResult;
 import cn.hserver.plugin.web.annotation.Controller;
 import cn.hserver.plugin.web.annotation.GET;
 import cn.hserver.plugin.web.annotation.POST;
+import cn.hserver.plugin.web.context.WebConstConfig;
 import cn.hserver.plugin.web.interfaces.HttpRequest;
 import cn.hserver.plugin.web.interfaces.HttpResponse;
 import cn.hserver.plugin.web.interfaces.ProgressStatus;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import net.hserver.hp.server.config.ConstConfig;
 import net.hserver.hp.server.dao.DomainDao;
 import net.hserver.hp.server.dao.PortDao;
@@ -107,7 +109,7 @@ public class OpenApiController {
 
 
     @POST("/user/domainLogin")
-    public JsonResult domainLogin(HttpRequest request, String username, String password,String domain, String address){
+    public JsonResult domainLogin(HttpRequest request, String username, String password,String domain, String address) throws JsonProcessingException {
         if (domain != null && password != null&&username!=null) {
             if (address == null) {
                 address = request.getIpAddress();
@@ -115,6 +117,7 @@ public class OpenApiController {
             UserVo login = userService.domainLogin(username, password,domain, address);
             if (login != null) {
                 login.setTips(ConstConfig.TIPS);
+                log.info(WebConstConfig.JSON.writeValueAsString(login));
                 return JsonResult.ok("登录成功.").put("data", login);
             }
         }
@@ -196,7 +199,7 @@ public class OpenApiController {
 
 
     @POST("/server/domainAdd")
-    public JsonResult domainAdd(String userId, String domain) {
+    public JsonResult domainAdd(String userId, String domain,String customDomain) {
         domain = domain.trim();
         if (domain.length() <= 3) {
             return JsonResult.error("域名的长度太短，大于等于4位");
@@ -215,6 +218,7 @@ public class OpenApiController {
             portEntity.setId(UUID.randomUUID().toString());
             portEntity.setCreateTime(String.valueOf(System.currentTimeMillis()));
             portEntity.setDomain(domain);
+            portEntity.setCustomDomain(customDomain);
             domainDao.insert(portEntity);
             return JsonResult.ok();
         } else {
