@@ -28,7 +28,7 @@
                         <td>${statistics.type}</td>
                         <td>${statistics.domain}</td>
                         <td>
-                            <#if statistics.port??> ${statistics.port}<#else>无端口</#if>.
+                            <#if statistics.port??> ${statistics.port}<#else>无端口</#if>
                         </td>
                         <td>${statistics.deviceId}</td>
                         <td>${statistics.createTime}</td>
