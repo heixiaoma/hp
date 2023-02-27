@@ -50,7 +50,7 @@ public class HpServerHandler extends HpCommonHandler {
     }
 
     public static void offline(String domain) {
-        List<ConnectInfo> collect = CURRENT_STATUS.stream().filter(v -> v.getDomain().equals(domain)).collect(Collectors.toList());
+        List<ConnectInfo> collect = CURRENT_STATUS.stream().filter(v -> domain.equals(v.getDomain())).collect(Collectors.toList());
         for (ConnectInfo connectInfo : collect) {
             connectInfo.getChannel().close();
         }

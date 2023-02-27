@@ -50,9 +50,9 @@ public class HpWebProxyProtocolDispatcher extends DispatchHttp {
                     String[] split = host.split("\\.");
                     String domain = split[0];
 
-                    ConnectInfo connectInfo = HpServerHandler.CURRENT_STATUS.stream().filter(v -> domain!=null&&v.getDomain()!=null&&domain.equals(v.getDomain())).findFirst().orElse(null);
+                    ConnectInfo connectInfo = HpServerHandler.CURRENT_STATUS.stream().filter(v -> domain!=null&&v!=null&&v.getDomain()!=null&&domain.equals(v.getDomain())).findFirst().orElse(null);
                     if (connectInfo==null){
-                         connectInfo = HpServerHandler.CURRENT_STATUS.stream().filter(v -> v.getCustomDomain()!=null&&host.equals(v.getCustomDomain())).findFirst().orElse(null);
+                         connectInfo = HpServerHandler.CURRENT_STATUS.stream().filter(v -> v!=null&& v.getCustomDomain()!=null&&host.equals(v.getCustomDomain())).findFirst().orElse(null);
                     }
 
                     if (connectInfo==null) {
