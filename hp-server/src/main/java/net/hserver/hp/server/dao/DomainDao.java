@@ -11,9 +11,4 @@ import org.beetl.sql.mapper.BaseMapper;
 @BeetlSQL
 public interface DomainDao extends BaseMapper<DomainEntity> {
 
-
-    default int deleteByUserId(String userId){
-        return executeUpdate("delete from sys_domain where user_id='"+userId+"'");
-    }
-
 }

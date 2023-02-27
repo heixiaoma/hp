@@ -1,27 +1,23 @@
-package net.hserver.hp.server.domian.entity;
+package net.hserver.hp.server.domian.bean;
 
-import org.beetl.sql.annotation.entity.AssignID;
-import org.beetl.sql.annotation.entity.Table;
+import net.hserver.hp.server.domian.entity.DomainEntity;
 
-/**
- * @author hxm
- */
-@Table(name = "sys_domain")
-public class DomainEntity {
+public class DomainVo {
 
-    @AssignID
     private String id;
     private String userId;
     private String domain;
     private String customDomain;
     private String createTime;
+    private String username;
 
-    public String getCustomDomain() {
-        return customDomain;
+
+    public String getUsername() {
+        return username;
     }
 
-    public void setCustomDomain(String customDomain) {
-        this.customDomain = customDomain;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getId() {
@@ -41,11 +37,25 @@ public class DomainEntity {
     }
 
     public String getDomain() {
+        if (domain==null){
+            return "";
+        }
         return domain;
     }
 
     public void setDomain(String domain) {
         this.domain = domain;
+    }
+
+    public String getCustomDomain() {
+        if (customDomain==null){
+            return "";
+        }
+        return customDomain;
+    }
+
+    public void setCustomDomain(String customDomain) {
+        this.customDomain = customDomain;
     }
 
     public String getCreateTime() {
@@ -54,15 +64,5 @@ public class DomainEntity {
 
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
-    }
-
-    @Override
-    public String toString() {
-        return "PortEntity{" +
-                "id='" + id + '\'' +
-                ", userId='" + userId + '\'' +
-                ", domain=" + domain +
-                ", createTime=" + createTime +
-                '}';
     }
 }

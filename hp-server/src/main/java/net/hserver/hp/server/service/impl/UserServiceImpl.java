@@ -202,20 +202,6 @@ public class UserServiceImpl implements UserService {
                 }
             }
         }
-
-        if (domains != null) {
-            String[] split = domains.split(",");
-            if (split.length > 0) {
-                domainDao.deleteByUserId(user.getId());
-                for (String s : split) {
-                    DomainEntity domainEntity = new DomainEntity();
-                    domainEntity.setId(UUID.randomUUID().toString());
-                    domainEntity.setUserId(user.getId());
-                    domainEntity.setDomain(s.trim());
-                    domainDao.insert(domainEntity);
-                }
-            }
-        }
     }
 
     @Override

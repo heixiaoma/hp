@@ -46,6 +46,14 @@
                 <div class="mdui-list-item-content">用户管理</div>
             </div>
         </a>
+
+        <a class="mdui-collapse-item mdui-collapse-item-open" href="/admin/domain">
+            <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-cyan-300">layers</i>
+                <div class="mdui-list-item-content">域名管理</div>
+            </div>
+        </a>
+
         <a class="mdui-collapse-item mdui-collapse-item-open" href="/admin/config">
             <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
                 <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-deep-orange-a100">layers</i>
