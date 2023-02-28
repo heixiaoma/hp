@@ -28,7 +28,9 @@
                     <#if statisticsData?exists>
                         <#list statisticsData as  app>
                             <tr>
-                                <td>${app.username}</td>
+                                <td>
+                                    <#if app.username??> ${app.username}<#else>未知</#if>
+                                </td>
                                 <td>${app.domain}</td>
                                 <td>
                                     <#if app.customDomain??> ${app.customDomain}<#else>未自定义</#if>

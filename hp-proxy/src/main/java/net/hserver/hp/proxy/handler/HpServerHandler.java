@@ -54,6 +54,7 @@ public class HpServerHandler extends HpCommonHandler {
         for (ConnectInfo connectInfo : collect) {
             connectInfo.getChannel().close();
         }
+        CURRENT_STATUS.removeAll(collect);
     }
 
 
@@ -87,7 +88,7 @@ public class HpServerHandler extends HpCommonHandler {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        List<ConnectInfo> collect = CURRENT_STATUS.stream().filter(v -> v.getChannel().id().asLongText().equals(ctx.channel().id().asLongText())).collect(Collectors.toList());
+        List<ConnectInfo> collect = CURRENT_STATUS.stream().filter(v -> !v.getChannel().isActive()||v.getChannel().id().asLongText().equals(ctx.channel().id().asLongText())).collect(Collectors.toList());
         try {
             CURRENT_STATUS.removeAll(collect);
             Statistics statistics = remoteConnectionServer.getStatistics();
