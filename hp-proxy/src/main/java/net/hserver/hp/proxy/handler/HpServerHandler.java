@@ -36,15 +36,12 @@ import java.util.stream.Collectors;
 @ChannelHandler.Sharable
 public class HpServerHandler extends HpCommonHandler {
     private static final Logger log = LoggerFactory.getLogger(HpServerHandler.class);
-
-    public static final AttributeKey<String> channelId = AttributeKey.valueOf("channelId");
     private final TcpServer remoteConnectionServer = new TcpServer();
-
     public static final List<ConnectInfo> CURRENT_STATUS = new ArrayList<>();
 
-    public static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    public  final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-    private static final ChannelGroup udp_channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    private  final ChannelGroup udp_channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     private boolean register = false;
 
@@ -54,15 +51,10 @@ public class HpServerHandler extends HpCommonHandler {
 
     @Override
     public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
-        log.info("{}读写变化：{}",ctx.channel().attr(channelId).get(),ctx.channel().isWritable());
-        channels.stream().filter(channel ->
-                channel.id().asLongText().equals(ctx.channel().attr(channelId).get())
-        ).findAny().ifPresent(targetChannel ->{
+        channels.forEach(targetChannel -> {
             targetChannel.config().setAutoRead(ctx.channel().isWritable());
         });
-        udp_channels.stream().filter(channel ->
-                channel.id().asLongText().equals(ctx.channel().attr(channelId).get())
-        ).findAny().ifPresent(targetChannel ->{
+        udp_channels.forEach(targetChannel -> {
             targetChannel.config().setAutoRead(ctx.channel().isWritable());
         });
         super.channelWritabilityChanged(ctx);
@@ -81,7 +73,6 @@ public class HpServerHandler extends HpCommonHandler {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HpMessageData.HpMessage hpMessage) throws Exception {
-        ctx.channel().attr(channelId).set(hpMessage.getMetaData().getChannelId());
         if (hpMessage.getType() == HpMessageData.HpMessage.HpMessageType.REGISTER) {
             if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.TCP) {
                 processRegisterTcp(hpMessage);

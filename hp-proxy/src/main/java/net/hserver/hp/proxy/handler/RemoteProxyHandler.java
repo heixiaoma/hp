@@ -7,8 +7,6 @@ import net.hserver.hp.common.protocol.HpMessageData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static net.hserver.hp.proxy.handler.HpServerHandler.channelId;
-
 
 /**
  * @author hxm
@@ -30,7 +28,6 @@ public class RemoteProxyHandler extends HpAbsHandler {
 
     @Override
     public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
-        log.info("{}读写变化：{}",proxyHandler.getCtx().channel().attr(channelId),ctx.channel().isWritable());
         proxyHandler.getCtx().channel().config().setAutoRead(ctx.channel().isWritable());
         super.channelWritabilityChanged(ctx);
     }
