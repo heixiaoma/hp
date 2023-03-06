@@ -32,6 +32,12 @@ public class RemoteUdpServerHandler extends
         this.proxyHandler = proxyHandler;
     }
 
+    @Override
+    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
+        super.channelWritabilityChanged(ctx);
+        proxyHandler.getCtx().channel().config().setAutoRead(ctx.channel().isWritable());
+    }
+
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
@@ -71,9 +77,7 @@ public class RemoteUdpServerHandler extends
         messageBuilder.setType(HpMessageData.HpMessage.HpMessageType.DATA);
         messageBuilder.setMetaData(HpMessageData.HpMessage.MetaData.newBuilder().setType(HpMessageData.HpMessage.MessageType.UDP).setChannelId(ctx.channel().id().asLongText()).build());
         messageBuilder.setData(ByteString.copyFrom(ByteBufUtil.getBytes(msg.content())));
-        proxyHandler.getCtx().writeAndFlush(messageBuilder.build()).addListener(future -> {
-            ctx.channel().config().setAutoRead(proxyHandler.getCtx().channel().isWritable());
-        });
+        proxyHandler.getCtx().writeAndFlush(messageBuilder.build());
         final Attribute<InetSocketAddress> attr = ctx.channel().attr(SENDER);
         attr.set(msg.sender());
     }

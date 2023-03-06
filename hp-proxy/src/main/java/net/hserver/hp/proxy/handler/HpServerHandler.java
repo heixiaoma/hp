@@ -10,6 +10,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.bytes.ByteArrayDecoder;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import io.netty.util.Attribute;
+import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import net.hserver.hp.common.exception.HpException;
 import net.hserver.hp.common.handler.HpCommonHandler;
@@ -36,6 +37,7 @@ import java.util.stream.Collectors;
 public class HpServerHandler extends HpCommonHandler {
     private static final Logger log = LoggerFactory.getLogger(HpServerHandler.class);
 
+    public static final AttributeKey<String> channelId = AttributeKey.valueOf("channelId");
     private final TcpServer remoteConnectionServer = new TcpServer();
 
     public static final List<ConnectInfo> CURRENT_STATUS = new ArrayList<>();
@@ -49,6 +51,27 @@ public class HpServerHandler extends HpCommonHandler {
     public HpServerHandler() {
     }
 
+
+    @Override
+    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
+
+        super.channelWritabilityChanged(ctx);
+        channels.stream().filter(channel ->
+                channel.id().asLongText().equals(ctx.channel().attr(channelId).get())
+        ).findFirst().ifPresent(targetChannel ->{
+            targetChannel.config().setAutoRead(ctx.channel().isWritable());
+        });
+
+        udp_channels.stream().filter(channel ->
+                channel.id().asLongText().equals(ctx.channel().attr(channelId).get())
+        ).findFirst().ifPresent(targetChannel ->{
+            targetChannel.config().setAutoRead(ctx.channel().isWritable());
+        });
+
+    }
+
+
+
     public static void offline(String domain) {
         List<ConnectInfo> collect = CURRENT_STATUS.stream().filter(v -> domain.equals(v.getDomain())).collect(Collectors.toList());
         for (ConnectInfo connectInfo : collect) {
@@ -60,6 +83,7 @@ public class HpServerHandler extends HpCommonHandler {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HpMessageData.HpMessage hpMessage) throws Exception {
+        ctx.channel().attr(channelId).set(hpMessage.getMetaData().getChannelId());
         if (hpMessage.getType() == HpMessageData.HpMessage.HpMessageType.REGISTER) {
             if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.TCP) {
                 processRegisterTcp(hpMessage);
@@ -239,9 +263,7 @@ public class HpServerHandler extends HpCommonHandler {
             channels.stream().filter(channel ->
                     channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId())
             ).findFirst().ifPresent(targetChannel ->{
-                targetChannel.writeAndFlush(bytes).addListener(future -> {
-                    getCtx().channel().config().setAutoRead(targetChannel.isWritable());
-                });
+                targetChannel.writeAndFlush(bytes);
             });
         }
 
@@ -252,9 +274,7 @@ public class HpServerHandler extends HpCommonHandler {
                 final Attribute<InetSocketAddress> attr = targetChannel.attr(RemoteUdpServerHandler.SENDER);
                 final InetSocketAddress inetSocketAddress = attr.get();
                 if (inetSocketAddress != null) {
-                    targetChannel.writeAndFlush(new DatagramPacket(Unpooled.wrappedBuffer(bytes), inetSocketAddress)).addListener(future -> {
-                        getCtx().channel().config().setAutoRead(targetChannel.isWritable());
-                    });
+                    targetChannel.writeAndFlush(new DatagramPacket(Unpooled.wrappedBuffer(bytes), inetSocketAddress));
                 }
             });
         }
