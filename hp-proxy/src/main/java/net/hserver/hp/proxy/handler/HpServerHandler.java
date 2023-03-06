@@ -54,7 +54,6 @@ public class HpServerHandler extends HpCommonHandler {
 
     @Override
     public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
-        super.channelWritabilityChanged(ctx);
         log.info("{}读写变化：{}",ctx.channel().attr(channelId).get(),ctx.channel().isWritable());
         channels.stream().filter(channel ->
                 channel.id().asLongText().equals(ctx.channel().attr(channelId).get())
@@ -66,6 +65,7 @@ public class HpServerHandler extends HpCommonHandler {
         ).findAny().ifPresent(targetChannel ->{
             targetChannel.config().setAutoRead(ctx.channel().isWritable());
         });
+        super.channelWritabilityChanged(ctx);
     }
 
 

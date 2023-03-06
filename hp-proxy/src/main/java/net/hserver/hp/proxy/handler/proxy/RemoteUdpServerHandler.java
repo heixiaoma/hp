@@ -34,8 +34,8 @@ public class RemoteUdpServerHandler extends
 
     @Override
     public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
-        super.channelWritabilityChanged(ctx);
         proxyHandler.getCtx().channel().config().setAutoRead(ctx.channel().isWritable());
+        super.channelWritabilityChanged(ctx);
     }
 
 
