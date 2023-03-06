@@ -54,20 +54,18 @@ public class HpServerHandler extends HpCommonHandler {
 
     @Override
     public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
-
         super.channelWritabilityChanged(ctx);
+        log.info("{}读写变化：{}",ctx.channel().attr(channelId).get(),ctx.channel().isWritable());
         channels.stream().filter(channel ->
                 channel.id().asLongText().equals(ctx.channel().attr(channelId).get())
-        ).findFirst().ifPresent(targetChannel ->{
+        ).findAny().ifPresent(targetChannel ->{
             targetChannel.config().setAutoRead(ctx.channel().isWritable());
         });
-
         udp_channels.stream().filter(channel ->
                 channel.id().asLongText().equals(ctx.channel().attr(channelId).get())
-        ).findFirst().ifPresent(targetChannel ->{
+        ).findAny().ifPresent(targetChannel ->{
             targetChannel.config().setAutoRead(ctx.channel().isWritable());
         });
-
     }
 
 
