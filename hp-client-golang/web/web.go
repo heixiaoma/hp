@@ -256,6 +256,13 @@ func deviceID() string {
 
 // InitCloudDevice /**
 func InitCloudDevice() {
+	defer func() {
+		err := recover()
+		if err != nil {
+			log.Println("云端资源读取失败", err)
+		}
+	}()
+
 	id := deviceID()
 	if id == "NO_ID" {
 		log.Println("未获取道设备ID，不能加载云端资源")
