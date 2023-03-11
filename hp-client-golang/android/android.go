@@ -5,5 +5,6 @@ import (
 )
 
 func Start(port int) {
+	web.InitCloudDevice()
 	web.StartWeb(port)
 }
