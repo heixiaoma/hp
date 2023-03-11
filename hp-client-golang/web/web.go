@@ -243,6 +243,12 @@ func deviceID() string {
 		return "NO_ID"
 	}
 	for _, netInterface := range netInterfaces {
+		if netInterface.Flags&net.FlagUp == 0 {
+			continue // 排除掉不存在、未启用的网口
+		}
+		if netInterface.Flags&net.FlagLoopback != 0 {
+			continue // 排除掉本地回环的网口
+		}
 		macAddr := netInterface.HardwareAddr.String()
 		if len(macAddr) != 0 {
 			h := md5.New()
