@@ -1,15 +1,17 @@
 package web
 
 import (
+	"crypto/md5"
 	"embed"
+	"encoding/hex"
 	"encoding/json"
-	"github.com/denisbrodbeck/machineid"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	HpMessage "hp-client-golang/hpMessage"
 	"hp-client-golang/tcp"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"strconv"
 	"strings"
@@ -236,11 +238,20 @@ func wsSend(msg Log) {
 }
 
 func deviceID() string {
-	id, err := machineid.ProtectedID("HP")
+	netInterfaces, err := net.Interfaces()
 	if err != nil {
 		return "NO_ID"
 	}
-	return id
+	for _, netInterface := range netInterfaces {
+		macAddr := netInterface.HardwareAddr.String()
+		if len(macAddr) != 0 {
+			h := md5.New()
+			h.Write([]byte(macAddr))
+			res := hex.EncodeToString(h.Sum(nil))
+			return res
+		}
+	}
+	return "NO_ID"
 }
 
 // InitCloudDevice /**

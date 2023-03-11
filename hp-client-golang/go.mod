@@ -3,7 +3,6 @@ module hp-client-golang
 go 1.16
 
 require (
-	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-playground/validator/v10 v10.11.1 // indirect
 	github.com/goccy/go-json v0.9.11 // indirect
