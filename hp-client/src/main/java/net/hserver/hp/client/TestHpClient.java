@@ -10,7 +10,6 @@ import net.hserver.hp.common.protocol.HpMessageData;
 public class TestHpClient {
 
     public static void main(String[] args) throws Exception {
-        for (int i = 0; i < 1000; i++) {
             HpClient client = new HpClient(new CallMsg() {
                 @Override
                 public void message(String msg) {
@@ -18,11 +17,13 @@ public class TestHpClient {
                 }
             });
 
-            client.connect(HpMessageData.HpMessage.MessageType.TCP, "hp.nsjiasu.com", 9091, "666666", "666666", "heixiaoma", -1, "127.0.0.1", 7777);
+            client.connect(HpMessageData.HpMessage.MessageType.UDP, "hp.nsjiasu.com", 9091, "666666", "666666", "asdx", -1, "127.0.0.1", 7777);
             Thread.sleep(2000);
-            client.close();
-            System.out.println("完成次数---》"+i);
-        }
+
+            while (true){
+                System.out.println(client.getStatus());
+                    Thread.sleep(10000);
+            }
 
 //        new Thread(() -> {
 //            while (true) {

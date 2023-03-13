@@ -22,6 +22,14 @@ public class LocalProxyHandler extends SimpleChannelInboundHandler<byte[]>  {
         this.proxyHandler = hpClientHandler;
         this.remoteChannelId = remoteChannelId;
     }
+
+    @Override
+    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
+        proxyHandler.getCtx().channel().config().setAutoRead(ctx.channel().isWritable());
+        super.channelWritabilityChanged(ctx);
+    }
+
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         this.ctx = ctx;

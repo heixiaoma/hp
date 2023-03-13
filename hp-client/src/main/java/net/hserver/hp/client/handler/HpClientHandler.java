@@ -51,6 +51,16 @@ public class HpClientHandler extends SimpleChannelInboundHandler<HpMessageData.H
         this.proxyPort = proxyPort;
         this.callMsg = callMsg;
     }
+    @Override
+    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
+        TcpChannelHandlerMap.values().forEach(targetChannel -> {
+            targetChannel.getCtx().channel().config().setAutoRead(ctx.channel().isWritable());
+        });
+        UdpChannelHandlerMap.values().forEach(targetChannel -> {
+            targetChannel.getCtx().channel().config().setAutoRead(ctx.channel().isWritable());
+        });
+        super.channelWritabilityChanged(ctx);
+    }
 
     public ChannelHandlerContext getCtx() {
         return ctx;

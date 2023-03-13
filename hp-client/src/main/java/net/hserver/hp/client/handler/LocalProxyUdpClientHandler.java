@@ -13,6 +13,11 @@ public class LocalProxyUdpClientHandler extends
     private final String remoteChannelId;
     private ChannelHandlerContext ctx;
 
+    @Override
+    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
+        proxyHandler.getCtx().channel().config().setAutoRead(ctx.channel().isWritable());
+        super.channelWritabilityChanged(ctx);
+    }
     public LocalProxyUdpClientHandler(HpClientHandler hpClientHandler, String remoteChannelId) {
         this.proxyHandler = hpClientHandler;
         this.remoteChannelId = remoteChannelId;

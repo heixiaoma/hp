@@ -33,7 +33,7 @@ public class UDPClient {
         while (true) {
             ByteBuf emptyBuffer = Unpooled.buffer();
             emptyBuffer.writeBytes("udp test".getBytes(StandardCharsets.UTF_8));
-            channel.writeAndFlush(new DatagramPacket(emptyBuffer, new InetSocketAddress("127.0.0.1", 11111)));
+            channel.writeAndFlush(new DatagramPacket(emptyBuffer, new InetSocketAddress("hp.nsjiasu.com", 45443)));
             System.out.println("发送了");
             Thread.sleep(1000);
         }
