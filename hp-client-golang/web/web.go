@@ -61,6 +61,8 @@ type DeviceData struct {
 	Data []*DeviceInfo `json:"data"`
 }
 
+var ApiUrl = ""
+
 func Proxy(messageType HpMessage.HpMessage_MessageType, server_ip string, server_port int, username string, password string, domain string, remote_port int, ip string, port int) bool {
 	_, ok := ConnGroup.Load(domain)
 	if ok {
@@ -206,6 +208,10 @@ func StartWeb(webPort int) {
 		context.JSON(http.StatusOK, deviceID())
 	})
 
+	e.GET("/api.js", func(context *gin.Context) {
+		context.String(http.StatusOK, "var apiAddress = \""+ApiUrl+"\"")
+	})
+
 	e.GET("/", func(context *gin.Context) {
 		context.Redirect(http.StatusMovedPermanently, "/static/login.html")
 	})
@@ -261,7 +267,8 @@ func deviceID() string {
 }
 
 // InitCloudDevice /**
-func InitCloudDevice() {
+func InitCloudDevice(apiAddress string) {
+	ApiUrl = apiAddress
 	defer func() {
 		err := recover()
 		if err != nil {
@@ -274,7 +281,7 @@ func InitCloudDevice() {
 		log.Println("未获取道设备ID，不能加载云端资源")
 		return
 	}
-	resp, err := http.Get("http://ksweb.club:9090/config/listDevice?deviceId=" + id)
+	resp, err := http.Get(apiAddress + "/config/listDevice?deviceId=" + id)
 	if err != nil {
 		log.Println(err)
 	}

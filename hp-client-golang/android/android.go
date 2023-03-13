@@ -4,7 +4,7 @@ import (
 	"hp-client-golang/web"
 )
 
-func Start(port int) {
-	web.InitCloudDevice()
+func Start(apiAddress string, port int) {
+	web.InitCloudDevice(apiAddress)
 	web.StartWeb(port)
 }
