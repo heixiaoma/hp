@@ -13,6 +13,8 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"strconv"
 	"strings"
 	"sync"
@@ -208,8 +210,29 @@ func StartWeb(webPort int) {
 		context.JSON(http.StatusOK, deviceID())
 	})
 
+	/**
+	网页端请求前缀配置
+	*/
 	e.GET("/api.js", func(context *gin.Context) {
-		context.String(http.StatusOK, "var apiAddress = \""+ApiUrl+"\"")
+		context.String(http.StatusOK, "var apiAddress = \"/hp\"")
+	})
+	/**
+	反向代理，前缀解析然后反向代理
+	*/
+	e.Any("/hp/*url", func(c *gin.Context) {
+		remote, err := url.Parse(ApiUrl)
+		if err != nil {
+			panic(err)
+		}
+		proxy := httputil.NewSingleHostReverseProxy(remote)
+		proxy.Director = func(req *http.Request) {
+			req.Header = c.Request.Header
+			req.Host = remote.Host
+			req.URL.Scheme = remote.Scheme
+			req.URL.Host = remote.Host
+			req.URL.Path = c.Param("url")
+		}
+		proxy.ServeHTTP(c.Writer, c.Request)
 	})
 
 	e.GET("/", func(context *gin.Context) {
