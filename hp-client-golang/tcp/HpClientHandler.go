@@ -37,7 +37,7 @@ func (h *HpClientHandler) ChannelActive(conn net.Conn) {
 		},
 	}
 	message.MetaData.Type = h.MessageType
-	conn.Write(protol.Encode(message))
+	conn.Write(Protol.Encode(message))
 }
 
 func (h *HpClientHandler) ChannelRead(conn net.Conn, data interface{}) {
@@ -57,7 +57,7 @@ func (h *HpClientHandler) ChannelRead(conn net.Conn, data interface{}) {
 		break
 	case hpMessage.HpMessage_KEEPALIVE:
 		h.CallMsg("服务器端返回心跳数据")
-		conn.Write(protol.Encode(&hpMessage.HpMessage{Type: hpMessage.HpMessage_KEEPALIVE}))
+		conn.Write(Protol.Encode(&hpMessage.HpMessage{Type: hpMessage.HpMessage_KEEPALIVE}))
 		break
 	default:
 		marshal, _ := json.Marshal(message.MetaData)

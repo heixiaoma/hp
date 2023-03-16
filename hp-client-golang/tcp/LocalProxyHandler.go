@@ -28,7 +28,7 @@ func (l *LocalProxyHandler) ChannelRead(conn net.Conn, data interface{}) {
 			ChannelId: l.RemoteChannelId,
 		},
 	}
-	l.HpClientHandler.Conn.Write(protol.Encode(message))
+	l.HpClientHandler.Conn.Write(Protol.Encode(message))
 }
 
 func (l *LocalProxyHandler) ChannelInactive(conn net.Conn) {

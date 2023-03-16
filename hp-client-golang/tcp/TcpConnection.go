@@ -37,7 +37,7 @@ func (connection *TcpConnection) Connect(host string, port int, redType bool, ha
 				return
 			}
 			if redType {
-				decode, e := protol.Decode(reader)
+				decode, e := Protol.Decode(reader)
 				if e != nil {
 					call(e.Error())
 					handler.ChannelInactive(conn)

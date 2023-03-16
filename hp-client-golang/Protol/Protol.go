@@ -1,4 +1,4 @@
-package protol
+package Protol
 
 import (
 	"bufio"
