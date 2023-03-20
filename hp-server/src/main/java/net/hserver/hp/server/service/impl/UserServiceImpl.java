@@ -1,6 +1,5 @@
 package net.hserver.hp.server.service.impl;
 
-import cn.hserver.HServerApplication;
 import net.hserver.hp.server.dao.DomainDao;
 import net.hserver.hp.server.dao.PortDao;
 import net.hserver.hp.server.dao.UserDao;
@@ -10,6 +9,7 @@ import net.hserver.hp.server.domian.entity.UserEntity;
 import net.hserver.hp.server.domian.vo.UserVo;
 import net.hserver.hp.server.service.UserService;
 import net.hserver.hp.server.utils.DateUtil;
+import net.hserver.hp.server.utils.IpUtil;
 import org.beetl.sql.core.SQLReady;
 import org.beetl.sql.core.page.PageResult;
 import cn.hserver.core.ioc.annotation.Autowired;
@@ -156,6 +156,17 @@ public class UserServiceImpl implements UserService {
             Map<String,String> domains = new HashMap<>();
             for (DomainEntity domainEntity : domain) {
                 domains.put(domainEntity.getDomain(), domainEntity.getCustomDomain());
+            }
+            //设置来源和手机号来源
+            if (userVo.getLoginIp()!=null&&userVo.getLoginIp().trim().length()>0){
+                if (userVo.getLoginIp().startsWith("/")){
+                    String[] split = userVo.getLoginIp().split(":");
+                    String s = split[0];
+                    String substring = s.substring(1);
+                    userVo.setIpSource(IpUtil.getIp(substring));
+                }else {
+                    userVo.setIpSource(IpUtil.getIp(userVo.getLoginIp()));
+                }
             }
             userVo.setDomains(domains);
             userVo.setPorts(ports);

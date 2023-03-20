@@ -2,6 +2,7 @@ package net.hserver.hp.server.service.impl;
 
 import cn.hserver.core.ioc.annotation.Autowired;
 import cn.hserver.core.ioc.annotation.Bean;
+import net.hserver.hp.server.config.ConstConfig;
 import net.hserver.hp.server.dao.ConfigDao;
 import net.hserver.hp.server.domian.entity.ConfigEntity;
 import net.hserver.hp.server.domian.entity.StatisticsEntity;
@@ -22,7 +23,7 @@ public class ConfigServiceImpl implements ConfigService {
     public boolean save(ConfigEntity config) {
         //一个账号只能配置三个账号
         List<ConfigEntity> select = configDao.createLambdaQuery().andEq(ConfigEntity::getUserId, config.getUserId()).select();
-        if (select!=null&&select.size()>=3){
+        if (select!=null&&select.size()>= ConstConfig.PROXY_SIZE){
             return false;
         }
         config.setId(UUID.randomUUID().toString());

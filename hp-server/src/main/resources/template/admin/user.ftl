@@ -30,6 +30,7 @@
                 <th>开通端口</th>
                 <th>用户级别</th>
                 <th>最近登录IP</th>
+                <th>IP来源</th>
                 <th>最近登录时间</th>
                 <th>创建时间</th>
                 <th>账号类型</th>
@@ -87,6 +88,7 @@
                         </td>
                         <td>${userVo.level?c}</td>
                         <td>${userVo.loginIp}</td>
+                        <td>${userVo.ipSource}</td>
                         <td>${userVo.loginTime}</td>
                         <td>${userVo.createTime}</td>
                         <td>

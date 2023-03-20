@@ -29,7 +29,20 @@ public class UserVo {
 
     private String loginIp;
 
+    private String ipSource;
+
     private String tips;
+
+    public String getIpSource() {
+        if (ipSource==null){
+            return "";
+        }
+        return ipSource;
+    }
+
+    public void setIpSource(String ipSource) {
+        this.ipSource = ipSource;
+    }
 
     public Integer getLevel() {
         return level;

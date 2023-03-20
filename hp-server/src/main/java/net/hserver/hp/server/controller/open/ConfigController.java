@@ -5,6 +5,7 @@ import cn.hserver.core.server.util.JsonResult;
 import cn.hserver.plugin.web.annotation.Controller;
 import cn.hserver.plugin.web.annotation.GET;
 import cn.hserver.plugin.web.annotation.POST;
+import net.hserver.hp.server.config.ConstConfig;
 import net.hserver.hp.server.domian.entity.ConfigEntity;
 import net.hserver.hp.server.domian.entity.UserEntity;
 import net.hserver.hp.server.service.ConfigService;
@@ -53,7 +54,7 @@ public class ConfigController {
         if (configService.save(config)){
             return JsonResult.ok();
         }else {
-            return JsonResult.error("一个账号只能配置3个自动穿透");
+            return JsonResult.error("一个账号只能配置"+ ConstConfig.PROXY_SIZE+"个自动穿透");
         }
     }
 

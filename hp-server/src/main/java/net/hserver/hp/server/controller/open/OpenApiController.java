@@ -1,6 +1,7 @@
 package net.hserver.hp.server.controller.open;
 
 import cn.hserver.core.ioc.annotation.Autowired;
+import cn.hserver.core.queue.HServerQueue;
 import cn.hserver.core.server.util.JsonResult;
 import cn.hserver.plugin.web.annotation.Controller;
 import cn.hserver.plugin.web.annotation.GET;
@@ -29,6 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -78,25 +81,39 @@ public class OpenApiController {
         return JsonResult.ok(ConstConfig.REG_TOKEN);
     }
 
+    @GET("/user/email")
+    public JsonResult sendEmail(String username){
+        //校验发送逻辑
+        if (ConstConfig.EMAIL.getIfPresent(username)!=null){
+            return JsonResult.error("已经发了邮件，请检查下垃圾邮箱里是否存在。");
+        }
+        ConstConfig.EMAIL.put(username,username);
+        HServerQueue.sendQueue("EMAIL",username);
+        return JsonResult.ok();
+    }
+
     @POST("/user/reg")
-    public JsonResult reg(String username, String password) {
+    public JsonResult reg(String username, String password,String code) {
         int time = ConstConfig.TIME;
         if (time == -1) {
             return JsonResult.error("注册功能已经关闭。如有疑问联系管理员");
         } else if (time > 0) {
-            Date date = new Date();
-            if (date.getHours() != time) {
+            int hour = LocalDateTime.now().getHour();
+            if (hour != time) {
                 return JsonResult.error("注册功能已经关闭,请在每天的" + time + "点时注册，开放注册时间为一小时");
             }
         }
         if (username != null && password != null) {
             //todo  检查特殊符号
             username = username.trim();
-            if (username.length() <= 5) {
-                return JsonResult.error("注册的长度太短，大于等于6位");
-            }
             if (!UserCheckUtil.checkUsername(username)) {
-                return JsonResult.error("注册只能小写字母和数字");
+                return JsonResult.error("注册只能使用qq邮箱");
+            }
+
+            //校验邮箱验证码
+            String email_code = ConstConfig.EMAIL_CODE.getIfPresent(username.trim());
+            if (email_code==null||!email_code.equals(code)){
+                return JsonResult.ok("验证码错误，请检查邮箱验证码");
             }
             if (userService.addUser(username.trim(), password.trim(), null, null, 0)) {
                 return JsonResult.ok("注册成功");
@@ -204,12 +221,12 @@ public class OpenApiController {
         if (domain.length() <= 3) {
             return JsonResult.error("域名的长度太短，大于等于4位");
         }
-        if (!UserCheckUtil.checkUsername(domain)) {
+        if (!UserCheckUtil.checkDomain(domain)) {
             return JsonResult.error("域名只能小写字母和数字");
         }
         List<DomainEntity> ports = domainDao.createLambdaQuery().andEq(DomainEntity::getUserId, userId).select();
-        if (ports.size() > 2) {
-            return JsonResult.error("限定每人3个域名，域名过多，暂时不能过多申请");
+        if (ports.size() > ConstConfig.PROXY_SIZE-1) {
+            return JsonResult.error("限定每人"+ConstConfig.PROXY_SIZE+"个域名，域名过多，暂时不能过多申请");
         }
         List<DomainEntity> select = domainDao.createLambdaQuery().andEq(DomainEntity::getDomain, domain).select();
         if (select.isEmpty()) {
