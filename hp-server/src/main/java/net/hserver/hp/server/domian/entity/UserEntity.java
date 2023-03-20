@@ -65,6 +65,9 @@ public class UserEntity {
     }
 
     public Integer getType() {
+        if (type==null){
+            return 0;
+        }
         return type;
     }
 

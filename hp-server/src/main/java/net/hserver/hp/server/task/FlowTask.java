@@ -6,6 +6,10 @@ import cn.hserver.core.ioc.annotation.Task;
 import net.hserver.hp.server.service.StatisticsService;
 import net.hserver.hp.server.service.UserService;
 
+import java.util.UUID;
+
+import static net.hserver.hp.server.config.ConstConfig.REG_CODE;
+
 @Bean
 public class FlowTask {
 
@@ -20,6 +24,7 @@ public class FlowTask {
      */
     @Task(name = "清除历史日志", time = "3600000")
     public void clearLog() {
+        REG_CODE = UUID.randomUUID().toString();
         statisticsService.removeExpData();
         userService.removeExp();
     }

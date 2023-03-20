@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
                 return null;
             }
         }
-        if (user.getPassword().equals(password)) {
+        if (user.getPassword().equals(password)&&user.getType()!=-1) {
             List<PortEntity> select = getPort(user.getId());
             List<DomainEntity> domainEntityList = getDomain(user.getId());
             UserVo userVo = new UserVo();
@@ -110,7 +110,7 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             return null;
         }
-        if (user.getPassword().equals(password)) {
+        if (user.getPassword().equals(password)&&user.getType()!=-1) {
             List<PortEntity> select = getPort(user.getId());
             List<DomainEntity> domain = getDomain(user.getId());
             UserVo userVo = new UserVo();

@@ -119,6 +119,9 @@ public class ConfigEntity {
     }
 
     public String getDomain() {
+        if (domain==null){
+            return "";
+        }
         return domain;
     }
 

@@ -82,18 +82,18 @@ public class OpenApiController {
     }
 
     @GET("/user/email")
-    public JsonResult sendEmail(String username){
-        //校验发送逻辑
-        if (ConstConfig.EMAIL.getIfPresent(username)!=null){
+    public JsonResult sendEmail(String username,HttpRequest request) {
+        //校验IP 5分钟一次逻辑
+        if (ConstConfig.EMAIL_IP.getIfPresent(request.getIpAddress()) != null) {
             return JsonResult.error("已经发了邮件，请检查下垃圾邮箱里是否存在。");
         }
-        ConstConfig.EMAIL.put(username,username);
-        HServerQueue.sendQueue("EMAIL",username);
+        ConstConfig.EMAIL_IP.put(request.getIpAddress(), username);
+        HServerQueue.sendQueue("EMAIL", username);
         return JsonResult.ok();
     }
 
     @POST("/user/reg")
-    public JsonResult reg(String username, String password,String code) {
+    public JsonResult reg(String username, String password, String code) {
         int time = ConstConfig.TIME;
         if (time == -1) {
             return JsonResult.error("注册功能已经关闭。如有疑问联系管理员");
@@ -104,16 +104,17 @@ public class OpenApiController {
             }
         }
         if (username != null && password != null) {
-            //todo  检查特殊符号
             username = username.trim();
             if (!UserCheckUtil.checkUsername(username)) {
                 return JsonResult.error("注册只能使用qq邮箱");
             }
-
-            //校验邮箱验证码
-            String email_code = ConstConfig.EMAIL_CODE.getIfPresent(username.trim());
-            if (email_code==null||!email_code.equals(code)){
-                return JsonResult.ok("验证码错误，请检查邮箱验证码");
+            //如果没有用通用码注册就必须用邮箱码注册
+            if (!ConstConfig.REG_CODE.equals(code)) {
+                //校验邮箱验证码
+                String email_code = ConstConfig.EMAIL_CODE.getIfPresent(username.trim());
+                if (email_code == null || !email_code.equals(code)) {
+                    return JsonResult.ok("验证码错误，请检查邮箱验证码");
+                }
             }
             if (userService.addUser(username.trim(), password.trim(), null, null, 0)) {
                 return JsonResult.ok("注册成功");
@@ -126,12 +127,12 @@ public class OpenApiController {
 
 
     @POST("/user/domainLogin")
-    public JsonResult domainLogin(HttpRequest request, String username, String password,String domain, String address) throws JsonProcessingException {
-        if (domain != null && password != null&&username!=null) {
+    public JsonResult domainLogin(HttpRequest request, String username, String password, String domain, String address) throws JsonProcessingException {
+        if (domain != null && password != null && username != null) {
             if (address == null) {
                 address = request.getIpAddress();
             }
-            UserVo login = userService.domainLogin(username, password,domain, address);
+            UserVo login = userService.domainLogin(username, password, domain, address);
             if (login != null) {
                 login.setTips(ConstConfig.TIPS);
                 log.info(WebConstConfig.JSON.writeValueAsString(login));
@@ -176,7 +177,7 @@ public class OpenApiController {
 
     @POST("/server/portAdd")
     public JsonResult portAdd(String userId, Integer port) {
-        if (port < 10000||port>60000) {
+        if (port < 10000 || port > 60000) {
             return JsonResult.error("10000-60000以内为开放端口。请重新申请");
         }
         List<PortEntity> ports = portDao.createLambdaQuery().andEq(PortEntity::getUserId, userId).select();
@@ -216,7 +217,7 @@ public class OpenApiController {
 
 
     @POST("/server/domainAdd")
-    public JsonResult domainAdd(String userId, String domain,String customDomain) {
+    public JsonResult domainAdd(String userId, String domain, String customDomain) {
         domain = domain.trim();
         if (domain.length() <= 3) {
             return JsonResult.error("域名的长度太短，大于等于4位");
@@ -225,8 +226,8 @@ public class OpenApiController {
             return JsonResult.error("域名只能小写字母和数字");
         }
         List<DomainEntity> ports = domainDao.createLambdaQuery().andEq(DomainEntity::getUserId, userId).select();
-        if (ports.size() > ConstConfig.PROXY_SIZE-1) {
-            return JsonResult.error("限定每人"+ConstConfig.PROXY_SIZE+"个域名，域名过多，暂时不能过多申请");
+        if (ports.size() > ConstConfig.PROXY_SIZE - 1) {
+            return JsonResult.error("限定每人" + ConstConfig.PROXY_SIZE + "个域名，域名过多，暂时不能过多申请");
         }
         List<DomainEntity> select = domainDao.createLambdaQuery().andEq(DomainEntity::getDomain, domain).select();
         if (select.isEmpty()) {
@@ -262,7 +263,7 @@ public class OpenApiController {
 
     @GET("/server/pay")
     public JsonResult pay() {
-        return JsonResult.ok().put("data",payService.getTop50());
+        return JsonResult.ok().put("data", payService.getTop50());
     }
 
     @GET("/app/getVersion")

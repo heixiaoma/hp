@@ -1,6 +1,7 @@
 <#include "./header.ftl">
 <#--监控页面-->
 <div style="padding: 1rem">
+    <div style="padding: 1rem">通用注册验证码：${reg_code} (一小时变化一次)</div>
     <div class="mdui-table-fluid">
         <table class="mdui-table">
             <thead>

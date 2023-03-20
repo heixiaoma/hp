@@ -19,6 +19,7 @@ public class ProxyController {
         HashMap<String, Object> tips = new HashMap<>();
         tips.put("list", ProxyServerEntity.getAll());
         tips.put("token", ConstConfig.REG_TOKEN);
+        tips.put("reg_code", ConstConfig.REG_CODE);
         response.sendTemplate("/admin/proxy.ftl", tips);
     }
 
