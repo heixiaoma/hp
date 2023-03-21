@@ -16,6 +16,8 @@ public class MailQueue {
         String code = generateCode4();
         if (MailUtils.sendMail(username, "穿透验证", "验证码为:" + code)) {
             ConstConfig.EMAIL_CODE.put(username, code);
+        }else {
+            ConstConfig.EMAIL_IP.invalidate(username);
         }
     }
 

@@ -82,12 +82,15 @@ public class OpenApiController {
     }
 
     @GET("/user/email")
-    public JsonResult sendEmail(String username,HttpRequest request) {
+    public JsonResult sendEmail(String username) {
+        if (!UserCheckUtil.checkUsername(username)){
+            return JsonResult.error("注册只能使用qq邮箱");
+        }
         //校验IP 5分钟一次逻辑
-        if (ConstConfig.EMAIL_IP.getIfPresent(request.getIpAddress()) != null) {
+        if (ConstConfig.EMAIL_IP.getIfPresent(username) != null) {
             return JsonResult.error("已经发了邮件，请检查下垃圾邮箱里是否存在。");
         }
-        ConstConfig.EMAIL_IP.put(request.getIpAddress(), username);
+        ConstConfig.EMAIL_IP.put(username, username);
         HServerQueue.sendQueue("EMAIL", username);
         return JsonResult.ok();
     }
