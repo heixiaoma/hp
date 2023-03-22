@@ -27,20 +27,22 @@
                     <tbody>
                     <#if statisticsData?exists>
                         <#list statisticsData as  app>
-                            <tr>
-                                <td>
-                                    <#if app.username??> ${app.username}<#else>未知</#if>
-                                </td>
-                                <td>${app.domain}</td>
-                                <td>
-                                    <#if app.customDomain??> ${app.customDomain}<#else>未自定义</#if>
-                                </td>
-                                <td><a href="//${app.domain}.${host}" target="_blank">访问${app.domain}</a></td>
-                                <td>${app.ip}</td>
-                                <td>${app.date}</td>
-                                <td>${app.port}</td>
-                                <td><a href="/offline?domain=${app.domain}&token=${token}" >强制下线</a></td>
-                            </tr>
+                            <#if app??>
+                                <tr>
+                                    <td>
+                                        <#if app.username??> ${app.username}<#else>未知</#if>
+                                    </td>
+                                    <td>${app.domain}</td>
+                                    <td>
+                                        <#if app.customDomain??> ${app.customDomain}<#else>未自定义</#if>
+                                    </td>
+                                    <td><a href="//${app.domain}.${host}" target="_blank">访问${app.domain}</a></td>
+                                    <td>${app.ip}</td>
+                                    <td>${app.date}</td>
+                                    <td>${app.port}</td>
+                                    <td><a href="/offline?domain=${app.domain}&token=${token}">强制下线</a></td>
+                                </tr>
+                            </#if>
                         </#list>
                     </#if>
                     </tbody>
