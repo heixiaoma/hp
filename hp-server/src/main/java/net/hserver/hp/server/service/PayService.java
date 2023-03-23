@@ -27,6 +27,8 @@ public interface PayService {
      */
     boolean add(PayEntity appEntity);
 
+    double countPrice();
+
     /**
      * 删除
      *

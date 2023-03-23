@@ -42,6 +42,7 @@ public class PayController {
         data.put("totalRow", list.getTotalRow());
         data.put("list", list.getList());
         data.put("totalPage", list.getTotalPage());
+        data.put("totalPrice", payService.countPrice());
         response.sendTemplate("/admin/pay.ftl", data);
     }
 

@@ -6,6 +6,7 @@ import net.hserver.hp.server.dao.PayDao;
 import net.hserver.hp.server.domian.entity.PayEntity;
 import net.hserver.hp.server.service.PayService;
 import net.hserver.hp.server.utils.DateUtil;
+import org.beetl.sql.core.SQLReady;
 import org.beetl.sql.core.page.PageResult;
 
 import java.util.List;
@@ -34,6 +35,16 @@ public class PayServiceImpl implements PayService {
         return false;
     }
 
+    @Override
+    public double countPrice() {
+        Double execute = payDao.getSQLManager().executeQueryOne(
+                new SQLReady("select sum(price) from sys_pay"), Double.class
+        );
+        if (execute!=null){
+            return execute;
+        }
+        return 0;
+    }
 
     @Override
     public void remove(String id) {

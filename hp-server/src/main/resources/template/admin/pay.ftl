@@ -7,6 +7,9 @@
                 onclick="new mdui.Dialog('#add').open()">
             添加打赏
         </button>
+
+        <span>累计收益：${totalPrice}</span>
+
     </div>
 
     <div class="mdui-table-fluid">
