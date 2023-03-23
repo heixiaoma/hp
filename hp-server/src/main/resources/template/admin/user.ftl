@@ -41,7 +41,7 @@
             <#if list??>
                 <#list list as userVo>
                     <tr>
-                        <div class="mdui-dialog" id="${userVo.username}">
+                        <div class="mdui-dialog" id="${userVo.id}">
                             <form method="post" action="/admin/user/edit?page=${page}">
                                 <div class="mdui-dialog-title">编辑</div>
                                 <div class="mdui-dialog-content">
@@ -100,7 +100,7 @@
                         </td>
                         <td>
                             <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-purple-accent mdui-ripple"
-                                    onclick="new mdui.Dialog('#${userVo.username}').open()">
+                                    onclick="new mdui.Dialog('#${userVo.id}').open()">
                                 编辑
                             </button>
                             <a class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-orange-accent mdui-ripple"
