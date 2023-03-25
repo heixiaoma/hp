@@ -74,6 +74,7 @@ public class HpServerHandler extends HpCommonHandler {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HpMessageData.HpMessage hpMessage) throws Exception {
         if (hpMessage.getType() == HpMessageData.HpMessage.HpMessageType.REGISTER) {
+            channelInactive(ctx);
             if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.TCP) {
                 processRegisterTcp(hpMessage);
             } else if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.UDP) {
@@ -101,11 +102,17 @@ public class HpServerHandler extends HpCommonHandler {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        udp_channels.close();
+        channels.close();
         List<ConnectInfo> collect = CURRENT_STATUS.stream().filter(v -> !v.getChannel().isActive()||v.getChannel().id().asLongText().equals(ctx.channel().id().asLongText())).collect(Collectors.toList());
         try {
+            for (ConnectInfo connectInfo : collect) {
+                connectInfo.getChannel().close();
+            }
             CURRENT_STATUS.removeAll(collect);
             Statistics statistics = remoteConnectionServer.getStatistics();
             HttpService.updateStatistics(statistics);
+
         } catch (Throwable ignored) {
         }
         remoteConnectionServer.close();
@@ -275,7 +282,7 @@ public class HpServerHandler extends HpCommonHandler {
      * @param hpMessage
      */
     private void processDisconnected(HpMessageData.HpMessage hpMessage) {
-        channels.close(channel -> channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId()));
-        udp_channels.close(channel -> channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId()));
+        channels.close(channel -> channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId())||!channel.isActive());
+        udp_channels.close(channel -> channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId())||!channel.isActive());
     }
 }
