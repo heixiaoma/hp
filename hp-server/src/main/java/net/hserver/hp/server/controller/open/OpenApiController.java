@@ -135,6 +135,8 @@ public class OpenApiController {
             if (address == null) {
                 address = request.getIpAddress();
             }
+            log.info("登录信息：{}，{}，{}，{}，{}",username,password,domain,address,request.getIpAddress());
+
             UserVo login = userService.domainLogin(username, password, domain, address);
             if (login != null) {
                 login.setTips(ConstConfig.TIPS);

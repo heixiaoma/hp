@@ -65,7 +65,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVo domainLogin(String username, String password,String domain, String address) {
 
-        log.info("登录信息：{}，{}，{}，{}",username,password,domain,address);
 
         UserEntity user = getUser(username);
         if (user == null) {
