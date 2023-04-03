@@ -10,9 +10,12 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.handler.timeout.IdleStateHandler;
 import net.hserver.hp.common.codec.HpMessageDecoder;
 import net.hserver.hp.common.codec.HpMessageEncoder;
+import net.hserver.hp.proxy.config.CostConfig;
+import net.hserver.hp.proxy.domian.bean.ConInfo;
 import net.hserver.hp.proxy.handler.HpServerHandler;
 
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 
 @Order(6)
 @Bean
@@ -28,6 +31,15 @@ public class HpProtocolDispatcher implements ProtocolDispatcherAdapter {
             port = PropUtil.getInstance().getInt("port");
         }
         if (socketAddress.getPort() == port) {
+            //检查是否被封控
+            InetSocketAddress address = (InetSocketAddress) ctx.channel().remoteAddress();
+            ConInfo conInfo = CostConfig.IP_USER.get(address.getHostString());
+            if (conInfo!=null) {
+                if (conInfo.getCount().get() > CostConfig.LONGIN_ERROR) {
+                    ctx.close();
+                    return false;
+                }
+            }
             channelPipeline.addLast(new IdleStateHandler(60, 30, 0));
             channelPipeline.addLast(new HpMessageDecoder());
             channelPipeline.addLast(new HpMessageEncoder());

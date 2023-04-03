@@ -2,6 +2,7 @@ package net.hserver.hp.proxy.controller;
 
 import cn.hserver.HServerApplication;
 import cn.hserver.core.ioc.annotation.Autowired;
+import cn.hserver.core.server.context.ConstConfig;
 import cn.hserver.core.server.util.JsonResult;
 import cn.hserver.plugin.web.annotation.Controller;
 import cn.hserver.plugin.web.annotation.GET;
@@ -9,13 +10,17 @@ import cn.hserver.plugin.web.interfaces.HttpRequest;
 import cn.hserver.plugin.web.interfaces.HttpResponse;
 import cn.hserver.plugin.web.interfaces.ProgressStatus;
 import net.hserver.hp.proxy.annotation.CheckApi;
+import net.hserver.hp.proxy.config.CostConfig;
 import net.hserver.hp.proxy.config.WebConfig;
+import net.hserver.hp.proxy.domian.bean.ConInfo;
 import net.hserver.hp.proxy.domian.bean.GlobalStat;
 import net.hserver.hp.proxy.handler.HpServerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,6 +34,12 @@ public class IndexController {
     @Autowired
     private WebConfig webConfig;
 
+    /**
+     * 大盘统计
+     *
+     * @param request
+     * @param response
+     */
     @CheckApi
     @GET("/statistics")
     public void index(HttpRequest request, HttpResponse response) {
@@ -65,7 +76,44 @@ public class IndexController {
         response.sendTemplate("/index.ftl", data);
     }
 
+    @CheckApi
+    @GET("/backList")
+    public void backList(HttpRequest request, HttpResponse response) {
+        try {
+            Map<String, Object> data = new HashMap<>(2);
+            data.put("token", request.query("token"));
+            data.put("dataSize", CostConfig.IP_USER.size());
+            data.put("data", CostConfig.IP_USER);
+            response.sendTemplate("/backList.ftl", data);
+        }catch (Exception e){}
+    }
 
+
+    /**
+     * 服务离线功能
+     *
+     * @param request
+     * @param response
+     */
+    @CheckApi
+    @GET("/clearBack")
+    public void clearBack(HttpRequest request, HttpResponse response) {
+        CostConfig.IP_USER.remove(request.query("ip"));
+        backList(request, response);
+    }
+
+    @GET("/clearAll")
+    public void clearAll(HttpRequest request, HttpResponse response) {
+        CostConfig.IP_USER.clear();
+        backList(request, response);
+    }
+
+    /**
+     * 服务离线功能
+     *
+     * @param request
+     * @param response
+     */
     @CheckApi
     @GET("/offline")
     public void offline(HttpRequest request, HttpResponse response) {
@@ -73,36 +121,5 @@ public class IndexController {
         index(request, response);
     }
 
-// 下面是版本过度做的调整
-
-    @GET("/app/getVersion")
-    public JsonResult getVersion() {
-        HashMap<Object, Object> data = new HashMap<>();
-        data.put("versionCode", "8.0");
-        data.put("updateContent", "服务端全新升级，针对服务器后期的代理服务器集群，做了优化，后期会不定时上线其他更多的穿透服务，请保证本次的升级完成，才能持续享受更好的服务");
-        return JsonResult.ok().put("data", data);
-    }
-
-    @GET("/app/download")
-    public void download(HttpResponse response, HttpRequest request) throws Exception {
-
-        File file = new File("../hp/hp-client.apk");
-        response.setDownloadBigFile(file, new ProgressStatus() {
-
-            @Override
-            public void operationComplete(String s) {
-                log.info("下载完成");
-            }
-
-            @Override
-            public void downloading(long progress, long total) {
-                if (total < 0) {
-                    log.warn("file {} transfer progress: {}", file.getName(), progress);
-                } else {
-                    log.debug("file {} transfer progress: {}/{}", file.getName(), progress, total);
-                }
-            }
-        },request);
-    }
 
 }

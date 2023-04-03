@@ -20,17 +20,14 @@ public class MailUtils {
     public static boolean sendMail(String email, String subject,String emailMsg) {
         try {
             //创建配置文件
-            String host = "smtp.office365.com";
             final Properties props = new Properties();
             // 发送服务器需要身份验证
             props.setProperty("mail.smtp.auth", "true");
             // 设置邮件服务器主机名
-            props.setProperty("mail.host", host);
-            props.setProperty("mail.port", "587");
-            //云服务限制
-            props.setProperty("mail.smtp.port", "587");
-            // 发送邮件协议名称 这里使用的是smtp协议
+            props.setProperty("mail.host", PropUtil.getInstance().get("mail.host"));
+            props.setProperty("mail.smtp.port", PropUtil.getInstance().get("mail.port"));
             props.setProperty("mail.transport.protocol", "smtp");
+            props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
             // 服务端口号
             props.setProperty("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.starttls.required", "true");
@@ -59,5 +56,9 @@ public class MailUtils {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public static void main(String[] args) {
+        sendMail("1417262058@qq.com","a","b");
     }
 }

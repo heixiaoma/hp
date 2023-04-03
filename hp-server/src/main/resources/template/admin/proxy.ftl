@@ -23,7 +23,10 @@
                         <td>${app.port}</td>
                         <td>${app.num}</td>
                         <td>${app.level}</td>
-                        <td><a target="_blank" href="http://${app.ip}/statistics?token=${token}">访问</a></td>
+                        <td>
+                            <a target="_blank" href="http://${app.ip}/statistics?token=${token}">数据分析</a>
+                            <a target="_blank" href="http://${app.ip}/backList?token=${token}">黑名单</a>
+                        </td>
                     </tr>
                 </#list>
             </#if>
