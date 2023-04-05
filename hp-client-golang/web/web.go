@@ -241,7 +241,6 @@ func StartWeb(webPort int, coreVersion string) {
 			})
 			return
 		}
-		log.Println(string(body))
 		data := &CoreData{}
 		err = json.Unmarshal(body, data)
 		if err != nil || data.Data == nil {
