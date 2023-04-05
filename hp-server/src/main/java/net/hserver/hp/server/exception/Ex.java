@@ -3,8 +3,8 @@ package net.hserver.hp.server.exception;
 import cn.hserver.HServerApplication;
 import cn.hserver.core.ioc.annotation.Bean;
 import cn.hserver.plugin.web.context.Webkit;
+import cn.hserver.plugin.web.exception.NotFoundException;
 import cn.hserver.plugin.web.interfaces.GlobalException;
-import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
