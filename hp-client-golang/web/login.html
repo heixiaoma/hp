@@ -21,7 +21,7 @@
     <div class="mdui-toolbar mdui-color-theme">
         <div class="mdui-toolbar-spacer"></div>
         <div mdui-dialog="{target: '#login_dialog'}" class=" mdui-btn mdui-btn-dense">登录</div>
-        <div mdui-dialog="{target: '#register_dialog'}" class="register mdui-btn mdui-btn-dense">注册</div>
+        <div mdui-dialog="{target: '#register_dialog'}" class="register mdui-btn mdui-btn-dense">注册（更新密码）</div>
     </div>
 </header>
 <!--菜單-->
@@ -55,7 +55,7 @@
     <div>
         <button id="closeReg" mdui-dialog-close="{target: '#register_dialog'}" class="mdui-btn mdui-btn-icon close"><i
                 class="mdui-icon material-icons">close</i></button>
-        <div class="mdui-dialog-title">创建新账号</div>
+        <div class="mdui-dialog-title">创建新账号/更新密码</div>
     </div>
     <form class="">
         <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom"><label
@@ -80,7 +80,7 @@
 
 
         <div class="actions mdui-clearfix">
-            <button id="reg_btn" type="button" class="mdui-btn mdui-btn-raised mdui-color-theme action-btn">注册并登录
+            <button id="reg_btn" type="button" class="mdui-btn mdui-btn-raised mdui-color-theme action-btn">注册（更新密码）
             </button>
         </div>
     </form>
@@ -263,7 +263,7 @@
         </div>
     </div>
     <div class="feature case">
-        <h2>最新捐赠者(打赏请备注账号)</h2>
+        <h2>最新捐赠者(打赏请备注邮箱账号)</h2>
         <div class="meta">
             <div style="text-align: center">
                 <img height="300" src="img/pay.jpg"/>
@@ -297,6 +297,10 @@
         $("#pay").html(
             tabData
         )
+    });
+
+    $.get("/core/version", function (result) {
+        mdui.alert(result.Msg);
     });
 </script>
 

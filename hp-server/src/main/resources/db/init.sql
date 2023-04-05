@@ -71,6 +71,16 @@ CREATE TABLE "sys_app" (
   PRIMARY KEY ("id")
 );
 
+DROP TABLE IF EXISTS "sys_core";
+CREATE TABLE "sys_core" (
+                           "id" text NOT NULL,
+                           "version_code" text NOT NULL,
+                           "update_content" text NOT NULL,
+                           "create_time" TEXT,
+                           PRIMARY KEY ("id")
+);
+
+
 DROP TABLE IF EXISTS "sys_statistics";
 CREATE TABLE "sys_statistics" (
   "id" text NOT NULL,

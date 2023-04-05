@@ -22,8 +22,8 @@
               mdui-drawer="{target: '#main-drawer', swipe: true}"><i class="mdui-icon material-icons">menu</i></span>
         <a href="./center.html" class="mdui-typo-headline mdui-hidden-xs">内网穿透</a>
         <div class="mdui-toolbar-spacer"></div>
-        <div class=" mdui-btn mdui-btn-dense"><span>用户：<span id="username">***</span> 级别：<span
-                id="level">***</span> </span></div>
+        <div class=" mdui-btn mdui-btn-dense"><span>等级：<span
+                id="level">***</span> 账户：<span id="username">***</span> </span></div>
         <div id="login_out" class=" mdui-btn mdui-btn-dense">退出</div>
     </div>
 </header>
@@ -85,6 +85,9 @@
         <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-purple-accent mdui-ripple"
                 onclick="new mdui.Dialog('#addUser').open()">
             添加
+        </button>
+        <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-purple-accent mdui-ripple" id="checkCore">
+            检查内核版本
         </button>
         <button class="mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-purple-accent mdui-ripple" id="refUser">
             刷新配置信息
@@ -256,7 +259,15 @@
                 } else {
                     $("#closeLogin").click()
                     mdui.alert(result.msg);
+                    localStorage.removeItem("userInfo")
+                    location.href = "login.html"
                 }
+            });
+        })
+
+        $("#checkCore").click(function () {
+            $.get("/core/version", function (result) {
+                mdui.alert(result.Msg);
             });
         })
 

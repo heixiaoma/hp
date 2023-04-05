@@ -15,15 +15,10 @@ import net.hserver.hp.server.config.ConstConfig;
 import net.hserver.hp.server.dao.DomainDao;
 import net.hserver.hp.server.dao.PortDao;
 import net.hserver.hp.server.domian.bean.Statistics;
-import net.hserver.hp.server.domian.entity.DomainEntity;
-import net.hserver.hp.server.domian.entity.PortEntity;
-import net.hserver.hp.server.domian.entity.ProxyServerEntity;
-import net.hserver.hp.server.domian.entity.StatisticsEntity;
+import net.hserver.hp.server.domian.entity.*;
 import net.hserver.hp.server.domian.vo.UserVo;
-import net.hserver.hp.server.service.AppService;
-import net.hserver.hp.server.service.PayService;
-import net.hserver.hp.server.service.StatisticsService;
-import net.hserver.hp.server.service.UserService;
+import net.hserver.hp.server.service.*;
+import net.hserver.hp.server.utils.DateUtil;
 import net.hserver.hp.server.utils.UserCheckUtil;
 import org.beetl.sql.core.page.PageResult;
 import org.slf4j.Logger;
@@ -44,6 +39,10 @@ public class OpenApiController {
 
     @Autowired
     private AppService appService;
+
+    @Autowired
+    private CoreService coreService;
+
     @Autowired
     private StatisticsService statisticsService;
 
@@ -268,13 +267,24 @@ public class OpenApiController {
 
     @GET("/server/pay")
     public JsonResult pay() {
-        return JsonResult.ok().put("data", payService.getTop50());
+        return JsonResult.ok().put("data", payService.getTop52());
     }
+
 
     @GET("/app/getVersion")
     public JsonResult getVersion() {
         return JsonResult.ok().put("data", appService.getAppVersion());
     }
+
+    @GET("/app/getCoreVersion")
+    public JsonResult getCoreVersion() {
+        CoreEntity appVersion = coreService.getAppVersion();
+        String createTime = appVersion.getCreateTime();
+        String s = DateUtil.stampToDate(createTime);
+        appVersion.setCreateTime(s);
+        return JsonResult.ok().put("data",appVersion );
+    }
+
 
     @GET("/app/download")
     public void download(HttpResponse response, HttpRequest request) throws Exception {

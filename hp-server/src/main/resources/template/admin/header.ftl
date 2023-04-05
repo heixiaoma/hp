@@ -73,10 +73,16 @@
                 <div class="mdui-list-item-content">公告管理</div>
             </div>
         </a>
+        <a class="mdui-collapse-item mdui-collapse-item-open" href="/admin/core">
+            <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-cyan-a400">layers</i>
+                <div class="mdui-list-item-content">内核版本</div>
+            </div>
+        </a>
         <a class="mdui-collapse-item mdui-collapse-item-open" href="/admin/app">
             <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
                 <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-green">layers</i>
-                <div class="mdui-list-item-content">app管理</div>
+                <div class="mdui-list-item-content">app版本</div>
             </div>
         </a>
         <a class="mdui-collapse-item mdui-collapse-item-open" href="/admin/reg">

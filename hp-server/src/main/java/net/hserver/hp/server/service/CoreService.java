@@ -1,15 +1,13 @@
 package net.hserver.hp.server.service;
 
 import net.hserver.hp.server.domian.entity.AppEntity;
-import net.hserver.hp.server.domian.entity.PayEntity;
+import net.hserver.hp.server.domian.entity.CoreEntity;
 import org.beetl.sql.core.page.PageResult;
-
-import java.util.List;
 
 /**
  * @author hxm
  */
-public interface PayService {
+public interface CoreService {
 
     /**
      * 列表
@@ -18,16 +16,14 @@ public interface PayService {
      * @param pageSize
      * @return
      */
-    PageResult<PayEntity> list(Integer page, Integer pageSize);
+    PageResult<CoreEntity> list(Integer page, Integer pageSize);
 
     /**
      * 添加用户
      *
      * @param appEntity
      */
-    boolean add(PayEntity appEntity);
-
-    double countPrice();
+    boolean add(CoreEntity appEntity);
 
     /**
      * 删除
@@ -39,6 +35,6 @@ public interface PayService {
     /**
      * 最新版本
      */
-    List<PayEntity> getTop52();
+    CoreEntity getAppVersion();
 
 }

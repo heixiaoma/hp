@@ -217,8 +217,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean addUser(String username, String password, String ports, String domains, Integer level) {
         UserEntity user = getUser(username);
+        //存在的用户就更新密码
         if (user != null) {
-            return false;
+            user.setPassword(password.trim());
+            userDao.updateById(user);
+            return true;
         }
         user = new UserEntity();
         user.setPassword(password.trim());

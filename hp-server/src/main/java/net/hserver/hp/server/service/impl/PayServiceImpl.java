@@ -52,8 +52,8 @@ public class PayServiceImpl implements PayService {
     }
 
     @Override
-    public List<PayEntity> getTop50() {
-        return payDao.createLambdaQuery().orderBy("create_time desc").limit(0, 50).select();
+    public List<PayEntity> getTop52() {
+        return payDao.createLambdaQuery().orderBy("create_time desc").limit(0, 52).select();
     }
 
 }

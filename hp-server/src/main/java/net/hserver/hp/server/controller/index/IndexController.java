@@ -19,7 +19,7 @@ public class IndexController {
     @GET("/")
     public void defaults(HttpResponse response) {
         Map<String, Object> data = new HashMap<>();
-        data.put("payer",payService.getTop50());
+        data.put("payer",payService.getTop52());
         response.sendTemplate("/index/default.ftl",data);
     }
 
@@ -29,6 +29,4 @@ public class IndexController {
         data.put("list", ProxyServerEntity.getAll());
         response.sendTemplate("/index/index.ftl", data);
     }
-
-
 }

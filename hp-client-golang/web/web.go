@@ -63,7 +63,22 @@ type DeviceData struct {
 	Data []*DeviceInfo `json:"data"`
 }
 
+type CoreVersion struct {
+	Id            string `json:"id"`
+	VersionCode   string `json:"versionCode"`
+	UpdateContent string `json:"updateContent"`
+	CreateTime    string `json:"createTime"`
+}
+
+type CoreData struct {
+	Code int          `json:"code"`
+	Msg  string       `json:"msg"`
+	Data *CoreVersion `json:"data"`
+}
+
 var ApiUrl = ""
+
+var CORE_VERSION = "1.0"
 
 func Proxy(messageType HpMessage.HpMessage_MessageType, server_ip string, server_port int, username string, password string, domain string, remote_port int, ip string, port int) bool {
 	_, ok := ConnGroup.Load(domain)
@@ -92,7 +107,8 @@ func Proxy(messageType HpMessage.HpMessage_MessageType, server_ip string, server
 	return true
 }
 
-func StartWeb(webPort int) {
+func StartWeb(webPort int, coreVersion string) {
+	CORE_VERSION = coreVersion
 	gin.SetMode(gin.ReleaseMode)
 	gin.DefaultWriter = io.Discard
 	e := gin.Default()
@@ -204,6 +220,52 @@ func StartWeb(webPort int) {
 	})
 
 	/**
+	内核版本
+	*/
+	e.GET("/core/version", func(context *gin.Context) {
+		resp, err := http.Get(ApiUrl + "/app/getCoreVersion")
+		if err != nil {
+			log.Println(err)
+		}
+		defer func(Body io.ReadCloser) {
+			err := Body.Close()
+			if err != nil {
+				log.Println(err)
+			}
+		}(resp.Body)
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			context.JSON(http.StatusOK, &Res{
+				Code: -1,
+				Msg:  "检查更新失败",
+			})
+			return
+		}
+		log.Println(string(body))
+		data := &CoreData{}
+		err = json.Unmarshal(body, data)
+		if err != nil || data.Data == nil {
+			context.JSON(http.StatusOK, &Res{
+				Code: -1,
+				Msg:  "检查更新失败",
+			})
+			return
+		}
+		//如果相等
+		if strings.Compare(data.Data.VersionCode, CORE_VERSION) == 0 {
+			context.JSON(http.StatusOK, &Res{
+				Code: 200,
+				Msg:  "<font color='green'>不需要更新</font><br>当前版本:" + CORE_VERSION + "<br>你的HP内核已经是最新版",
+			})
+		} else {
+			context.JSON(http.StatusOK, &Res{
+				Code: 200,
+				Msg:  "<font color='red'>需要更新</font><br>当前版本:" + CORE_VERSION + "<br>最新版本:" + data.Data.VersionCode + "<br>更新时间:" + data.Data.CreateTime + "<br>更新内容:" + data.Data.UpdateContent,
+			})
+		}
+	})
+
+	/**
 	查询设备ID
 	*/
 	e.GET("/device/info", func(context *gin.Context) {
@@ -304,7 +366,7 @@ func InitCloudDevice(apiAddress string) {
 		log.Println("未获取道设备ID，不能加载云端资源")
 		return
 	}
-	resp, err := http.Get(apiAddress + "/config/listDevice?deviceId=" + id)
+	resp, err := http.Get(ApiUrl + "/config/listDevice?deviceId=" + id)
 	if err != nil {
 		log.Println(err)
 	}
