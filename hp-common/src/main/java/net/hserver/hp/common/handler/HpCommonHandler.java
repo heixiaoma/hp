@@ -1,5 +1,6 @@
 package net.hserver.hp.common.handler;
 
+import cn.hserver.core.server.util.ExceptionUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
@@ -30,7 +31,7 @@ public abstract class HpCommonHandler extends SimpleChannelInboundHandler<HpMess
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         if (!(cause instanceof IOException)){
-            log.error("HP通道 ......",cause);
+            log.error("HP通道 ......\n{}", ExceptionUtil.getMessage(cause));
         }
         ctx.close();
     }
