@@ -32,7 +32,7 @@ public abstract class HpCommonHandler extends SimpleChannelInboundHandler<HpMess
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         if (!(cause instanceof IOException)){
             cause.printStackTrace();
-            log.error("HP通道 ......\n{}", ExceptionUtil.getMessage(cause));
+            log.error("HP通道 {}......\n{}",cause.getStackTrace()[0].toString(), ExceptionUtil.getMessage(cause));
         }
         ctx.close();
     }
