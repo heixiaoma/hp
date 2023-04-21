@@ -11,6 +11,7 @@ import cn.hserver.plugin.web.protocol.DispatchHttp;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpServerCodec;
+import net.hserver.hp.common.codec.PhotoMessageDecoder;
 import net.hserver.hp.proxy.config.WebConfig;
 import net.hserver.hp.proxy.domian.bean.ConnectInfo;
 import net.hserver.hp.proxy.handler.HpServerHandler;
@@ -76,6 +77,7 @@ public class HpWebProxyProtocolDispatcher extends DispatchHttp {
     }
 
     public void addProxyHandler(ChannelPipeline pipeline, Integer port) {
+        pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new PhotoMessageDecoder());
         pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new FrontendHandler(port));
     }
 

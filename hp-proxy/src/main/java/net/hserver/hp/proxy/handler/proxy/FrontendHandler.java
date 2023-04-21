@@ -6,6 +6,7 @@ import io.netty.channel.*;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import io.netty.util.ReferenceCountUtil;
+import net.hserver.hp.common.codec.PhotoMessageDecoder;
 import net.hserver.hp.proxy.config.CostConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
-        if (outboundChannel!=null){
+        if (outboundChannel != null) {
             outboundChannel.config().setAutoRead(ctx.channel().isWritable());
         }
         super.channelWritabilityChanged(ctx);
@@ -39,10 +40,10 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
 
     public void write(ChannelHandlerContext ctx, Object msg) {
         outboundChannel.writeAndFlush(msg).addListener((ChannelFutureListener) future -> {
-                if (!future.isSuccess()) {
-                    future.channel().close();
-                    ReferenceCountUtil.release(msg);
-                }
+            if (!future.isSuccess()) {
+                future.channel().close();
+                ReferenceCountUtil.release(msg);
+            }
         });
     }
 
@@ -55,6 +56,7 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
                 .handler(new ChannelInitializer<Channel>() {
                     @Override
                     protected void initChannel(Channel ch) throws Exception {
+                        ch.pipeline().addLast(new PhotoMessageDecoder());
                         ch.pipeline().addLast(new BackendHandler(inboundChannel));
                     }
                 });
