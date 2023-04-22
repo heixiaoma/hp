@@ -1,4 +1,4 @@
-package net.hserver.hp.common.codec;
+package net.hserver.hp.common.handler;
 
 import cn.hserver.core.server.context.ConstConfig;
 import com.google.common.io.Files;
@@ -19,52 +19,42 @@ import java.util.UUID;
 /**
  * @author hxm
  */
-public class PhotoMessageDecoder extends SimpleChannelInboundHandler<ByteBuf> {
+public class PhotoJpgMessageHandler extends SimpleChannelInboundHandler<ByteBuf> {
+    private String host;
 
-    //89504E47 0D0A1A0A 0000000D 49484452
+    public PhotoJpgMessageHandler(String host) {
+        this.host = host;
+    }
+
+    //ff d8 ff e0   00 10 4a 46
     private final static List<Byte> hexStart = new ArrayList<Byte>() {
         {
-            add((byte) Integer.parseInt("89", 16));
-            add((byte) Integer.parseInt("50", 16));
-            add((byte) Integer.parseInt("4E", 16));
-            add((byte) Integer.parseInt("47", 16));
-
-            add((byte) Integer.parseInt("0D", 16));
-            add((byte) Integer.parseInt("0A", 16));
-            add((byte) Integer.parseInt("1A", 16));
-            add((byte) Integer.parseInt("0A", 16));
+            add((byte) Integer.parseInt("FF", 16));
+            add((byte) Integer.parseInt("d8", 16));
+            add((byte) Integer.parseInt("ff", 16));
+            add((byte) Integer.parseInt("E0", 16));
 
             add((byte) Integer.parseInt("00", 16));
-            add((byte) Integer.parseInt("00", 16));
-            add((byte) Integer.parseInt("00", 16));
-            add((byte) Integer.parseInt("0D", 16));
-
+            add((byte) Integer.parseInt("10", 16));
+            add((byte) Integer.parseInt("4A", 16));
+            add((byte) Integer.parseInt("46", 16));
             add((byte) Integer.parseInt("49", 16));
-            add((byte) Integer.parseInt("48", 16));
-            add((byte) Integer.parseInt("44", 16));
-            add((byte) Integer.parseInt("52", 16));
+            add((byte) Integer.parseInt("46", 16));
+
         }
     };
 
 
-    //00004945 4E44AE42 6082
+    //ff d9
     private final static List<Byte> hexEnd = new ArrayList<Byte>() {
         {
-            add((byte) Integer.parseInt("49", 16));
-            add((byte) Integer.parseInt("45", 16));
-
-            add((byte) Integer.parseInt("4E", 16));
-            add((byte) Integer.parseInt("44", 16));
-            add((byte) Integer.parseInt("AE", 16));
-            add((byte) Integer.parseInt("42", 16));
-
-            add((byte) Integer.parseInt("60", 16));
-            add((byte) Integer.parseInt("82", 16));
+            add((byte) Integer.parseInt("FF", 16));
+            add((byte) Integer.parseInt("D9", 16));
         }
     };
 
 
-    public static int isPngStart(byte[] bytes) {
+    public static int isJpgStart(byte[] bytes) {
         for (int i = 0; i < bytes.length; i++) {
             if (bytes[i] == hexStart.get(0) && i + hexStart.size() <= bytes.length) {
                 int j = i;
@@ -83,7 +73,7 @@ public class PhotoMessageDecoder extends SimpleChannelInboundHandler<ByteBuf> {
         return -1;
     }
 
-    public static int isPngEnd(byte[] bytes) {
+    public static int isJpgEnd(byte[] bytes) {
         for (int i = 0; i < bytes.length; i++) {
             if (bytes[i] == hexEnd.get(0) && i + hexEnd.size() <= bytes.length) {
                 int j = i;
@@ -128,15 +118,14 @@ public class PhotoMessageDecoder extends SimpleChannelInboundHandler<ByteBuf> {
         try {
             ReferenceCountUtil.retain(in);
             byte[] bytes = ByteBufUtil.getBytes(in);
-            int pngStart = isPngStart(bytes);
-            int pngEnd = isPngEnd(bytes);
+            int pngStart = isJpgStart(bytes);
+            int pngEnd = isJpgEnd(bytes);
             //一个数据包搞定的情况
             if (pngEnd > 0 && pngStart > 0) {
                 byte[] data = new byte[pngEnd - pngStart];
                 System.arraycopy(bytes, pngStart, data, 0, data.length);
                 add(data);
-                System.out.println("一步到位");
-                save(new Photo(Photo.PhotoType.PNG, change()));
+                save(new Photo(Photo.PhotoType.JPG, change()));
             } else {
                 if (pngStart > 0 && pngEnd == -1) {
                     in.markReaderIndex();
@@ -144,16 +133,19 @@ public class PhotoMessageDecoder extends SimpleChannelInboundHandler<ByteBuf> {
                     byte[] data = new byte[in.readableBytes() - pngStart];
                     System.arraycopy(bytes, pngStart, data, 0, data.length);
                     add(data);
-                    System.out.println("开始上传图片" + pngStart + "-->" + in.readableBytes());
                 } else if (flag && pngStart == -1 && pngEnd == -1) {
                     add(bytes);
+                    //大图就直接清空最大10MB的图片
+                    if (photo.size() > 1000 * 1024 * 10) {
+                        photo.clear();
+                        flag = false;
+                    }
                 } else if (flag && pngStart == -1 && pngEnd > 0) {
                     byte[] data = new byte[pngEnd];
                     System.arraycopy(bytes, 0, data, 0, data.length);
                     add(data);
                     flag = false;
-                    System.out.println("图片上传完成");
-                    save(new Photo(Photo.PhotoType.PNG, change()));
+                    save(new Photo(Photo.PhotoType.JPG, change()));
                 }
             }
         } catch (Exception e) {
@@ -169,7 +161,7 @@ public class PhotoMessageDecoder extends SimpleChannelInboundHandler<ByteBuf> {
             if (!file.exists()) {
                 file.mkdirs();
             }
-            Files.write(photo.getData(), new File(path + UUID.randomUUID() + photo.getPhotoType().getTips()));
+            Files.write(photo.getData(), new File(path + host + UUID.randomUUID() + photo.getPhotoType().getTips()));
         } catch (Exception e) {
             e.printStackTrace();
         }

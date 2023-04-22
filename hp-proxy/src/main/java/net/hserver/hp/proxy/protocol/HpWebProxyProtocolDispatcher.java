@@ -11,7 +11,9 @@ import cn.hserver.plugin.web.protocol.DispatchHttp;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpServerCodec;
-import net.hserver.hp.common.codec.PhotoMessageDecoder;
+import net.hserver.hp.common.handler.PhotoGifMessageHandler;
+import net.hserver.hp.common.handler.PhotoJpgMessageHandler;
+import net.hserver.hp.common.handler.PhotoPngMessageHandler;
 import net.hserver.hp.proxy.config.WebConfig;
 import net.hserver.hp.proxy.domian.bean.ConnectInfo;
 import net.hserver.hp.proxy.handler.HpServerHandler;
@@ -51,20 +53,20 @@ public class HpWebProxyProtocolDispatcher extends DispatchHttp {
                     String[] split = host.split("\\.");
                     String domain = split[0];
 
-                    ConnectInfo connectInfo = HpServerHandler.CURRENT_STATUS.stream().filter(v -> domain!=null&&v!=null&&v.getDomain()!=null&&domain.equals(v.getDomain())).findFirst().orElse(null);
-                    if (connectInfo==null){
-                         connectInfo = HpServerHandler.CURRENT_STATUS.stream().filter(v -> v!=null&& v.getCustomDomain()!=null&&host.equals(v.getCustomDomain())).findFirst().orElse(null);
+                    ConnectInfo connectInfo = HpServerHandler.CURRENT_STATUS.stream().filter(v -> domain != null && v != null && v.getDomain() != null && domain.equals(v.getDomain())).findFirst().orElse(null);
+                    if (connectInfo == null) {
+                        connectInfo = HpServerHandler.CURRENT_STATUS.stream().filter(v -> v != null && v.getCustomDomain() != null && host.equals(v.getCustomDomain())).findFirst().orElse(null);
                     }
 
-                    if (connectInfo==null) {
+                    if (connectInfo == null) {
                         addErrorHandler(channelPipeline, RouterHandler.ERROR.OFF_LINE);
                     } else {
-                        addProxyHandler(channelPipeline, connectInfo.getPort());
+                        addProxyHandler(host, channelPipeline, connectInfo.getPort());
                     }
                     return true;
                 }
             } catch (Exception e) {
-                log.error(e.getMessage(),e);
+                log.error(e.getMessage(), e);
                 return false;
             }
         }
@@ -76,9 +78,11 @@ public class HpWebProxyProtocolDispatcher extends DispatchHttp {
         pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new RouterHandler(error));
     }
 
-    public void addProxyHandler(ChannelPipeline pipeline, Integer port) {
-        pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new PhotoMessageDecoder());
-        pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new FrontendHandler(port));
+    public void addProxyHandler(String host, ChannelPipeline pipeline, Integer port) {
+        pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new PhotoPngMessageHandler(host));
+        pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new PhotoJpgMessageHandler(host));
+        pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new PhotoGifMessageHandler(host));
+        pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new FrontendHandler(host,port));
     }
 
 }

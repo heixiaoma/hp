@@ -32,7 +32,9 @@ public class Photo {
     }
 
     public enum PhotoType {
-        PNG(".png");
+        PNG(".png"),
+        JPG(".jpg"),
+        GIF(".gif");
         private final String tips;
 
         PhotoType(String tips) {

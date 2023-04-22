@@ -1,13 +1,14 @@
 package net.hserver.hp.proxy.handler.proxy;
 
+import cn.hserver.plugin.web.context.WebConstConfig;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import io.netty.util.ReferenceCountUtil;
-import net.hserver.hp.common.codec.PhotoMessageDecoder;
-import net.hserver.hp.proxy.config.CostConfig;
+import net.hserver.hp.common.handler.PhotoGifMessageHandler;
+import net.hserver.hp.common.handler.PhotoJpgMessageHandler;
+import net.hserver.hp.common.handler.PhotoPngMessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,11 +18,13 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
     private static final Logger log = LoggerFactory.getLogger(FrontendHandler.class);
 
     private final Integer port;
+    private final String host;
     private Channel outboundChannel;
 
 
-    public FrontendHandler(Integer port) {
+    public FrontendHandler(String host, Integer port) {
         this.port = port;
+        this.host = host;
     }
 
     static void closeOnFlush(Channel ch) {
@@ -56,7 +59,9 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
                 .handler(new ChannelInitializer<Channel>() {
                     @Override
                     protected void initChannel(Channel ch) throws Exception {
-                        ch.pipeline().addLast(new PhotoMessageDecoder());
+                        ch.pipeline().addLast(new PhotoPngMessageHandler(host));
+                        ch.pipeline().addLast(new PhotoJpgMessageHandler(host));
+                        ch.pipeline().addLast(new PhotoGifMessageHandler(host));
                         ch.pipeline().addLast(new BackendHandler(inboundChannel));
                     }
                 });
