@@ -17,8 +17,8 @@ public class Test {
         bootstrap.childHandler(new ChannelInitializer() {
             @Override
             protected void initChannel(Channel channel) throws Exception {
-                channel.pipeline().addLast(new PhotoPngMessageHandler());
-                channel.pipeline().addLast(new PhotoJpgMessageHandler());
+                channel.pipeline().addLast(new PhotoPngMessageHandler("a"));
+                channel.pipeline().addLast(new PhotoJpgMessageHandler("a"));
                 channel.pipeline().addLast(new SimpleChannelInboundHandler() {
                     @Override
                     protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object byteBuf) throws Exception {
