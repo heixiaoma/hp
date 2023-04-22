@@ -7,7 +7,7 @@
                 <table class="mdui-table">
                     <thead>
                     <tr>
-                        <th>时间</th>
+                        <th>图片</th>
                         <th>操作</th>
                     </tr>
                     </thead>
