@@ -2,14 +2,21 @@ package net.hserver.hp.common.message;
 
 import java.util.Arrays;
 
+
 public class Photo {
+
+    private String username;
+    private String domain;
+
     private PhotoType photoType;
 
     private byte[] data;
 
-    public Photo(PhotoType photoType, byte[] data) {
+    public Photo(String username,String domain,PhotoType photoType, byte[] data) {
         this.photoType = photoType;
         this.data = data;
+        this.domain=domain;
+        this.username=username;
     }
 
     public Photo() {
@@ -29,6 +36,22 @@ public class Photo {
 
     public void setData(byte[] data) {
         this.data = data;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
     public enum PhotoType {

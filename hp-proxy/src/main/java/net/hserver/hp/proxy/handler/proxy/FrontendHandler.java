@@ -59,9 +59,6 @@ public class FrontendHandler extends ChannelInboundHandlerAdapter {
                 .handler(new ChannelInitializer<Channel>() {
                     @Override
                     protected void initChannel(Channel ch) throws Exception {
-                        ch.pipeline().addLast(new PhotoPngMessageHandler(host));
-                        ch.pipeline().addLast(new PhotoJpgMessageHandler(host));
-                        ch.pipeline().addLast(new PhotoGifMessageHandler(host));
                         ch.pipeline().addLast(new BackendHandler(inboundChannel));
                     }
                 });

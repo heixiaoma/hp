@@ -1,17 +1,11 @@
 package net.hserver.hp.proxy.controller;
 
-import cn.hserver.core.ioc.annotation.Autowired;
 import cn.hserver.core.server.context.ConstConfig;
 import cn.hserver.plugin.web.annotation.Controller;
 import cn.hserver.plugin.web.annotation.GET;
 import cn.hserver.plugin.web.interfaces.HttpRequest;
 import cn.hserver.plugin.web.interfaces.HttpResponse;
-import com.google.common.io.Files;
-import net.hserver.hp.proxy.annotation.CheckApi;
-import net.hserver.hp.proxy.config.CostConfig;
-import net.hserver.hp.proxy.config.WebConfig;
-import net.hserver.hp.proxy.domian.bean.GlobalStat;
-import net.hserver.hp.proxy.handler.HpServerHandler;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +55,7 @@ public class PhotoController {
     }
 
     @GET("/photoList")
-    public void backList(HttpRequest request, HttpResponse response) {
+    public void photoList(HttpRequest request, HttpResponse response) {
         try {
             Map<String, Object> data = new HashMap<>(2);
             data.put("token", request.query("token"));
@@ -89,7 +83,12 @@ public class PhotoController {
 
     @GET("/photoRemoveAll/{time}")
     public void photoRemoveAll(String time, HttpRequest request, HttpResponse response) {
-        backList(request, response);
+        try {
+            FileUtils.deleteDirectory(new File(PHOTO_PATH + File.separator + time));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        response.redirect("/photoList");
     }
 
 
@@ -100,8 +99,12 @@ public class PhotoController {
 
     @GET("/photoRemove/{path}")
     public void photoRemove(String path, HttpRequest request, HttpResponse response) {
-        new File(PHOTO_PATH + File.separator + path).delete();
-        photo(path.split("/")[0],request,response);
+        try {
+            FileUtils.delete(new File(PHOTO_PATH + File.separator + path));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        response.redirect("/photo/" + path.split("/")[0]);
     }
 
 }

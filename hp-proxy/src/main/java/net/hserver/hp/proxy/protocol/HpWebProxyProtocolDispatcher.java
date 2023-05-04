@@ -3,7 +3,6 @@ package net.hserver.hp.proxy.protocol;
 import cn.hserver.core.ioc.annotation.Autowired;
 import cn.hserver.core.ioc.annotation.Bean;
 import cn.hserver.core.ioc.annotation.Order;
-import cn.hserver.core.server.util.ExceptionUtil;
 import cn.hserver.core.server.util.protocol.HostUtil;
 import cn.hserver.core.server.util.protocol.SSLUtils;
 import cn.hserver.plugin.web.context.WebConstConfig;
@@ -11,9 +10,6 @@ import cn.hserver.plugin.web.protocol.DispatchHttp;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpServerCodec;
-import net.hserver.hp.common.handler.PhotoGifMessageHandler;
-import net.hserver.hp.common.handler.PhotoJpgMessageHandler;
-import net.hserver.hp.common.handler.PhotoPngMessageHandler;
 import net.hserver.hp.proxy.config.WebConfig;
 import net.hserver.hp.proxy.domian.bean.ConnectInfo;
 import net.hserver.hp.proxy.handler.HpServerHandler;
@@ -79,9 +75,6 @@ public class HpWebProxyProtocolDispatcher extends DispatchHttp {
     }
 
     public void addProxyHandler(String host, ChannelPipeline pipeline, Integer port) {
-        pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new PhotoPngMessageHandler(host));
-        pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new PhotoJpgMessageHandler(host));
-        pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new PhotoGifMessageHandler(host));
         pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new FrontendHandler(host,port));
     }
 

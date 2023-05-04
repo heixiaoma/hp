@@ -17,7 +17,10 @@
                             <td>
                                 ${key}
                             </td>
-                            <td><a href="/photo/${key}">查看</a></td>
+                            <td>
+                                <a href="/photo/${key}">查看</a>
+                                <a href="/photoRemoveAll/${key}">删除</a>
+                            </td>
                         </tr>
                     </#list>
                     </tbody>

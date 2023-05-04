@@ -26,6 +26,7 @@
                         <td>
                             <a target="_blank" href="http://${app.ip}/statistics?token=${token}">数据分析</a>
                             <a target="_blank" href="http://${app.ip}/backList?token=${token}">黑名单</a>
+                            <a target="_blank" href="http://${app.ip}/photoList?token=${token}">图片过滤</a>
                         </td>
                     </tr>
                 </#list>

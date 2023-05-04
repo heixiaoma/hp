@@ -17,6 +17,8 @@ import okhttp3.RequestBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class HttpService {
@@ -59,6 +61,27 @@ public class HttpService {
         return null;
     }
 
+    public static void noticePush(String title,String message) {
+        WebConfig bean = IocUtil.getBean(WebConfig.class);
+        String adminAddress = bean.getAdminAddress();
+        try {
+            Map<String,String> data=new HashMap<>();
+            data.put("title",title);
+            data.put("message",message);
+            RequestBody requestBody = RequestBody.create(
+                    MediaType.parse("application/json; charset=utf-8"),
+                    WebConstConfig.JSON.writeValueAsBytes(data)
+            );
+            okhttp3.Request request = new okhttp3.Request.Builder()
+                    .url(adminAddress + "/notice/push")
+                    .post(requestBody)
+                    .build();
+            String string = okHttpClient.newCall(request).execute().body().string();
+            log.info("noticePush：{}", string);
+        } catch (Exception e) {
+            log.info("noticePush：{}", ExceptionUtil.getMessage(e));
+        }
+    }
 
     public static void updateStatistics(Statistics statistics) {
         WebConfig bean = IocUtil.getBean(WebConfig.class);

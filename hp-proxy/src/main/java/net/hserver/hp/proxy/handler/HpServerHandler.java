@@ -7,11 +7,10 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.bytes.ByteArrayDecoder;
-import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import io.netty.util.Attribute;
-import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import net.hserver.hp.common.codec.PhotoMessageDecoder;
+import net.hserver.hp.common.codec.PhotoMessageEncoder;
 import net.hserver.hp.common.exception.HpException;
 import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessageData;
@@ -148,11 +147,11 @@ public class HpServerHandler extends HpCommonHandler {
          */
         HpMessageData.HpMessage.MetaData.Builder metaDataBuild = HpMessageData.HpMessage.MetaData.newBuilder();
         if (login == null) {
-            backList(ctx,username);
+            backList(ctx, username);
             metaDataBuild.setSuccess(false);
             metaDataBuild.setReason("非法用户，登录失败，有疑问请联系管理员");
         } else if (login.getType() != null && login.getType() == -1) {
-            backList(ctx,username);
+            backList(ctx, username);
             metaDataBuild.setSuccess(false);
             metaDataBuild.setReason("账号被封，请穿透正能量，有意义的程序哦。用户名：" + username + " 域名：" + domain + " 来源IP：" + ctx.channel().remoteAddress());
         } else if (webConfig.getLevel() != null && webConfig.getLevel() != 0 && login.getLevel() < webConfig.getLevel()) {
@@ -164,14 +163,14 @@ public class HpServerHandler extends HpCommonHandler {
                     tempPort = NetUtil.getAvailablePort();
                 }
                 HpServerHandler thisHandler = this;
+                String host = IocUtil.getBean(WebConfig.class).getUserHost();
                 remoteConnectionServer.bindTcp(tempPort, new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(
-                                //添加编码器作用是进行统计，包数据
-//                                new FlowGlobalTrafficShapingHandler(ctx.executor()),
-                                new ByteArrayDecoder(),
-                                new ByteArrayEncoder(),
+                                //添加编码器作用是检查是否有图片，然后在bytebuf和byte转化
+                                new PhotoMessageDecoder(username,domain + "." + host),
+                                new PhotoMessageEncoder(username,domain + "." + host),
                                 new RemoteProxyHandler(thisHandler, remoteConnectionServer)
                         );
                         channels.add(ch);
@@ -180,7 +179,6 @@ public class HpServerHandler extends HpCommonHandler {
                 metaDataBuild.setSuccess(true);
                 register = true;
                 CURRENT_STATUS.add(new ConnectInfo(tempPort, username, domain, login.getDomains().get(domain), ctx.channel()));
-                String host = IocUtil.getBean(WebConfig.class).getUserHost();
                 metaDataBuild.setReason("连接成功，外网TCP地址是:" + IocUtil.getBean(WebConfig.class).getHost() + ":" + tempPort + ",外网HTTP地址是：http://" + domain + "." + host + " " + (login.getTips().trim().length() > 0 ? "公告提示：" + login.getTips() : ""));
                 System.out.println("注册成功，外网地址是:  " + host + ":" + tempPort);
                 System.out.println("用户名：" + username + " 域名：" + domain + " 来源IP：" + ctx.channel().remoteAddress());
@@ -216,11 +214,11 @@ public class HpServerHandler extends HpCommonHandler {
          */
         HpMessageData.HpMessage.MetaData.Builder metaDataBuild = HpMessageData.HpMessage.MetaData.newBuilder();
         if (login == null) {
-            backList(ctx,username);
+            backList(ctx, username);
             metaDataBuild.setSuccess(false);
             metaDataBuild.setReason("非法用户，登录失败，有疑问请联系管理员");
         } else if (login.getType() != null && login.getType() == -1) {
-            backList(ctx,username);
+            backList(ctx, username);
             metaDataBuild.setSuccess(false);
             metaDataBuild.setReason("账号被封，请穿透正能量，有意义的程序哦。用户名：" + username + " 来源IP：" + ctx.channel().remoteAddress());
         } else if (webConfig.getLevel() != null && webConfig.getLevel() != 0 && login.getLevel() < webConfig.getLevel()) {

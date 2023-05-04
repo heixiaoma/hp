@@ -1,0 +1,49 @@
+package net.hserver.hp.proxy.queue;
+
+import cn.hserver.HServerApplication;
+import cn.hserver.core.ioc.annotation.Autowired;
+import cn.hserver.core.ioc.annotation.queue.QueueHandler;
+import cn.hserver.core.ioc.annotation.queue.QueueListener;
+import cn.hserver.core.server.context.ConstConfig;
+import com.google.common.io.Files;
+import net.hserver.hp.common.message.Photo;
+import net.hserver.hp.proxy.service.HttpService;
+import net.hserver.hp.proxy.service.nsfw.NsfwService;
+import net.hserver.hp.proxy.utils.Md5Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
+
+@QueueListener(queueName = "PHOTO")
+public class PhotoQueue {
+    private static final Logger log = LoggerFactory.getLogger(PhotoQueue.class);
+
+    @Autowired
+    private NsfwService nsfwService;
+
+    @QueueHandler
+    public void check(Photo photo) {
+        try {
+            String path = ConstConfig.PATH + "photo" + File.separator + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + File.separator;
+            File file = new File(path);
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+            String md5 = Md5Util.get(photo.getData());
+            String desPath = path + photo.getDomain() + "_" + md5 + photo.getPhotoType().getTips();
+            Files.write(photo.getData(), new File(desPath));
+            float prediction = nsfwService.getPrediction(Files.toByteArray(new File(desPath)));
+            log.info("图片涉黄校验，分数 {}, 用户 {},域名 {} 地址 {}", prediction, photo.getUsername(), photo.getDomain(), desPath);
+            if (prediction > 0.3) {
+                HttpService.noticePush("异常通知", "分数 " + prediction + ", 用户 " + photo.getUsername() + " 域名 " + photo.getDomain() + " 地址 " + desPath);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
+}

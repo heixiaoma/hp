@@ -1,29 +1,20 @@
 package net.hserver.hp.common.handler;
 
-import cn.hserver.core.server.context.ConstConfig;
-import com.google.common.io.Files;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.util.ReferenceCountUtil;
 import net.hserver.hp.common.message.Photo;
 
-import java.io.File;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author hxm
  */
-public class PhotoJpgMessageHandler extends SimpleChannelInboundHandler<ByteBuf> {
-    private String host;
+public class PhotoJpgMessageHandler extends PhotoMessageHandler {
+    private final String username;
+    private final String domain;
 
-    public PhotoJpgMessageHandler(String host) {
-        this.host = host;
+    public PhotoJpgMessageHandler(String username, String domain) {
+        this.username = username;
+        this.domain = domain;
     }
 
     //ff d8 ff e0   00 10 4a 46
@@ -114,23 +105,20 @@ public class PhotoJpgMessageHandler extends SimpleChannelInboundHandler<ByteBuf>
 
 
     @Override
-    public void channelRead0(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
+    public boolean checkAndSavePhoto(byte[] bytes) {
         try {
-            ReferenceCountUtil.retain(in);
-            byte[] bytes = ByteBufUtil.getBytes(in);
             int pngStart = isJpgStart(bytes);
             int pngEnd = isJpgEnd(bytes);
             //一个数据包搞定的情况
-            if (pngEnd > 0 && pngStart > 0) {
+            if (pngEnd >= 0 && pngStart >= 0) {
                 byte[] data = new byte[pngEnd - pngStart];
                 System.arraycopy(bytes, pngStart, data, 0, data.length);
                 add(data);
-                save(new Photo(Photo.PhotoType.JPG, change()));
+                save(new Photo(username,domain,Photo.PhotoType.JPG, change()));
             } else {
-                if (pngStart > 0 && pngEnd == -1) {
-                    in.markReaderIndex();
+                if (pngStart >= 0 && pngEnd == -1) {
                     flag = true;
-                    byte[] data = new byte[in.readableBytes() - pngStart];
+                    byte[] data = new byte[bytes.length - pngStart];
                     System.arraycopy(bytes, pngStart, data, 0, data.length);
                     add(data);
                 } else if (flag && pngStart == -1 && pngEnd == -1) {
@@ -140,30 +128,20 @@ public class PhotoJpgMessageHandler extends SimpleChannelInboundHandler<ByteBuf>
                         photo.clear();
                         flag = false;
                     }
-                } else if (flag && pngStart == -1 && pngEnd > 0) {
+                } else if (flag && pngStart == -1 && pngEnd >= 0) {
                     byte[] data = new byte[pngEnd];
                     System.arraycopy(bytes, 0, data, 0, data.length);
                     add(data);
                     flag = false;
-                    save(new Photo(Photo.PhotoType.JPG, change()));
+                    save(new Photo(username,domain,Photo.PhotoType.JPG, change()));
+                }else {
+                    return false;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
-        ctx.fireChannelRead(in);
-    }
-
-    public void save(Photo photo) {
-        try {
-            String path = ConstConfig.PATH + "photo" + File.separator + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + File.separator;
-            File file = new File(path);
-            if (!file.exists()) {
-                file.mkdirs();
-            }
-            Files.write(photo.getData(), new File(path + host + UUID.randomUUID() + photo.getPhotoType().getTips()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        return true;
     }
 }
