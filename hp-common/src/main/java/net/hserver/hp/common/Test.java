@@ -1,16 +1,11 @@
 package net.hserver.hp.common;
 
-import cn.hserver.core.server.ServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import net.hserver.hp.common.codec.PhotoMessageDecoder;
 import net.hserver.hp.common.codec.PhotoMessageEncoder;
-import net.hserver.hp.common.handler.PhotoJpgMessageHandler;
-import net.hserver.hp.common.handler.PhotoPngMessageHandler;
-import sun.misc.IOUtils;
 
 import java.io.FileInputStream;
 
@@ -28,7 +23,6 @@ public class Test {
                     @Override
                     protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object byteBuf) throws Exception {
                         System.out.println("收到数据：" + byteBuf);
-                        channelHandlerContext.writeAndFlush(IOUtils.readAllBytes(new FileInputStream("/Users/heixiaoma/Documents/1680922025615.jpg")));
                     }
 
                 });
