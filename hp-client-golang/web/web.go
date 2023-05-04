@@ -1,9 +1,7 @@
 package web
 
 import (
-	"crypto/md5"
 	"embed"
-	"encoding/hex"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -11,10 +9,10 @@ import (
 	"hp-client-golang/tcp"
 	"io"
 	"log"
-	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -79,6 +77,8 @@ type CoreData struct {
 var ApiUrl = ""
 
 var CORE_VERSION = "1.0"
+
+var deviceID = "NO_ID"
 
 func Proxy(messageType HpMessage.HpMessage_MessageType, server_ip string, server_port int, username string, password string, domain string, remote_port int, ip string, port int) bool {
 	_, ok := ConnGroup.Load(domain)
@@ -268,7 +268,7 @@ func StartWeb(webPort int, coreVersion string) {
 	查询设备ID
 	*/
 	e.GET("/device/info", func(context *gin.Context) {
-		context.JSON(http.StatusOK, deviceID())
+		context.JSON(http.StatusOK, deviceID)
 	})
 
 	/**
@@ -327,31 +327,8 @@ func wsSend(msg Log) {
 	})
 }
 
-func deviceID() string {
-	netInterfaces, err := net.Interfaces()
-	if err != nil {
-		return "NO_ID"
-	}
-	for _, netInterface := range netInterfaces {
-		if netInterface.Flags&net.FlagUp == 0 {
-			continue // 排除掉不存在、未启用的网口
-		}
-		if netInterface.Flags&net.FlagLoopback != 0 {
-			continue // 排除掉本地回环的网口
-		}
-		macAddr := netInterface.HardwareAddr.String()
-		if len(macAddr) != 0 {
-			h := md5.New()
-			h.Write([]byte(macAddr))
-			res := hex.EncodeToString(h.Sum(nil))
-			return res
-		}
-	}
-	return "NO_ID"
-}
-
 // InitCloudDevice /**
-func InitCloudDevice(apiAddress string) {
+func InitCloudDevice(apiAddress string, deviceId string) {
 	ApiUrl = apiAddress
 	defer func() {
 		err := recover()
@@ -359,13 +336,19 @@ func InitCloudDevice(apiAddress string) {
 			log.Println("云端资源读取失败", err)
 		}
 	}()
-
-	id := deviceID()
-	if id == "NO_ID" {
+	if deviceId == "NO_ID" {
 		log.Println("未获取道设备ID，不能加载云端资源")
 		return
+	} else {
+		//校验设备ID
+		matched, _ := regexp.MatchString("^[0-9a-zA-Z]+$", deviceID)
+		if !matched || len(deviceID) < 10 {
+			log.Println("设备ID只能是数字和字母组成同时大于10位")
+			return
+		}
 	}
-	resp, err := http.Get(ApiUrl + "/config/listDevice?deviceId=" + id)
+	deviceID = deviceId
+	resp, err := http.Get(ApiUrl + "/config/listDevice?deviceId=" + deviceId)
 	if err != nil {
 		log.Println(err)
 	}

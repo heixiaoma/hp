@@ -86,7 +86,7 @@
                 onclick="new mdui.Dialog('#addUser').open()">
             添加穿透配置
         </button>
-        <div>设备ID:<span id="deviceIdText">获取不到设备ID(意味着你用不了这个功能)</span></div>
+        <div>设备ID:<span id="deviceIdText">未设置设备ID</span></div>
     </div>
 
     <div class="mdui-table-fluid">
@@ -108,11 +108,19 @@
         </table>
     </div>
 
-    <div style="padding: .6rem;word-break: break-all; ">
-        <p>当前设备ID:<p id="deviceId">获取不到设备ID(意味着你用不了这个功能)</p></p>
+    <div style="padding: .6rem;word-break: break-all;line-height: 1.6 ">
+        <p>当前设备ID:
+        <p id="deviceId">如果未设置设备ID(意味着你用不了这个功能)</p></p>
         <p style="letter-spacing:.1rem">
-            <br>功能说明：<br>如果你在这里添加了云端存储，那么HP启动时就会加载云端配置，然后进行内网穿透，减少了每次打开都需要重新填写配置这种反人类的，头大的事情。该功能要求设备ID，目前我们假定我获取的设备ID是唯一的就行，出现bug我在去优化这个获取硬件唯一ID的事情。
-            <br> <br>注意事项:<br>在A设备添加只能用于A设备，登录B设备时，因为设备ID不一样，就读取不到配置，一个账号可以添加三个配置，配置完成后重启程序方能看效果</p>
+            <br>功能说明：<br>如果你在这里添加了云端存储，那么HP启动时就会加载云端配置，然后进行内网穿透，减少了每次打开都需要重新填写配置这种反人类的，头大的事情。该功能要求设备ID。
+            <br> <br>如何设置:<br>
+        <ul>
+            <li>设备ID要求：15个字符串长度可以是字母或者数字</li>
+            <li>android中：自动获取IMIE为设备ID</li>
+            <li>docker中：添加环境变量 deviceId:设备ID</li>
+            <li>二进制文件：hp-client -deviceId=设备ID</li>
+        </ul>
+        </p>
     </div>
 
     <div class="mdui-dialog" id="addUser" style="overflow: scroll">
@@ -167,16 +175,16 @@
 
 <script>
     var userInfo = localStorage.getItem("userInfo")
-    var deviceId="NO_ID"
+    var deviceId = "NO_ID"
     if (userInfo) {
         userInfo = JSON.parse(userInfo)
         console.log(userInfo)
 
         //获取设备ID：
         $.get("/device/info", function (result) {
-            if (result!=="NO_ID"){
-                deviceId=result
-                $("#deviceIdText").text(result.slice(0,6)+"..."+result.slice(-6))
+            if (result !== "NO_ID") {
+                deviceId = result
+                $("#deviceIdText").text(result.slice(0, 6) + "..." + result.slice(-6))
                 $("#deviceId").text(deviceId)
             }
         });
@@ -184,7 +192,7 @@
         /**
          * 初始化参数
          */
-        function initPop(){
+        function initPop() {
             var domainHtml = "      <label class=\"mdui-textfield-label\">穿透域名</label>\n" +
                 "                    "
 
@@ -217,7 +225,7 @@
 
             var serverData = []
 
-            $.get(apiAddress+"/load/data", function (result) {
+            $.get(apiAddress + "/load/data", function (result) {
                 if (result.code === 200) {
                     serverData.push(...result.data)
                 }
@@ -263,7 +271,7 @@
         initPop();
 
         function stop(id) {
-            $.get(apiAddress+"/config/remove?id="+id, function (result) {
+            $.get(apiAddress + "/config/remove?id=" + id, function (result) {
                 alert(result.msg)
                 reload()
             });
@@ -271,11 +279,11 @@
 
         $("#userInfo").val(userInfo.id)
         var tabData = ""
-        $.get(apiAddress+"/config/list?userId="+userInfo.id, function (result) {
+        $.get(apiAddress + "/config/list?userId=" + userInfo.id, function (result) {
             for (let a of result.data) {
                 let port = a.port;
                 tabData += "  <tr>\n" +
-                    "                <td>" + (a.deviceId.slice(0,6)+"..."+a.deviceId.slice(-6)) + "</td>\n" +
+                    "                <td>" + (a.deviceId.slice(0, 6) + "..." + a.deviceId.slice(-6)) + "</td>\n" +
                     "                <td>" + a.userHost + "</td>\n" +
                     "                <td>" + a.serverHost + "</td>\n" +
                     "                <td>" + a.type + "</td>\n" +
@@ -283,7 +291,7 @@
                     "                <td>" + a.port + "</td>\n" +
                     "                <td>\n" +
                     "                    <button class=\"mdui-btn mdui-btn-raised mdui-btn-dense mdui-color-deep-orange-accent mdui-ripple\"\n" +
-                    "                       onclick=\"stop('"+a.id+"')\">\n" +
+                    "                       onclick=\"stop('" + a.id + "')\">\n" +
                     "                        删除\n" +
                     "                    </button>\n" +
                     "                </td>\n" +
@@ -298,7 +306,7 @@
 
     $("#add_btn").click(function () {
 
-        if (deviceId==="NO_ID"){
+        if (deviceId === "NO_ID") {
             alert("不能获取到设备唯一ID，因此不能使用该功能")
             return;
         }
@@ -309,16 +317,16 @@
             if (a.name == 'serverHost' && a.value == '-1') {
                 a.value = $("#showServerInfoInPutVal").val()
             }
-            if (a.name == 'userHost'){
+            if (a.name == 'userHost') {
                 var split = a.value.split(":");
-                if (split.length==1){
+                if (split.length == 1) {
                     alert("必须填写端口，ip:端口")
                     return
                 }
             }
-            if (a.name == 'domian'){
+            if (a.name == 'domian') {
                 var split = a.value.split(":");
-                if (split.length==1){
+                if (split.length == 1) {
                     alert("必须填写端口，ip:端口")
                     return
                 }
@@ -328,13 +336,13 @@
         }
         //添加其他的post数据
         //用户ID，用户名，密码，设备ID，
-        serialize.push({name:"userId",value:userInfo.id})
-        serialize.push({name:"username",value:userInfo.username})
-        serialize.push({name:"password",value:userInfo.password})
-        serialize.push({name:"deviceId",value:deviceId})
+        serialize.push({name: "userId", value: userInfo.id})
+        serialize.push({name: "username", value: userInfo.username})
+        serialize.push({name: "password", value: userInfo.password})
+        serialize.push({name: "deviceId", value: deviceId})
 
         console.log(serialize)
-        $.post(apiAddress+"/config/save", serialize, function (result) {
+        $.post(apiAddress + "/config/save", serialize, function (result) {
             if (result.code === 200) {
                 alert(result.msg)
                 $("#closeFrom").click();
@@ -346,12 +354,14 @@
     })
 
 
-
     /**
      * 刷新
      */
-    function reload(){
-        $.post(apiAddress+"/user/login", {username: userInfo.username, password: userInfo.password}, function (result) {
+    function reload() {
+        $.post(apiAddress + "/user/login", {
+            username: userInfo.username,
+            password: userInfo.password
+        }, function (result) {
             if (result.code === 200) {
                 localStorage.setItem("userInfo", JSON.stringify(result.data))
                 location.reload()
