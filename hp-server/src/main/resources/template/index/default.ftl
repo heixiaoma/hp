@@ -127,9 +127,9 @@
         <h2>通过 Docker 安装</h2>
         <div class="mdui-typo"><pre class="hljs php"><code class="lang-bash"><span
                             class="hljs-comment"># 通过 docker run 运行容器</span>
-docker run -P -d -p 10240:10240  registry.cn-shenzhen.aliyuncs.com/hserver/hp:latest
+sudo docker run -P -d -p 10240:10240 -e deviceId=10-36位的自定义设备ID registry.cn-shenzhen.aliyuncs.com/hserver/hp:latest
 <span class="hljs-comment"># 通过 docker run 运行容器 ARM</span>
-docker run -P -d -p 10240:10240  registry.cn-shenzhen.aliyuncs.com/hserver/hp:latest-arm64
+sudo docker run -P -d -p 10240:10240 -e deviceId=10-36位的自定义设备ID registry.cn-shenzhen.aliyuncs.com/hserver/hp:latest-arm64
 </code></pre>
         </div>
     </div>
