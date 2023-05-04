@@ -341,9 +341,9 @@ func InitCloudDevice(apiAddress string, deviceId string) {
 		return
 	} else {
 		//校验设备ID
-		matched, _ := regexp.MatchString("^[0-9a-zA-Z]+$", deviceID)
-		if !matched || len(deviceID) < 10 {
-			log.Println("设备ID只能是数字和字母组成同时大于10位")
+		matched, _ := regexp.MatchString("^[0-9a-zA-Z]+$", deviceId)
+		if !matched || !(len(deviceId) >= 10 && len(deviceId) <= 36) {
+			log.Println("设备ID只能是数字和字母组成同时大于10-36位")
 			return
 		}
 	}

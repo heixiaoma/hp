@@ -32,7 +32,9 @@
         <div class="mdui-typo" style="margin-top: 50px">
             <span><a href="https://gitee.com/HServer/hp" rel="nofollow" target="_blank">开源地址</a></span>
             <span><a href="https://jq.qq.com/?_wv=1027&k=9xMZrFCQ" rel="nofollow"
-                     target="_blank">新QQ群：767474069</a></span>
+                     target="_blank">QQ群1：767474069</a></span>
+            <span><a href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=HtcqAJXqHdLd9qi6Nmp5Wd2-ukBjGYFS&authKey=PevXyhvsxsRe35IKE28v9Ra7N6%2BZxsMU9notMbWYgRX4gXRNJ%2Fm7907VxQDZSjXi&noverify=0&group_code=738424584" rel="nofollow"
+                     target="_blank">QQ群2：738424584</a></span>
         </div>
     </div>
 
