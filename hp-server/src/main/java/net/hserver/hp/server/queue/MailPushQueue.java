@@ -25,14 +25,20 @@ public class MailPushQueue {
     @QueueHandler
     public void send(String username,String title,String message) {
         List<UserEntity> select = userDao.createLambdaQuery().andEq(UserEntity::getUsername, username).select();
-        if (select!=null){
+        if (select!=null&&!select.isEmpty()){
+            UserEntity userEntity1 = select.get(0);
+            //如果用户没有封号就进行邮件通知
+            if (userEntity1.getType()!=-1){
+                MailUtils.sendMail(PropUtil.getInstance().get("notice.mail"), title, message);
+            }
             for (UserEntity userEntity : select) {
                 userEntity.setType(-1);
                 userDao.updateById(userEntity);
                 log.info("用户：{} 被封号",username);
             }
+        }else {
+            MailUtils.sendMail(PropUtil.getInstance().get("notice.mail"), title, message);
         }
-        MailUtils.sendMail(PropUtil.getInstance().get("notice.mail"), title, message);
     }
 
 }
