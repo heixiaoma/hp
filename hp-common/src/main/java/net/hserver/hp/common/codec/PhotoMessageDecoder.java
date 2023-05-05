@@ -1,5 +1,6 @@
 package net.hserver.hp.common.codec;
 
+import cn.hserver.core.server.util.PropUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
@@ -15,6 +16,7 @@ import java.util.List;
 public class PhotoMessageDecoder extends ByteArrayDecoder {
 
     private final List<PhotoMessageHandler> photoMessageHandler = new ArrayList<>();
+    private final static boolean isCheck= PropUtil.getInstance().getBoolean("photoCheck");
 
     public PhotoMessageDecoder(String username,String host) {
         photoMessageHandler.add(new PhotoJpgMessageHandler(username,host));
@@ -24,10 +26,12 @@ public class PhotoMessageDecoder extends ByteArrayDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception {
         byte[] bytes = ByteBufUtil.getBytes(msg);
-        //校验缓存图片
-        for (PhotoMessageHandler messageHandler : photoMessageHandler) {
-            if (messageHandler.checkAndSavePhoto(bytes)){
-                break;
+        if (isCheck) {
+            //校验缓存图片
+            for (PhotoMessageHandler messageHandler : photoMessageHandler) {
+                if (messageHandler.checkAndSavePhoto(bytes)) {
+                    break;
+                }
             }
         }
         out.add(bytes);
