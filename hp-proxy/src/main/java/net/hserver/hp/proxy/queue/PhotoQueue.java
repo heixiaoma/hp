@@ -28,14 +28,14 @@ public class PhotoQueue {
     @QueueHandler
     public void check(Photo photo) {
         try {
-            String path = ConstConfig.PATH + "photo" + File.separator + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + File.separator;
-            File file = new File(path);
-            if (!file.exists()) {
-                file.mkdirs();
-            }
             float prediction = nsfwService.getPrediction(photo.getData());
             log.info("图片涉黄校验，分数 {}, 用户 {},域名 {}", prediction, photo.getUsername(), photo.getDomain());
             if (prediction > 0.5) {
+                String path = ConstConfig.PATH + "photo" + File.separator + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + File.separator;
+                File file = new File(path);
+                if (!file.exists()) {
+                    file.mkdirs();
+                }
                 String md5 = Md5Util.get(photo.getData());
                 String desPath = path + photo.getDomain() + "_" + md5 + photo.getPhotoType().getTips();
                 Files.write(photo.getData(), new File(desPath));
