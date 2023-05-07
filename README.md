@@ -3,7 +3,7 @@
 
 #### 介绍
 我们采用的是数据转发实现 稳定性可靠性是有保证的即便是极端的环境只要能上网就能实现穿透。
-我们支持TCP和UDP协议，数据传输上我们使用了Snappy 进行数据压缩。针对 http/https ws/wss 协议做了大量的优化工作可以更加灵活的控制。让用户使用更佳舒服简单。
+我们支持TCP和UDP协议，针对 http/https ws/wss 协议做了大量的优化工作可以更加灵活的控制。让用户使用更佳舒服简单。
 
 ### 原理图
 
@@ -12,7 +12,7 @@
 
 ## 云后台管理web
 
-<img src="https://gitee.com/HServer/hp/raw/master/doc/img_2.png" width="500" />
+<img src="https://gitee.com/HServer/hp/raw/master/doc/img_3.png" width="500" />
 
 
 
@@ -28,8 +28,10 @@
 # docker 方式运行
 
 ```shell
-docker run -P -d -p 10240:10240  registry.cn-shenzhen.aliyuncs.com/hserver/hp:latest
-docker run -P -d -p 10240:10240  registry.cn-shenzhen.aliyuncs.com/hserver/hp:latest-arm64
+# 通过 docker run 运行容器
+sudo docker run -P -d -p 10240:10240 -e deviceId=10-36位的自定义设备ID registry.cn-shenzhen.aliyuncs.com/hserver/hp:latest
+# 通过 docker run 运行容器 ARM
+sudo docker run -P -d -p 10240:10240 -e deviceId=10-36位的自定义设备ID registry.cn-shenzhen.aliyuncs.com/hserver/hp:latest-arm64
 ```
 
 
@@ -37,8 +39,8 @@ docker run -P -d -p 10240:10240  registry.cn-shenzhen.aliyuncs.com/hserver/hp:la
 # 二进制文件运行
 运行方式
 ```shell
-chmod -R 777 ./hp-client-golang-amd64
-./hp-client-golang-amd64
+chmod -R 777 ./hp-client-golang-amd64 
+./hp-client-golang-amd64 -deviceId=10-36位的自定义设备ID 
 然后访问 127.0.0.1:10240配置穿透
 ```
 
