@@ -61,13 +61,14 @@ public class HttpService {
         return null;
     }
 
-    public static void noticePush(String title,String message) {
+    public static void noticePush(String username,String title,String message) {
         WebConfig bean = IocUtil.getBean(WebConfig.class);
         String adminAddress = bean.getAdminAddress();
         try {
             Map<String,String> data=new HashMap<>();
             data.put("title",title);
             data.put("message",message);
+            data.put("username",username);
             RequestBody requestBody = RequestBody.create(
                     MediaType.parse("application/json; charset=utf-8"),
                     WebConstConfig.JSON.writeValueAsBytes(data)

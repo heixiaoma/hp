@@ -12,7 +12,7 @@ public class NoticeController {
 
     @POST("/notice/push")
     public JsonResult push(Map<String, String> data) {
-        HServerQueue.sendQueue("EMAIL_PUSH", data.get("title"), data.get("message"));
+        HServerQueue.sendQueue("EMAIL_PUSH", data.get("username"),data.get("title"), data.get("message"));
         return JsonResult.ok();
     }
 

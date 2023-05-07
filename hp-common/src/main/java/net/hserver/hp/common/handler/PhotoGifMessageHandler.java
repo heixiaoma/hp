@@ -20,9 +20,11 @@ public class PhotoGifMessageHandler extends PhotoMessageHandler {
 
     private final static List<Byte> hexStart = new ArrayList<Byte>() {
         {
+            //47494638
             add((byte) Integer.parseInt("47", 16));
             add((byte) Integer.parseInt("49", 16));
             add((byte) Integer.parseInt("46", 16));
+            add((byte) Integer.parseInt("38", 16));
         }
     };
 
@@ -30,6 +32,8 @@ public class PhotoGifMessageHandler extends PhotoMessageHandler {
     //00004945 4E44AE42 6082
     private final static List<Byte> hexEnd = new ArrayList<Byte>() {
         {
+            add((byte) Integer.parseInt("10", 16));
+            add((byte) Integer.parseInt("10", 16));
             add((byte) Integer.parseInt("00", 16));
             add((byte) Integer.parseInt("3B", 16));
         }
