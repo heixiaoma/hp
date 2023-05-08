@@ -5,6 +5,7 @@ import cn.hserver.core.ioc.annotation.Autowired;
 import cn.hserver.core.ioc.annotation.queue.QueueHandler;
 import cn.hserver.core.ioc.annotation.queue.QueueListener;
 import cn.hserver.core.server.context.ConstConfig;
+import cn.hserver.core.server.util.PropUtil;
 import com.google.common.io.Files;
 import net.hserver.hp.common.message.Photo;
 import net.hserver.hp.proxy.handler.HpServerHandler;
@@ -21,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 @QueueListener(queueName = "PHOTO")
 public class PhotoQueue {
     private static final Logger log = LoggerFactory.getLogger(PhotoQueue.class);
+    private final static float score= Float.parseFloat(PropUtil.getInstance().get("score","0.6"));
 
     @Autowired
     private NsfwService nsfwService;
@@ -30,7 +32,7 @@ public class PhotoQueue {
         try {
             float prediction = nsfwService.getPrediction(photo.getData());
             log.info("图片涉黄校验，分数 {}, 用户 {},域名 {}", prediction, photo.getUsername(), photo.getDomain());
-            if (prediction > 0.6) {
+            if (prediction > score) {
                 String path = ConstConfig.PATH + "photo" + File.separator + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + File.separator;
                 File file = new File(path);
                 if (!file.exists()) {
