@@ -85,6 +85,7 @@ public class UserServiceImpl implements UserService {
             userVo.setId(user.getId());
             userVo.setUsername(user.getUsername());
             userVo.setPassword(user.getPassword());
+            userVo.setHasCloseCheckPhoto(user.getHasCloseCheckPhoto());
             userVo.setType(user.getType());
             List<Integer> ports = new ArrayList<>();
             for (PortEntity portEntity : select) {
@@ -179,7 +180,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void editUser(String username, String password, String ports, Integer type, Integer level,String domains) {
+    public void editUser(String username, String password, String ports, Integer type, Integer level,String domains,String hasCloseCheckPhoto) {
         UserEntity user = getUser(username);
         if (user != null) {
             if (type != null) {
@@ -191,6 +192,7 @@ public class UserServiceImpl implements UserService {
             if (level != null) {
                 user.setLevel(level);
             }
+            user.setHasCloseCheckPhoto(hasCloseCheckPhoto);
             user.setPassword(password);
             userDao.updateById(user);
         }
@@ -215,7 +217,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean addUser(String username, String password, String ports, String domains, Integer level) {
+    public boolean addUser(String username, String password, String ports, String domains, Integer level,String hasCloseCheckPhoto) {
         UserEntity user = getUser(username);
         //存在的用户就更新密码
         if (user != null) {
@@ -227,6 +229,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(password.trim());
         user.setCreateTime(String.valueOf(System.currentTimeMillis()));
         user.setType(2);
+        user.setHasCloseCheckPhoto(hasCloseCheckPhoto);
         user.setId(UUID.randomUUID().toString());
         user.setUsername(username.trim());
         if (level == null) {

@@ -169,8 +169,8 @@ public class HpServerHandler extends HpCommonHandler {
                     public void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(
                                 //添加编码器作用是检查是否有图片，然后在bytebuf和byte转化
-                                new PhotoMessageDecoder(username,domain + "." + host),
-                                new PhotoMessageEncoder(username,domain + "." + host),
+                                new PhotoMessageDecoder(login.getHasCloseCheckPhoto(),username,domain + "." + host),
+                                new PhotoMessageEncoder(login.getHasCloseCheckPhoto(),username,domain + "." + host),
                                 new RemoteProxyHandler(thisHandler, remoteConnectionServer)
                         );
                         channels.add(ch);

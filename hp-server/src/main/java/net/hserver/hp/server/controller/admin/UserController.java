@@ -44,9 +44,9 @@ public class UserController {
     }
 
     @POST("/admin/user/edit")
-    public void edit(Integer page, HttpResponse response, String username, String password, String ports, Integer type,Integer level,String domains) {
+    public void edit(Integer page, HttpResponse response, String username, String password, String ports, Integer type,Integer level,String domains,String hasCloseCheckPhoto) {
         if (username != null) {
-            userService.editUser(username, password, ports, type,level,domains);
+            userService.editUser(username, password, ports, type,level,domains,hasCloseCheckPhoto);
         }
         index(page, response, null);
     }
@@ -54,7 +54,7 @@ public class UserController {
     @POST("/admin/user/add")
     public void add(Integer page, HttpResponse response, String username, String password, String ports,String domains,Integer level) {
         if (username != null) {
-            userService.addUser(username, password, ports,domains,level);
+            userService.addUser(username, password, ports,domains,level,"false");
         }
         index(page, response, null);
     }

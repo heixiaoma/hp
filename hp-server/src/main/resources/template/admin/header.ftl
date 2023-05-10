@@ -14,6 +14,12 @@
     <script src="/common/js/mdui.min.js"></script>
     <title>内网穿透</title>
 </head>
+<style>
+    .mdui-overlay-show {
+        z-index: 1 !important;
+        display: none !important;
+    }
+</style>
 <body class="mdui-drawer-body-left mdui-appbar-with-toolbar  mdui-theme-primary-indigo mdui-theme-accent-pink mdui-theme-layout-auto">
 <header class="mdui-appbar mdui-appbar-fixed">
     <div class="mdui-toolbar mdui-color-theme">

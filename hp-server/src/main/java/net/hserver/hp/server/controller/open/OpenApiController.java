@@ -118,7 +118,7 @@ public class OpenApiController {
                     return JsonResult.ok("验证码错误，请检查邮箱验证码");
                 }
             }
-            if (userService.addUser(username.trim(), password.trim(), null, null, 0)) {
+            if (userService.addUser(username.trim(), password.trim(), null, null, 0,"false")) {
                 return JsonResult.ok("注册成功");
             } else {
                 return JsonResult.error("用户名已经存在请换一个");

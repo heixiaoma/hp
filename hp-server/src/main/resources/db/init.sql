@@ -11,6 +11,10 @@
  File Encoding         : 65001
 
  Date: 10/12/2020 12:27:59
+
+
+ demo：alter table sys_user add column has_close_check_photo TEXT
+
 */
 
 PRAGMA foreign_keys = false;
@@ -25,6 +29,7 @@ CREATE TABLE "sys_user" (
   "password" TEXT,
   "type" Integer,
   "level" Integer,
+  "has_close_check_photo" TEXT,
   "login_ip" TEXT,
   "login_time" TEXT,
   "create_time" TEXT,

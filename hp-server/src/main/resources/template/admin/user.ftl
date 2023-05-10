@@ -29,6 +29,7 @@
                 <th>密码</th>
                 <th>开通端口</th>
                 <th>用户级别</th>
+                <th>关闭鉴别校验</th>
                 <th>最近登录IP</th>
                 <th>IP来源</th>
                 <th>最近登录时间</th>
@@ -60,7 +61,11 @@
                                         <input class="mdui-textfield-input" name="type" type="text"
                                                value="${userVo.type}"/>
                                     </div>
-
+                                    <div class="mdui-textfield">
+                                        <label class="mdui-textfield-label">鉴别：false需要校验，true，关闭了校验</label>
+                                        <input class="mdui-textfield-input" name="hasCloseCheckPhoto" type="text"
+                                               value="${userVo.hasCloseCheckPhoto}"/>
+                                    </div>
                                     <div class="mdui-textfield">
                                         <label class="mdui-textfield-label">TCP端口号固定 多个逗号隔开</label>
                                         <input class="mdui-textfield-input" name="ports" type="text"
@@ -87,6 +92,7 @@
                             </#list>
                         </td>
                         <td>${userVo.level?c}</td>
+                        <td>${userVo.hasCloseCheckPhoto}</td>
                         <td>${userVo.loginIp}</td>
                         <td>${userVo.ipSource}</td>
                         <td>${userVo.loginTime}</td>

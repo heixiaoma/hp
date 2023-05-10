@@ -21,6 +21,20 @@ public class UserEntity {
     private Integer type;
     //级别到时一些优惠或者限定服务器可以选择
     private Integer level;
+
+    /**
+     * 关闭检查
+     */
+    private String hasCloseCheckPhoto;
+
+    public String getHasCloseCheckPhoto() {
+        return hasCloseCheckPhoto;
+    }
+
+    public void setHasCloseCheckPhoto(String hasCloseCheckPhoto) {
+        this.hasCloseCheckPhoto = hasCloseCheckPhoto;
+    }
+
     private String createTime;
     private String loginTime;
 

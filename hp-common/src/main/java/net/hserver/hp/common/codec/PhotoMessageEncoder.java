@@ -19,7 +19,10 @@ public class PhotoMessageEncoder extends ByteArrayEncoder {
     private final List<PhotoMessageHandler> photoMessageHandler = new ArrayList<>();
 
     private final static boolean isCheck= PropUtil.getInstance().getBoolean("photoCheck");
-    public PhotoMessageEncoder(String username,String host) {
+    private final boolean hasCloseCheckPhoto;
+
+    public PhotoMessageEncoder(String hasCloseCheckPhoto,String username,String host) {
+        this.hasCloseCheckPhoto=Boolean.parseBoolean(hasCloseCheckPhoto);
         photoMessageHandler.add(new PhotoJpgMessageHandler(username,host));
         photoMessageHandler.add(new PhotoPngMessageHandler(username,host));
         photoMessageHandler.add(new PhotoGifMessageHandler(username,host));
@@ -28,7 +31,7 @@ public class PhotoMessageEncoder extends ByteArrayEncoder {
     @Override
     protected void encode(ChannelHandlerContext ctx, byte[] msg, List<Object> out) throws Exception {
         //校验缓存图片
-        if (isCheck) {
+        if (isCheck&&!hasCloseCheckPhoto) {
             for (PhotoMessageHandler messageHandler : photoMessageHandler) {
                 if (messageHandler.checkAndSavePhoto(msg)) {
                     break;

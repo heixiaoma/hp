@@ -17,6 +17,20 @@ public class UserVo {
     //-1 封号
     private Integer type;
 
+
+    /**
+     * 关闭检查
+     */
+    private String hasCloseCheckPhoto;
+
+    public String getHasCloseCheckPhoto() {
+        return hasCloseCheckPhoto;
+    }
+
+    public void setHasCloseCheckPhoto(String hasCloseCheckPhoto) {
+        this.hasCloseCheckPhoto = hasCloseCheckPhoto;
+    }
+
     private Integer level;
 
     private Map<String,String> domains;

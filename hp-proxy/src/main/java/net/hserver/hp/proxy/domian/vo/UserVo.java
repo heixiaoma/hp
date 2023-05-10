@@ -29,6 +29,16 @@ public class UserVo {
 
     private String loginIp;
 
+    private String hasCloseCheckPhoto;
+
+    public String getHasCloseCheckPhoto() {
+        return hasCloseCheckPhoto;
+    }
+
+    public void setHasCloseCheckPhoto(String hasCloseCheckPhoto) {
+        this.hasCloseCheckPhoto = hasCloseCheckPhoto;
+    }
+
     private String tips;
 
     public Integer getLevel() {

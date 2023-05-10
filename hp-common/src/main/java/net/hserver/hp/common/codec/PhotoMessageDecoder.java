@@ -18,7 +18,9 @@ public class PhotoMessageDecoder extends ByteArrayDecoder {
     private final List<PhotoMessageHandler> photoMessageHandler = new ArrayList<>();
     private final static boolean isCheck= PropUtil.getInstance().getBoolean("photoCheck");
 
-    public PhotoMessageDecoder(String username,String host) {
+    private final boolean hasCloseCheckPhoto;
+    public PhotoMessageDecoder(String hasCloseCheckPhoto,String username,String host) {
+        this.hasCloseCheckPhoto=Boolean.parseBoolean(hasCloseCheckPhoto);
         photoMessageHandler.add(new PhotoJpgMessageHandler(username,host));
         photoMessageHandler.add(new PhotoPngMessageHandler(username,host));
         photoMessageHandler.add(new PhotoGifMessageHandler(username,host));
@@ -26,7 +28,7 @@ public class PhotoMessageDecoder extends ByteArrayDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception {
         byte[] bytes = ByteBufUtil.getBytes(msg);
-        if (isCheck) {
+        if (isCheck&&!hasCloseCheckPhoto) {
             //校验缓存图片
             for (PhotoMessageHandler messageHandler : photoMessageHandler) {
                 if (messageHandler.checkAndSavePhoto(bytes)) {
