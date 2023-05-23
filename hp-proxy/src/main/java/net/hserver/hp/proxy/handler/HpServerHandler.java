@@ -124,7 +124,7 @@ public class HpServerHandler extends HpCommonHandler {
         String username = hpMessage.getMetaData().getUsername();
         String domain = hpMessage.getMetaData().getDomain();
         int tempPort = hpMessage.getMetaData().getPort();
-        UserVo login = HttpService.login(username, password, domain, ctx.channel().remoteAddress().toString());
+        UserVo login = HttpService.login(username, password, domain, ((InetSocketAddress)ctx.channel().remoteAddress()).getHostString());
         /**
          * 查询这个用户是否是合法的，不是合法的直接干掉
          */
@@ -183,7 +183,7 @@ public class HpServerHandler extends HpCommonHandler {
         String password = hpMessage.getMetaData().getPassword();
         String username = hpMessage.getMetaData().getUsername();
         int tempPort = hpMessage.getMetaData().getPort();
-        UserVo login = HttpService.login(username, password, "udp", ctx.channel().remoteAddress().toString());
+        UserVo login = HttpService.login(username, password, "udp", ((InetSocketAddress)ctx.channel().remoteAddress()).getHostString());
         /**
          * 查询这个用户是否是合法的，不是合法的直接干掉
          */

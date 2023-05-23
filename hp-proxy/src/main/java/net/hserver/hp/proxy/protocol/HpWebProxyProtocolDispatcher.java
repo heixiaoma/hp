@@ -1,12 +1,11 @@
 package net.hserver.hp.proxy.protocol;
 
+import cn.hserver.core.interfaces.ProtocolDispatcherAdapter;
 import cn.hserver.core.ioc.annotation.Autowired;
 import cn.hserver.core.ioc.annotation.Bean;
 import cn.hserver.core.ioc.annotation.Order;
 import cn.hserver.core.server.util.protocol.HostUtil;
 import cn.hserver.core.server.util.protocol.SSLUtils;
-import cn.hserver.plugin.web.context.WebConstConfig;
-import cn.hserver.plugin.web.protocol.DispatchHttp;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpServerCodec;
@@ -26,7 +25,7 @@ import java.nio.ByteBuffer;
  */
 @Order(0)
 @Bean
-public class HpWebProxyProtocolDispatcher extends DispatchHttp {
+public class HpWebProxyProtocolDispatcher implements ProtocolDispatcherAdapter {
 
     @Autowired
     private WebConfig webConfig;
@@ -51,7 +50,7 @@ public class HpWebProxyProtocolDispatcher extends DispatchHttp {
                     }
 
                     if (connectInfo == null) {
-                        addErrorHandler(channelPipeline, RouterHandler.ERROR.OFF_LINE);
+                        addErrorHandler(channelPipeline);
                     } else {
                         addProxyHandler(host, channelPipeline, connectInfo.getPort());
                     }
@@ -68,11 +67,10 @@ public class HpWebProxyProtocolDispatcher extends DispatchHttp {
     /**
      * 未知来源的访问直接响应错误的穿透
      * @param pipeline
-     * @param error
      */
-    public void addErrorHandler(ChannelPipeline pipeline, RouterHandler.ERROR error) {
-        pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new HttpServerCodec());
-        pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new RouterHandler(error));
+    public void addErrorHandler(ChannelPipeline pipeline) {
+        pipeline.addLast(new HttpServerCodec());
+        pipeline.addLast(new RouterHandler());
     }
 
     /**
@@ -82,7 +80,7 @@ public class HpWebProxyProtocolDispatcher extends DispatchHttp {
      * @param port
      */
     public void addProxyHandler(String host, ChannelPipeline pipeline, Integer port) {
-        pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new FrontendHandler(host,port));
+        pipeline.addLast(new FrontendHandler(host,port));
     }
 
 }

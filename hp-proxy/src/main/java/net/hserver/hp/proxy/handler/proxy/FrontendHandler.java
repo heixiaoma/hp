@@ -1,14 +1,10 @@
 package net.hserver.hp.proxy.handler.proxy;
 
-import cn.hserver.plugin.web.context.WebConstConfig;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.ReferenceCountUtil;
-import net.hserver.hp.common.handler.PhotoGifMessageHandler;
-import net.hserver.hp.common.handler.PhotoJpgMessageHandler;
-import net.hserver.hp.common.handler.PhotoPngMessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

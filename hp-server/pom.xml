@@ -11,20 +11,12 @@
     <artifactId>hp-server</artifactId>
     <dependencies>
         <dependency>
-            <groupId>net.hserver.hp</groupId>
-            <artifactId>hp-common</artifactId>
-            <version>15.0</version>
-            <scope>compile</scope>
+            <groupId>cn.hserver</groupId>
+            <artifactId>hserver-plugin-mybatis</artifactId>
         </dependency>
         <dependency>
             <groupId>cn.hserver</groupId>
             <artifactId>hserver-plugin-web</artifactId>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/com.ibeetl/beetlsql -->
-        <dependency>
-            <groupId>com.ibeetl</groupId>
-            <artifactId>beetlsql</artifactId>
-            <version>3.19.3-RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.lionsoul</groupId>
@@ -32,28 +24,25 @@
             <version>2.6.5</version>
         </dependency>
         <dependency>
-            <groupId>cn.hserver</groupId>
-            <artifactId>hserver-plugin-beetlsql</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>2.7.2</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>2.0.5</version>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.18</version>
         </dependency>
         <dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-            <version>3.28.0</version>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.10</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>1.4.7</version>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.9</version>
         </dependency>
     </dependencies>
 
