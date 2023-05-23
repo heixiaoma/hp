@@ -5,6 +5,8 @@ import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class HttpService {
@@ -25,6 +27,8 @@ public class HttpService {
         userVo.setUsername(username);
         userVo.setPassword(password);
         userVo.setType(1);
+        List<Integer> ports=new ArrayList<>();
+        userVo.setPorts(ports);
         return userVo;
     }
 
