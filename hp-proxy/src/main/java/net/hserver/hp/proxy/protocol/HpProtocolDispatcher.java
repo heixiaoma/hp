@@ -31,17 +31,6 @@ public class HpProtocolDispatcher implements ProtocolDispatcherAdapter {
             port = PropUtil.getInstance().getInt("port");
         }
         if (socketAddress.getPort() == port) {
-            //检查是否被封控
-            try {
-                InetSocketAddress address = (InetSocketAddress) ctx.channel().remoteAddress();
-                ConInfo conInfo = CostConfig.IP_USER.get(address.getHostString());
-                if (conInfo != null) {
-                    if (conInfo.getCount().get() > CostConfig.LONGIN_ERROR) {
-                        ctx.close();
-                        return false;
-                    }
-                }
-            }catch (Exception e){}
             channelPipeline.addLast(new IdleStateHandler(60, 30, 0));
             channelPipeline.addLast(new HpMessageDecoder());
             channelPipeline.addLast(new HpMessageEncoder());

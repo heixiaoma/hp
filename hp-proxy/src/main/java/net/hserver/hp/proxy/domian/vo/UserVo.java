@@ -7,7 +7,6 @@ import java.util.Map;
  * @author hxm
  */
 public class UserVo {
-
     private String id;
 
     private String username;
@@ -17,52 +16,22 @@ public class UserVo {
     //-1 封号
     private Integer type;
 
-    private Integer level;
+    /**
+     * 自定义的域名
+     */
+    private String customDomain;
 
-    private Map<String,String> domains;
-
+    /**
+     * 开通的端口号
+     */
     private List<Integer> ports;
 
-    private String createTime;
-
-    private String loginTime;
-
-    private String loginIp;
-
-    private String hasCloseCheckPhoto;
-
-    public String getHasCloseCheckPhoto() {
-        return hasCloseCheckPhoto;
+    public String getId() {
+        return id;
     }
 
-    public void setHasCloseCheckPhoto(String hasCloseCheckPhoto) {
-        this.hasCloseCheckPhoto = hasCloseCheckPhoto;
-    }
-
-    private String tips;
-
-    public Integer getLevel() {
-        return level;
-    }
-
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
-
-    public String getTips() {
-        return tips;
-    }
-
-    public void setTips(String tips) {
-        this.tips = tips;
-    }
-
-    public String getLoginTime() {
-        return loginTime;
-    }
-
-    public void setLoginTime(String loginTime) {
-        this.loginTime = loginTime;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getUsername() {
@@ -89,56 +58,19 @@ public class UserVo {
         this.type = type;
     }
 
+    public String getCustomDomain() {
+        return customDomain;
+    }
+
+    public void setCustomDomain(String customDomain) {
+        this.customDomain = customDomain;
+    }
+
     public List<Integer> getPorts() {
         return ports;
     }
 
     public void setPorts(List<Integer> ports) {
         this.ports = ports;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-
-    public String getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getLoginIp() {
-        return loginIp;
-    }
-
-    public void setLoginIp(String loginIp) {
-        this.loginIp = loginIp;
-    }
-
-    public Map<String, String> getDomains() {
-        return domains;
-    }
-
-    public void setDomains(Map<String, String> domains) {
-        this.domains = domains;
-    }
-
-    @Override
-    public String toString() {
-        return "UserVo{" +
-                "id='" + id + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", type=" + type +
-                ", ports=" + ports +
-                ", createTime='" + createTime + '\'' +
-                '}';
     }
 }

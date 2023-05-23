@@ -7,18 +7,15 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.bytes.ByteArrayDecoder;
+import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import io.netty.util.Attribute;
 import io.netty.util.concurrent.GlobalEventExecutor;
-import net.hserver.hp.common.codec.PhotoMessageDecoder;
-import net.hserver.hp.common.codec.PhotoMessageEncoder;
 import net.hserver.hp.common.exception.HpException;
 import net.hserver.hp.common.handler.HpCommonHandler;
 import net.hserver.hp.common.protocol.HpMessageData;
-import net.hserver.hp.proxy.config.CostConfig;
 import net.hserver.hp.proxy.config.WebConfig;
-import net.hserver.hp.proxy.domian.bean.ConInfo;
 import net.hserver.hp.proxy.domian.bean.ConnectInfo;
-import net.hserver.hp.proxy.domian.bean.Statistics;
 import net.hserver.hp.proxy.domian.vo.UserVo;
 import net.hserver.hp.proxy.handler.proxy.RemoteUdpServerHandler;
 import net.hserver.hp.proxy.service.HttpService;
@@ -47,17 +44,6 @@ public class HpServerHandler extends HpCommonHandler {
     private boolean register = false;
 
     public HpServerHandler() {
-    }
-
-
-    private void backList(ChannelHandlerContext ctx, String username) {
-        InetSocketAddress address = (InetSocketAddress) ctx.channel().remoteAddress();
-        ConInfo conInfo = CostConfig.IP_USER.get(address.getHostString());
-        if (conInfo != null) {
-            conInfo.getCount().incrementAndGet();
-        } else {
-            CostConfig.IP_USER.put(address.getHostString(), new ConInfo(username));
-        }
     }
 
 
@@ -121,8 +107,6 @@ public class HpServerHandler extends HpCommonHandler {
                 connectInfo.getChannel().close();
             }
             CURRENT_STATUS.removeAll(collect);
-            Statistics statistics = remoteConnectionServer.getStatistics();
-            HttpService.updateStatistics(statistics);
 
         } catch (Throwable ignored) {
         }
@@ -140,37 +124,31 @@ public class HpServerHandler extends HpCommonHandler {
         String username = hpMessage.getMetaData().getUsername();
         String domain = hpMessage.getMetaData().getDomain();
         int tempPort = hpMessage.getMetaData().getPort();
-        WebConfig webConfig = IocUtil.getBean(WebConfig.class);
         UserVo login = HttpService.login(username, password, domain, ctx.channel().remoteAddress().toString());
         /**
          * 查询这个用户是否是合法的，不是合法的直接干掉
          */
         HpMessageData.HpMessage.MetaData.Builder metaDataBuild = HpMessageData.HpMessage.MetaData.newBuilder();
         if (login == null) {
-            backList(ctx, username);
             metaDataBuild.setSuccess(false);
             metaDataBuild.setReason("非法用户，登录失败，有疑问请联系管理员");
         } else if (login.getType() != null && login.getType() == -1) {
-            backList(ctx, username);
             metaDataBuild.setSuccess(false);
             metaDataBuild.setReason("账号被封，请穿透正能量，有意义的程序哦。用户名：" + username + " 域名：" + domain + " 来源IP：" + ctx.channel().remoteAddress());
-        } else if (webConfig.getLevel() != null && webConfig.getLevel() != 0 && login.getLevel() < webConfig.getLevel()) {
-            metaDataBuild.setSuccess(false);
-            metaDataBuild.setReason("当前穿透服务限定用户级别： " + webConfig.getLevel() + "、请升级后享受该服务。用户名：" + username + " 域名：" + domain + " 来源IP：" + ctx.channel().remoteAddress());
-        } else {
+        }else {
             try {
                 if (!login.getPorts().contains(tempPort) || tempPort <= 0) {
                     tempPort = NetUtil.getAvailablePort();
                 }
                 HpServerHandler thisHandler = this;
-                String host = IocUtil.getBean(WebConfig.class).getUserHost();
+                String host = IocUtil.getBean(WebConfig.class).getHost();
                 remoteConnectionServer.bindTcp(tempPort, new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(
                                 //添加编码器作用是检查是否有图片，然后在bytebuf和byte转化
-                                new PhotoMessageDecoder(login.getHasCloseCheckPhoto(),username,domain + "." + host),
-                                new PhotoMessageEncoder(login.getHasCloseCheckPhoto(),username,domain + "." + host),
+                                new ByteArrayDecoder(),
+                                new ByteArrayEncoder(),
                                 new RemoteProxyHandler(thisHandler, remoteConnectionServer)
                         );
                         channels.add(ch);
@@ -178,10 +156,8 @@ public class HpServerHandler extends HpCommonHandler {
                 }, login.getUsername());
                 metaDataBuild.setSuccess(true);
                 register = true;
-                CURRENT_STATUS.add(new ConnectInfo(tempPort, username, domain, login.getDomains().get(domain), ctx.channel()));
-                metaDataBuild.setReason("连接成功，外网TCP地址是:" + IocUtil.getBean(WebConfig.class).getHost() + ":" + tempPort + ",外网HTTP地址是：http://" + domain + "." + host + " " + (login.getTips().trim().length() > 0 ? "公告提示：" + login.getTips() : ""));
-                System.out.println("注册成功，外网地址是:  " + host + ":" + tempPort);
-                System.out.println("用户名：" + username + " 域名：" + domain + " 来源IP：" + ctx.channel().remoteAddress());
+                CURRENT_STATUS.add(new ConnectInfo(tempPort, username, domain, login.getCustomDomain(), ctx.channel()));
+                metaDataBuild.setReason("连接成功，外网TCP地址是:" + IocUtil.getBean(WebConfig.class).getHost() + ":" + tempPort + ",外网HTTP地址是：http://" + domain + "." + host);
             } catch (Exception e) {
                 metaDataBuild.setSuccess(false);
                 metaDataBuild.setReason(e.getMessage());
@@ -207,23 +183,17 @@ public class HpServerHandler extends HpCommonHandler {
         String password = hpMessage.getMetaData().getPassword();
         String username = hpMessage.getMetaData().getUsername();
         int tempPort = hpMessage.getMetaData().getPort();
-        WebConfig webConfig = IocUtil.getBean(WebConfig.class);
         UserVo login = HttpService.login(username, password, "udp", ctx.channel().remoteAddress().toString());
         /**
          * 查询这个用户是否是合法的，不是合法的直接干掉
          */
         HpMessageData.HpMessage.MetaData.Builder metaDataBuild = HpMessageData.HpMessage.MetaData.newBuilder();
         if (login == null) {
-            backList(ctx, username);
             metaDataBuild.setSuccess(false);
             metaDataBuild.setReason("非法用户，登录失败，有疑问请联系管理员");
         } else if (login.getType() != null && login.getType() == -1) {
-            backList(ctx, username);
             metaDataBuild.setSuccess(false);
             metaDataBuild.setReason("账号被封，请穿透正能量，有意义的程序哦。用户名：" + username + " 来源IP：" + ctx.channel().remoteAddress());
-        } else if (webConfig.getLevel() != null && webConfig.getLevel() != 0 && login.getLevel() < webConfig.getLevel()) {
-            metaDataBuild.setSuccess(false);
-            metaDataBuild.setReason("当前穿透服务限定用户级别： " + webConfig.getLevel() + "、请升级后享受该服务。用户名：" + username + " 来源IP：" + ctx.channel().remoteAddress());
         } else {
             try {
                 if (!login.getPorts().contains(tempPort) || tempPort <= 0) {
@@ -244,7 +214,7 @@ public class HpServerHandler extends HpCommonHandler {
                 metaDataBuild.setSuccess(true);
                 register = true;
                 CURRENT_STATUS.add(new ConnectInfo(tempPort, username, "(udp)", ctx.channel()));
-                metaDataBuild.setReason("连接成功，外网UDP地址是:" + IocUtil.getBean(WebConfig.class).getHost() + ":" + tempPort + (login.getTips().trim().length() > 0 ? " 公告提示：" + login.getTips() : ""));
+                metaDataBuild.setReason("连接成功，外网UDP地址是:" + IocUtil.getBean(WebConfig.class).getHost() + ":" + tempPort);
             } catch (Exception e) {
                 metaDataBuild.setSuccess(false);
                 metaDataBuild.setReason(e.getMessage());
@@ -268,7 +238,6 @@ public class HpServerHandler extends HpCommonHandler {
      */
     private void processData(HpMessageData.HpMessage hpMessage) {
         byte[] bytes = hpMessage.getData().toByteArray();
-        remoteConnectionServer.addReceive((long) bytes.length);
         if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.TCP) {
             channels.stream().filter(channel ->
                     channel.id().asLongText().equals(hpMessage.getMetaData().getChannelId())

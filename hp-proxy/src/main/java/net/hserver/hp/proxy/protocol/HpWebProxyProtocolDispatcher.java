@@ -42,10 +42,6 @@ public class HpWebProxyProtocolDispatcher extends DispatchHttp {
                 String host = HostUtil.getHost(ByteBuffer.wrap(headers));
                 log.debug("version:{},host:{}", SSLUtils.verifyPacket(ByteBuffer.wrap(headers)), host);
                 if (host != null) {
-                    // 检查是否是否官方主域名？如果是主域名走内部接口
-                    if (host.startsWith(webConfig.getHost())) {
-                        return super.dispatcher(ctx, channelPipeline, headers);
-                    }
                     String[] split = host.split("\\.");
                     String domain = split[0];
 
@@ -69,11 +65,22 @@ public class HpWebProxyProtocolDispatcher extends DispatchHttp {
         return false;
     }
 
+    /**
+     * 未知来源的访问直接响应错误的穿透
+     * @param pipeline
+     * @param error
+     */
     public void addErrorHandler(ChannelPipeline pipeline, RouterHandler.ERROR error) {
         pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new HttpServerCodec());
         pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new RouterHandler(error));
     }
 
+    /**
+     * 存在反向代理
+     * @param host
+     * @param pipeline
+     * @param port
+     */
     public void addProxyHandler(String host, ChannelPipeline pipeline, Integer port) {
         pipeline.addLast(WebConstConfig.BUSINESS_EVENT, new FrontendHandler(host,port));
     }

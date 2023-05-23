@@ -35,7 +35,6 @@ public class RemoteProxyHandler extends HpAbsHandler {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        tcpServer.addConnectNum();
         HpMessageData.HpMessage.Builder messageBuilder = HpMessageData.HpMessage.newBuilder();
         messageBuilder.setType(HpMessageData.HpMessage.HpMessageType.CONNECTED);
         messageBuilder.setMetaData(HpMessageData.HpMessage.MetaData.newBuilder().setType(HpMessageData.HpMessage.MessageType.TCP).setChannelId(ctx.channel().id().asLongText()).build());
@@ -61,8 +60,6 @@ public class RemoteProxyHandler extends HpAbsHandler {
      */
     @Override
     public void channelRead0(ChannelHandlerContext ctx, byte[] msg) throws Exception {
-        tcpServer.addSend((long) msg.length);
-        tcpServer.addPackNum();
         HpMessageData.HpMessage.Builder messageBuilder = HpMessageData.HpMessage.newBuilder();
         messageBuilder.setType(HpMessageData.HpMessage.HpMessageType.DATA);
         messageBuilder.setMetaData(HpMessageData.HpMessage.MetaData.newBuilder().setType(HpMessageData.HpMessage.MessageType.TCP).setChannelId(ctx.channel().id().asLongText()).build());

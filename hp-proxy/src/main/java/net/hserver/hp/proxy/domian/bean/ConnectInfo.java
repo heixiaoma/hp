@@ -8,16 +8,34 @@ import java.util.Date;
 
 public class ConnectInfo {
 
+    /**
+     * 用户名
+     */
     private String username;
 
+    /**
+     * 自定义域名前缀
+     */
     private String domain;
 
+    /**
+     * 用户自定义域名 **.com
+     */
     private String customDomain;
 
+    /**
+     * 链接通道
+     */
     private Channel channel;
 
+    /**
+     * 来源端口
+     */
     private Integer port;
 
+    /**
+     * 来源IP
+     */
     private String ip;
 
     private String date;

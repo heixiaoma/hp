@@ -55,7 +55,6 @@ public class RemoteUdpServerHandler extends
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         proxyHandler.getCtx().channel().config().setAutoRead(ctx.channel().isWritable());
-        tcpServer.addConnectNum();
         HpMessageData.HpMessage.Builder messageBuilder = HpMessageData.HpMessage.newBuilder();
         messageBuilder.setType(HpMessageData.HpMessage.HpMessageType.CONNECTED);
         messageBuilder.setMetaData(HpMessageData.HpMessage.MetaData.newBuilder().setType(HpMessageData.HpMessage.MessageType.UDP).setChannelId(ctx.channel().id().asLongText()).build());
@@ -71,8 +70,6 @@ public class RemoteUdpServerHandler extends
      */
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws Exception {
-        tcpServer.addSend((long) msg.content().readableBytes());
-        tcpServer.addPackNum();
         HpMessageData.HpMessage.Builder messageBuilder = HpMessageData.HpMessage.newBuilder();
         messageBuilder.setType(HpMessageData.HpMessage.HpMessageType.DATA);
         messageBuilder.setMetaData(HpMessageData.HpMessage.MetaData.newBuilder().setType(HpMessageData.HpMessage.MessageType.UDP).setChannelId(ctx.channel().id().asLongText()).build());

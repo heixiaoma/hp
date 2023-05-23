@@ -12,29 +12,15 @@ public class WebConfig {
     @Value("host")
     private String host;
 
-    @Value("userHost")
-    private String userHost;
-
-    @Value("notReg")
-    private Boolean notReg;
-
-    @Value("level")
-    private Integer level;
-
     @Value("name")
     private String name;
+
+
 
     public String getName() {
         return name;
     }
 
-    public Integer getLevel() {
-        return level;
-    }
-
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
 
     public void setName(String name) {
         this.name = name;
@@ -50,22 +36,6 @@ public class WebConfig {
 
     public String getHost() {
         return host;
-    }
-
-    public Boolean getNotReg() {
-        return notReg;
-    }
-
-    public String getUserHost() {
-        return userHost;
-    }
-
-    public void setUserHost(String userHost) {
-        this.userHost = userHost;
-    }
-
-    public void setNotReg(Boolean notReg) {
-        this.notReg = notReg;
     }
 
     public void setHost(String host) {
