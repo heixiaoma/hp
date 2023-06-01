@@ -115,21 +115,22 @@ public class HpServerHandler extends HpCommonHandler {
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         udp_channels.close();
         channels.close();
-        List<ConnectInfo> collect = CURRENT_STATUS.stream().filter(v -> !v.getChannel().isActive() || v.getChannel().id().asLongText().equals(ctx.channel().id().asLongText())).collect(Collectors.toList());
         try {
+            List<ConnectInfo> collect = CURRENT_STATUS.stream().filter(v -> !v.getChannel().isActive() || v.getChannel().id().asLongText().equals(ctx.channel().id().asLongText())).collect(Collectors.toList());
             for (ConnectInfo connectInfo : collect) {
                 connectInfo.getChannel().close();
             }
             CURRENT_STATUS.removeAll(collect);
             Statistics statistics = remoteConnectionServer.getStatistics();
             HttpService.updateStatistics(statistics);
-
-        } catch (Throwable ignored) {
+            if (register) {
+                System.out.println("停止服务器的端口: " + collect);
+            }
+        } catch (Throwable e) {
+            log.error(e.getMessage(), e);
         }
         remoteConnectionServer.close();
-        if (register) {
-            System.out.println("停止服务器的端口: " + collect);
-        }
+
     }
 
     /**
@@ -169,8 +170,8 @@ public class HpServerHandler extends HpCommonHandler {
                     public void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(
                                 //添加编码器作用是检查是否有图片，然后在bytebuf和byte转化
-                                new PhotoMessageDecoder(login.getHasCloseCheckPhoto(),username,domain + "." + host),
-                                new PhotoMessageEncoder(login.getHasCloseCheckPhoto(),username,domain + "." + host),
+                                new PhotoMessageDecoder(login.getHasCloseCheckPhoto(), username, domain + "." + host),
+                                new PhotoMessageEncoder(login.getHasCloseCheckPhoto(), username, domain + "." + host),
                                 new RemoteProxyHandler(thisHandler, remoteConnectionServer)
                         );
                         channels.add(ch);
