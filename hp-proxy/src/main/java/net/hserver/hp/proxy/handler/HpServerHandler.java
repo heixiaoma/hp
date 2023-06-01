@@ -116,7 +116,7 @@ public class HpServerHandler extends HpCommonHandler {
         udp_channels.close();
         channels.close();
         try {
-            List<ConnectInfo> collect = CURRENT_STATUS.stream().filter(v -> !v.getChannel().isActive() || v.getChannel().id().asLongText().equals(ctx.channel().id().asLongText())).collect(Collectors.toList());
+            List<ConnectInfo> collect = CURRENT_STATUS.stream().filter(v -> v != null && !v.getChannel().isActive() || v!=null&&v.getChannel().id().asLongText().equals(ctx.channel().id().asLongText())).collect(Collectors.toList());
             for (ConnectInfo connectInfo : collect) {
                 connectInfo.getChannel().close();
             }
