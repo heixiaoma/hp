@@ -14,7 +14,6 @@ import net.hserver.hp.proxy.domian.bean.Statistics;
 import java.util.concurrent.atomic.AtomicLong;
 
 
-
 /**
  * @author hxm
  */
@@ -112,6 +111,9 @@ public class TcpServer {
      * @return
      */
     public synchronized Statistics getStatistics() {
+        if (statistics == null) {
+            return null;
+        }
         statistics.setReceive(receive.get());
         statistics.setSend(send.get());
         statistics.setConnectNum(connectNum.get());

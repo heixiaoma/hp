@@ -85,6 +85,9 @@ public class HttpService {
     }
 
     public static void updateStatistics(Statistics statistics) {
+        if (statistics==null){
+            return;
+        }
         WebConfig bean = IocUtil.getBean(WebConfig.class);
         String adminAddress = bean.getAdminAddress();
         try {

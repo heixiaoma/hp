@@ -85,7 +85,6 @@ public class HpServerHandler extends HpCommonHandler {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HpMessageData.HpMessage hpMessage) throws Exception {
         if (hpMessage.getType() == HpMessageData.HpMessage.HpMessageType.REGISTER) {
-            channelInactive(ctx);
             if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.TCP) {
                 processRegisterTcp(hpMessage);
             } else if (hpMessage.getMetaData().getType() == HpMessageData.HpMessage.MessageType.UDP) {
@@ -127,7 +126,8 @@ public class HpServerHandler extends HpCommonHandler {
                 System.out.println("停止服务器的端口: " + collect);
             }
         } catch (Throwable e) {
-            log.error(e.getMessage(), e);
+            e.printStackTrace();
+            log.error(e.getMessage()+"-->"+ctx.channel().remoteAddress(), e);
         }
         remoteConnectionServer.close();
 
@@ -156,6 +156,7 @@ public class HpServerHandler extends HpCommonHandler {
             metaDataBuild.setSuccess(false);
             metaDataBuild.setReason("账号被封，请穿透正能量，有意义的程序哦。用户名：" + username + " 域名：" + domain + " 来源IP：" + ctx.channel().remoteAddress());
         } else if (webConfig.getLevel() != null && webConfig.getLevel() != 0 && login.getLevel() < webConfig.getLevel()) {
+            backList(ctx, username);
             metaDataBuild.setSuccess(false);
             metaDataBuild.setReason("当前穿透服务限定用户级别： " + webConfig.getLevel() + "、请升级后享受该服务。用户名：" + username + " 域名：" + domain + " 来源IP：" + ctx.channel().remoteAddress());
         } else {
@@ -223,6 +224,7 @@ public class HpServerHandler extends HpCommonHandler {
             metaDataBuild.setSuccess(false);
             metaDataBuild.setReason("账号被封，请穿透正能量，有意义的程序哦。用户名：" + username + " 来源IP：" + ctx.channel().remoteAddress());
         } else if (webConfig.getLevel() != null && webConfig.getLevel() != 0 && login.getLevel() < webConfig.getLevel()) {
+            backList(ctx, username);
             metaDataBuild.setSuccess(false);
             metaDataBuild.setReason("当前穿透服务限定用户级别： " + webConfig.getLevel() + "、请升级后享受该服务。用户名：" + username + " 来源IP：" + ctx.channel().remoteAddress());
         } else {
